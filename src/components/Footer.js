@@ -24,9 +24,9 @@ function Footer() {
   return (
     <Container id="contact">
       <Social>
-        <IconLink href="https://github.com/" target="_blank" rel="noopener noreferrer"><FaGithub /></IconLink>
-        <IconLink href="https://linkedin.com/" target="_blank" rel="noopener noreferrer"><FaLinkedin /></IconLink>
-        <IconLink href="https://twitter.com/" target="_blank" rel="noopener noreferrer"><FaTwitter /></IconLink>
+        <IconLink href="https://github.com/Samukelo-Mkhonza" target="_blank" rel="noopener noreferrer"><FaGithub /></IconLink>
+        <IconLink href="https://www.linkedin.com/in/samukelo-mkhonza-a27340215/" target="_blank" rel="noopener noreferrer"><FaLinkedin /></IconLink>
+        {/* <IconLink href="https://twitter.com/" target="_blank" rel="noopener noreferrer"><FaTwitter /></IconLink> */}
       </Social>
       <p>&copy; {new Date().getFullYear()} Samukelo Mkhonza</p>
     </Container>
