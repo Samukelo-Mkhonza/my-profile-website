@@ -23,7 +23,6 @@ const Heading = styled.h2`
   margin-bottom: 2rem;
 `;
 
-// Modified Grid to be centered
 const Grid = styled(motion.div)`
   display: flex;
   flex-wrap: wrap;
