@@ -62,8 +62,7 @@ const Circle = styled.div`
 `;
 
 const events = [
-  { period: '2021 – Present', role: 'Software Developer at CloudZA', desc: 'Architecting cloud-native solutions and building scalable web applications.' },
-  { period: '2019 – 2021', role: 'Junior Developer at TechCorp', desc: 'Developed React front-ends and Node.js APIs.' }
+  { period: '2023 – Present', role: 'Cloud Technologist at CloudZA', desc: 'Architecting cloud-native solutions and building scalable web applications.' },
 ];
 
 const Experience = () => (
