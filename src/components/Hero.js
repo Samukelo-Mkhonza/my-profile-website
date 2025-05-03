@@ -45,27 +45,38 @@ const Section = styled.section`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-top: 4rem;
+  padding: clamp(2rem, 10vw, 4rem) 1rem;
+  background: #f7f7f7;
 `;
 
 const Content = styled(motion.div)`
+  max-width: 900px;
+  width: 100%;
   text-align: center;
 `;
 
 const Title = styled.h1`
-  font-size: 4rem;
+  font-size: clamp(2.5rem, 8vw, 4rem);
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
-  margin-bottom: 1rem;
+  letter-spacing: 0.15em;
+  margin-bottom: clamp(0.5rem, 2vw, 1rem);
+
+  @media (max-width: 480px) {
+    letter-spacing: 0.1em;
+  }
 `;
 
 const Subtitle = styled.p`
-  font-size: 1.125rem;
+  font-size: clamp(1rem, 4vw, 1.25rem);
   font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.1em;
   color: #333;
+
+  @media (max-width: 480px) {
+    letter-spacing: 0.05em;
+  }
 `;
 
 const Hero = () => (

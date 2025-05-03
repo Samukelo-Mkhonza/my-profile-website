@@ -41,28 +41,32 @@ const TypingText = ({ text, speed = 40 }) => {
 };
 
 const Section = styled.section`
-  padding: 5rem 2rem;
+  padding: clamp(2rem, 5vw, 5rem) clamp(1rem, 5vw, 2rem);
   background: #f7f7f7;
 `;
 
 const Container = styled(motion.div)`
+  width: 100%;
   max-width: 720px;
   margin: 0 auto;
+  padding: 0 1rem;
   text-align: center;
 `;
 
 const Heading = styled.h2`
-  font-size: 2.5rem;
+  font-size: clamp(1.75rem, 6vw, 2.5rem);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  margin-bottom: 1rem;
+  margin-bottom: clamp(1rem, 4vw, 2rem);
 `;
 
 const Text = styled.p`
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 2.5vw, 1.1rem);
   color: #111;
   line-height: 1.8;
+  margin: 0 auto;
+  max-width: 600px;
 `;
 
 const About = () => (
@@ -78,9 +82,7 @@ const About = () => (
       </Heading>
       <Text>
         <TypingText
-          text={
-            "I’m a passionate software developer specializing in cloud-native infrastructures and high-performance applications. Currently, I architect solutions at CloudZA, leveraging AWS to build scalable, secure systems."
-          }
+          text="I’m a passionate software developer specializing in cloud-native infrastructures and high-performance applications. Currently, I architect solutions at CloudZA, leveraging AWS to build scalable, secure systems."
           speed={30}
         />
       </Text>
