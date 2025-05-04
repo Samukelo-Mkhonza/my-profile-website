@@ -1,9 +1,10 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: >
-  CI/CD pipeline for a my react portfolio website:
+  CI/CD pipeline for my React portfolio website:
     • GitHub (via OAuth) → CodePipeline (push-triggered)
-    • CodeBuild builds to S3
-    • CloudFront distribution + Origin Access Identity
+    • CodeBuild builds to S3 + invalidates CloudFront
+    • CloudFront distribution + Origin Access Identity (updates in-place)
+    • S3 bucket is private, CloudFront OAI reads it
 
 Parameters:
   GitHubOwner:
@@ -19,7 +20,8 @@ Parameters:
   GitHubToken:
     Type: String
     NoEcho: true
-    Description: GitHub Personal Access Token (must have repo + admin:repo_hook scopes)
+    Description: >-
+      GitHub Personal Access Token (must have repo + admin:repo_hook scopes)
 
 Resources:
 
@@ -40,6 +42,11 @@ Resources:
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: index.html
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        RestrictPublicBuckets: true
 
   WebsiteBucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -63,6 +70,8 @@ Resources:
 
   CloudFrontDistribution:
     Type: AWS::CloudFront::Distribution
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Properties:
       DistributionConfig:
         Enabled: true
@@ -117,6 +126,11 @@ Resources:
                   - logs:CreateLogStream
                   - logs:PutLogEvents
                 Resource: '*'
+              - Effect: Allow
+                Action:
+                  - cloudfront:CreateInvalidation
+                Resource:
+                  - !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}'
 
   CodeBuildProject:
     Type: AWS::CodeBuild::Project
@@ -127,6 +141,7 @@ Resources:
         Type: CODEPIPELINE
         BuildSpec: |
           version: 0.2
+
           phases:
             install:
               runtime-versions:
@@ -136,6 +151,7 @@ Resources:
             build:
               commands:
                 - npm run build
+
           artifacts:
             files: '**/*'
             base-directory: build
@@ -148,7 +164,35 @@ Resources:
         EnvironmentVariables:
           - Name: S3_BUCKET
             Value: !Ref WebsiteBucket
+          - Name: DISTRIBUTION_ID
+            Value: !Ref CloudFrontDistribution
       TimeoutInMinutes: 30
+
+  InvalidationProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub '${AWS::StackName}-invalidate'
+      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: |
+          version: 0.2
+
+          phases:
+            build:
+              commands:
+                - echo "Invalidating CloudFront distribution $DISTRIBUTION_ID…"
+                - aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:6.0
+        Type: LINUX_CONTAINER
+        EnvironmentVariables:
+          - Name: DISTRIBUTION_ID
+            Value: !Ref CloudFrontDistribution
+      TimeoutInMinutes: 5
 
   CodePipelineServiceRole:
     Type: AWS::IAM::Role
@@ -206,6 +250,7 @@ Resources:
                 Branch: !Ref GitHubBranch
                 OAuthToken: !Sub '{{resolve:secretsmanager:${GitHubOAuthSecret}:SecretString:token}}'
                 PollForSourceChanges: false
+
         - Name: Build
           Actions:
             - Name: BuildApp
@@ -220,6 +265,7 @@ Resources:
                 - Name: BuildOutput
               Configuration:
                 ProjectName: !Ref CodeBuildProject
+
         - Name: Deploy
           Actions:
             - Name: S3Deploy
@@ -233,6 +279,20 @@ Resources:
               Configuration:
                 BucketName: !Ref WebsiteBucket
                 Extract: true
+              RunOrder: 1
+
+            - Name: InvalidateCache
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: 1
+              InputArtifacts:
+                - Name: BuildOutput
+              Configuration:
+                ProjectName: !Ref InvalidationProject
+              RunOrder: 2
+
       RestartExecutionOnUpdate: true
 
   Webhook:
