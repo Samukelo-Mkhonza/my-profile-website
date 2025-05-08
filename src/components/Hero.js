@@ -46,7 +46,7 @@ const Section = styled.section`
   align-items: center;
   justify-content: center;
   padding: clamp(2rem, 10vw, 4rem) 1rem;
-  background: #f7f7f7;
+  background: #ffffff; /* Changed from #f7f7f7 to white */
 `;
 
 const Content = styled(motion.div)`

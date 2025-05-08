@@ -35,13 +35,15 @@ const Grid = styled(motion.div)`
   margin: 0 auto;
 `;
 
-const SkillCard = styled.div`
+// Modified SkillCard to use motion.div for hover animation
+const SkillCard = styled(motion.div)`
   display: flex;
   flex-direction: column;
   align-items: center;
+  cursor: pointer;
 `;
 
-const IconWrapper = styled.div`
+const IconWrapper = styled(motion.div)`
   font-size: clamp(1.5rem, 6vw, 2.5rem);
 `;
 
@@ -79,7 +81,12 @@ const Skills = () => (
               visible: { opacity: 1, y: 0 },
             }}
           >
-            <SkillCard>
+            <SkillCard
+              whileHover={{
+                scale: 1.2,
+                transition: { type: "spring", stiffness: 400, damping: 10 }
+              }}
+            >
               <IconWrapper>
                 <s.icon />
               </IconWrapper>
