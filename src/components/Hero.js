@@ -88,20 +88,32 @@ const TypingText = ({ texts, speed = 50, pause = 2000 }) => {
 
 const Section = styled.section`
   min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height for mobile */
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: clamp(2rem, 10vw, 4rem) 1rem;
+  padding: clamp(1.5rem, 5vw, 4rem) clamp(1rem, 3vw, 2rem);
   background: linear-gradient(-45deg, #ffffff, #f8f9fa, #ffffff, #f0f2f5);
   background-size: 400% 400%;
   animation: ${gradientShift} 15s ease infinite;
   position: relative;
   overflow: hidden;
 
-  @media (max-width: 768px) {
-    padding-top: clamp(6rem, 15vw, 8rem);
-    align-items: flex-start;
-    justify-content: center;
+  /* Small mobile devices */
+  @media (max-width: 480px) {
+    padding-top: clamp(5rem, 20vw, 7rem);
+    padding-bottom: clamp(3rem, 10vw, 5rem);
+  }
+
+  /* Tablets and small laptops */
+  @media (min-width: 481px) and (max-width: 1024px) {
+    padding: clamp(3rem, 8vw, 6rem) clamp(1.5rem, 4vw, 3rem);
+  }
+
+  /* Landscape mobile */
+  @media (max-height: 600px) and (orientation: landscape) {
+    min-height: auto;
+    padding: 2rem 2rem 3rem;
   }
 
   &:before {
@@ -126,6 +138,11 @@ const BackgroundElements = styled.div`
   bottom: 0;
   overflow: hidden;
   pointer-events: none;
+
+  /* Hide on very small screens to improve performance */
+  @media (max-width: 360px) {
+    display: none;
+  }
 `;
 
 const FloatingIcon = styled(motion.div)`
@@ -134,6 +151,11 @@ const FloatingIcon = styled(motion.div)`
   font-size: ${props => props.size || '2rem'};
   animation: ${float} ${props => props.duration || '6s'} ease-in-out infinite;
   animation-delay: ${props => props.delay || '0s'};
+
+  /* Reduce size on mobile */
+  @media (max-width: 768px) {
+    font-size: calc(${props => props.size || '2rem'} * 0.7);
+  }
 `;
 
 const Container = styled.div`
@@ -141,13 +163,25 @@ const Container = styled.div`
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: clamp(2rem, 5vw, 4rem);
+  gap: clamp(1.5rem, 4vw, 4rem);
   align-items: center;
   z-index: 1;
 
+  /* Tablets */
+  @media (max-width: 1024px) {
+    gap: clamp(1.5rem, 3vw, 3rem);
+  }
+
+  /* Mobile */
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
     text-align: center;
+    gap: clamp(1.5rem, 4vw, 2.5rem);
+  }
+
+  /* Landscape mobile */
+  @media (max-height: 600px) and (orientation: landscape) {
+    grid-template-columns: 1fr 1fr;
     gap: 2rem;
   }
 `;
@@ -155,15 +189,21 @@ const Container = styled.div`
 const MainContent = styled(motion.div)`
   display: flex;
   flex-direction: column;
-  gap: clamp(1rem, 3vw, 1.5rem);
+  gap: clamp(0.75rem, 2vw, 1.5rem);
 
   @media (max-width: 768px) {
     order: 1;
+    align-items: center;
+  }
+
+  /* Very small screens */
+  @media (max-width: 360px) {
+    gap: 0.75rem;
   }
 `;
 
 const Greeting = styled(motion.div)`
-  font-size: clamp(1rem, 2.5vw, 1.125rem);
+  font-size: clamp(0.875rem, 2vw, 1.125rem);
   color: #666;
   font-weight: 500;
   display: flex;
@@ -175,10 +215,15 @@ const Greeting = styled(motion.div)`
   @media (max-width: 768px) {
     justify-content: center;
   }
+
+  @media (max-width: 360px) {
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+  }
 `;
 
 const Title = styled(motion.h1)`
-  font-size: clamp(2.5rem, 7vw, 4.5rem);
+  font-size: clamp(1.75rem, 6vw, 4.5rem);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -186,49 +231,88 @@ const Title = styled(motion.h1)`
   color: #000;
   margin: 0;
 
+  /* Tablets */
+  @media (min-width: 769px) and (max-width: 1024px) {
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
+  }
+
+  /* Small mobile */
   @media (max-width: 480px) {
+    font-size: clamp(1.5rem, 7vw, 2.5rem);
     letter-spacing: 0.02em;
+  }
+
+  /* Very small screens */
+  @media (max-width: 360px) {
+    font-size: 1.375rem;
+    letter-spacing: 0.01em;
+  }
+
+  /* Landscape mobile */
+  @media (max-height: 600px) and (orientation: landscape) {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
   }
 `;
 
 const DynamicRole = styled(motion.div)`
-  font-size: clamp(1.25rem, 4vw, 2rem);
+  font-size: clamp(1rem, 3.5vw, 2rem);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: #333;
-  margin: clamp(0.5rem, 2vw, 1rem) 0;
-  min-height: clamp(1.5rem, 4vw, 2.5rem);
+  margin: clamp(0.25rem, 1.5vw, 1rem) 0;
+  min-height: clamp(1.25rem, 3.5vw, 2.5rem);
 
   @media (max-width: 480px) {
+    font-size: clamp(0.875rem, 4vw, 1.25rem);
     letter-spacing: 0.05em;
+    min-height: 1.5rem;
+  }
+
+  @media (max-width: 360px) {
+    font-size: 0.875rem;
   }
 `;
 
 const Description = styled(motion.p)`
-  font-size: clamp(1rem, 2.5vw, 1.125rem);
+  font-size: clamp(0.875rem, 2vw, 1.125rem);
   line-height: 1.6;
   color: #555;
-  margin: clamp(1rem, 3vw, 1.5rem) 0;
+  margin: clamp(0.75rem, 2vw, 1.5rem) 0;
   max-width: 500px;
 
   @media (max-width: 768px) {
     margin: 1rem auto;
+    max-width: 90%;
+  }
+
+  @media (max-width: 360px) {
+    font-size: 0.8125rem;
+    line-height: 1.5;
   }
 `;
 
 const ButtonGroup = styled(motion.div)`
   display: flex;
-  gap: 1rem;
-  margin-top: clamp(1.5rem, 3vw, 2rem);
+  gap: clamp(0.75rem, 2vw, 1rem);
+  margin-top: clamp(1rem, 2.5vw, 2rem);
+  flex-wrap: wrap;
+  justify-content: flex-start;
 
-  @media (max-width: 640px) {
-    flex-direction: column;
-    align-items: center;
+  @media (max-width: 768px) {
+    justify-content: center;
   }
 
-  @media (max-width: 768px) and (min-width: 641px) {
-    justify-content: center;
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  /* Landscape mobile */
+  @media (max-height: 600px) and (orientation: landscape) {
+    margin-top: 1rem;
   }
 `;
 
@@ -237,9 +321,9 @@ const Button = styled(motion.a)`
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  padding: clamp(0.75rem, 2vw, 1rem) clamp(1.5rem, 3vw, 2rem);
+  padding: clamp(0.625rem, 1.5vw, 1rem) clamp(1.25rem, 2.5vw, 2rem);
   border-radius: 4px;
-  font-size: clamp(0.875rem, 2vw, 1rem);
+  font-size: clamp(0.8125rem, 1.5vw, 1rem);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -248,11 +332,25 @@ const Button = styled(motion.a)`
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  min-width: 200px;
+  min-width: min(200px, 100%);
+  white-space: nowrap;
+  
+  /* Touch-friendly size for mobile */
+  @media (max-width: 768px) {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
 
-  @media (max-width: 640px) {
+  @media (max-width: 480px) {
     width: 100%;
-    min-width: unset;
+    padding: 0.875rem 1.5rem;
+  }
+
+  @media (max-width: 360px) {
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
   }
 
   &:before {
@@ -275,10 +373,18 @@ const Button = styled(motion.a)`
     position: relative;
     z-index: 1;
     transition: transform 0.3s ease;
+    flex-shrink: 0;
   }
 
-  &:hover svg {
-    transform: translateX(4px);
+  @media (hover: hover) {
+    &:hover svg {
+      transform: translateX(4px);
+    }
+  }
+
+  /* Touch feedback for mobile */
+  &:active {
+    transform: scale(0.98);
   }
 `;
 
@@ -291,13 +397,15 @@ const PrimaryButton = styled(Button)`
     background: #fff;
   }
 
-  &:hover {
-    color: #000;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  @media (hover: hover) {
+    &:hover {
+      color: #000;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 
-    &:before {
-      width: 100%;
+      &:before {
+        width: 100%;
+      }
     }
   }
 `;
@@ -311,13 +419,15 @@ const SecondaryButton = styled(Button)`
     background: #000;
   }
 
-  &:hover {
-    color: #fff;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  @media (hover: hover) {
+    &:hover {
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 
-    &:before {
-      width: 100%;
+      &:before {
+        width: 100%;
+      }
     }
   }
 `;
@@ -325,8 +435,8 @@ const SecondaryButton = styled(Button)`
 const StatsSection = styled(motion.div)`
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  padding: clamp(2rem, 4vw, 2.5rem);
+  gap: clamp(1rem, 2vw, 1.5rem);
+  padding: clamp(1.5rem, 3vw, 2.5rem);
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(0, 0, 0, 0.1);
@@ -335,72 +445,118 @@ const StatsSection = styled(motion.div)`
 
   @media (max-width: 768px) {
     order: 2;
+    width: 100%;
+    max-width: 500px;
+  }
+
+  @media (max-width: 480px) {
+    padding: clamp(1.25rem, 4vw, 2rem);
+  }
+
+  /* Landscape mobile */
+  @media (max-height: 600px) and (orientation: landscape) {
+    padding: 1.5rem;
   }
 `;
 
 const StatsGrid = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+
+  @media (max-width: 360px) {
+    gap: 0.625rem;
+  }
 `;
 
 const StatCard = styled(motion.div)`
   text-align: center;
-  padding: 1rem;
+  padding: clamp(0.75rem, 2vw, 1rem);
   background: rgba(255, 255, 255, 0.6);
   border-radius: 8px;
   border: 1px solid rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
 
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-    background: rgba(255, 255, 255, 0.9);
+  @media (hover: hover) {
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      background: rgba(255, 255, 255, 0.9);
+    }
+  }
+
+  @media (max-width: 360px) {
+    padding: 0.625rem;
   }
 `;
 
 const StatNumber = styled.div`
-  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-size: clamp(1.25rem, 3vw, 2rem);
   font-weight: 700;
   color: #000;
   margin-bottom: 0.25rem;
+
+  @media (max-width: 360px) {
+    font-size: 1.125rem;
+  }
 `;
 
 const StatLabel = styled.div`
-  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  font-size: clamp(0.625rem, 1.5vw, 0.875rem);
   color: #666;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-weight: 500;
+
+  @media (max-width: 360px) {
+    font-size: 0.625rem;
+    letter-spacing: 0.05em;
+  }
 `;
 
 const QuickInfo = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  padding-top: 1rem;
+  gap: clamp(0.5rem, 1.5vw, 0.75rem);
+  padding-top: clamp(0.75rem, 2vw, 1rem);
   border-top: 1px solid rgba(0, 0, 0, 0.1);
+
+  @media (max-width: 360px) {
+    gap: 0.5rem;
+    padding-top: 0.625rem;
+  }
 `;
 
 const InfoItem = styled.div`
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  font-size: clamp(0.875rem, 2vw, 1rem);
+  font-size: clamp(0.75rem, 1.75vw, 1rem);
   color: #555;
+
+  @media (max-width: 360px) {
+    gap: 0.5rem;
+    font-size: 0.75rem;
+  }
 `;
 
 const InfoIcon = styled.div`
-  font-size: 1rem;
+  font-size: clamp(0.875rem, 2vw, 1rem);
   color: #000;
   width: 20px;
   display: flex;
   justify-content: center;
+  flex-shrink: 0;
+
+  @media (max-width: 360px) {
+    font-size: 0.75rem;
+    width: 16px;
+  }
 `;
 
 const ScrollIndicator = styled(motion.div)`
   position: absolute;
-  bottom: 2rem;
+  bottom: clamp(1rem, 3vw, 2rem);
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -410,13 +566,18 @@ const ScrollIndicator = styled(motion.div)`
   color: #666;
   cursor: pointer;
 
-  @media (max-width: 768px) {
-    bottom: 1rem;
+  /* Hide on very short screens */
+  @media (max-height: 600px) {
+    display: none;
+  }
+
+  @media (max-width: 360px) {
+    bottom: 0.75rem;
   }
 `;
 
 const ScrollText = styled.span`
-  font-size: 0.75rem;
+  font-size: clamp(0.625rem, 1.5vw, 0.75rem);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-weight: 500;
@@ -435,28 +596,52 @@ const ModalOverlay = styled(motion.div)`
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 1rem;
+  padding: clamp(1rem, 3vw, 2rem);
+  overflow-y: auto;
 `;
 
 const ModalContent = styled(motion.div)`
   background: #fff;
   border-radius: 12px;
-  padding: clamp(2rem, 5vw, 3rem);
+  padding: clamp(1.5rem, 4vw, 3rem);
   width: 100%;
   max-width: 600px;
   max-height: 90vh;
+  max-height: 90dvh;
   overflow-y: auto;
   position: relative;
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+  margin: auto;
+
+  /* Smooth scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
+
+  @media (max-width: 480px) {
+    padding: clamp(1.25rem, 4vw, 2rem);
+    max-height: 85vh;
+    max-height: 85dvh;
+  }
+
+  @media (max-width: 360px) {
+    padding: 1rem;
+    border-radius: 8px;
+  }
+
+  /* Landscape mobile */
+  @media (max-height: 500px) and (orientation: landscape) {
+    max-height: 95vh;
+    max-height: 95dvh;
+    padding: 1.5rem;
+  }
 `;
 
 const CloseButton = styled.button`
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: clamp(0.75rem, 2vw, 1rem);
+  right: clamp(0.75rem, 2vw, 1rem);
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
   color: #666;
   cursor: pointer;
   padding: 0.5rem;
@@ -465,32 +650,67 @@ const CloseButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
 
-  &:hover {
-    background: rgba(0, 0, 0, 0.1);
-    color: #000;
+  @media (hover: hover) {
+    &:hover {
+      background: rgba(0, 0, 0, 0.1);
+      color: #000;
+    }
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  @media (max-width: 360px) {
+    top: 0.5rem;
+    right: 0.5rem;
+    font-size: 1.125rem;
   }
 `;
 
 const ModalTitle = styled.h2`
-  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-size: clamp(1.25rem, 3.5vw, 2rem);
   font-weight: 700;
   color: #000;
-  margin: 0 0 1rem 0;
+  margin: 0 0 clamp(0.75rem, 2vw, 1rem) 0;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  padding-right: 2rem;
+
+  @media (max-width: 480px) {
+    font-size: clamp(1.125rem, 4vw, 1.5rem);
+  }
+
+  @media (max-width: 360px) {
+    font-size: 1.125rem;
+    letter-spacing: 0.02em;
+  }
 `;
 
 const ModalSubtitle = styled.p`
   color: #666;
-  margin-bottom: 2rem;
+  margin-bottom: clamp(1.5rem, 3vw, 2rem);
   line-height: 1.6;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+
+  @media (max-width: 360px) {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    margin-bottom: 1.25rem;
+  }
 `;
 
-const Form = styled.form`
+const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: clamp(1rem, 2.5vw, 1.5rem);
+
+  @media (max-width: 360px) {
+    gap: 0.875rem;
+  }
 `;
 
 const FormGroup = styled.div`
@@ -504,14 +724,18 @@ const Label = styled.label`
   color: #333;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  font-size: 0.875rem;
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+
+  @media (max-width: 360px) {
+    font-size: 0.75rem;
+  }
 `;
 
 const Input = styled.input`
-  padding: 1rem;
+  padding: clamp(0.75rem, 2vw, 1rem);
   border: 2px solid #e0e0e0;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: clamp(0.875rem, 2vw, 1rem);
   transition: all 0.3s ease;
   background: #fff;
 
@@ -524,14 +748,20 @@ const Input = styled.input`
   &::placeholder {
     color: #999;
   }
+
+  @media (max-width: 360px) {
+    padding: 0.625rem;
+    font-size: 0.875rem;
+    border-radius: 6px;
+  }
 `;
 
 const TextArea = styled.textarea`
-  padding: 1rem;
+  padding: clamp(0.75rem, 2vw, 1rem);
   border: 2px solid #e0e0e0;
   border-radius: 8px;
-  font-size: 1rem;
-  min-height: 120px;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  min-height: clamp(100px, 20vw, 120px);
   resize: vertical;
   font-family: inherit;
   transition: all 0.3s ease;
@@ -546,6 +776,13 @@ const TextArea = styled.textarea`
   &::placeholder {
     color: #999;
   }
+
+  @media (max-width: 360px) {
+    padding: 0.625rem;
+    font-size: 0.875rem;
+    min-height: 80px;
+    border-radius: 6px;
+  }
 `;
 
 const SubmitButton = styled(motion.button)`
@@ -553,23 +790,30 @@ const SubmitButton = styled(motion.button)`
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  padding: 1rem 2rem;
+  padding: clamp(0.875rem, 2vw, 1rem) clamp(1.5rem, 3vw, 2rem);
   background: #000;
   color: #fff;
   border: 2px solid #000;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: clamp(0.875rem, 2vw, 1rem);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-top: 1rem;
+  margin-top: clamp(0.5rem, 2vw, 1rem);
+  min-height: 44px;
 
-  &:hover {
-    background: #333;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      background: #333;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
   }
 
   &:disabled {
@@ -580,21 +824,31 @@ const SubmitButton = styled(motion.button)`
 
   svg {
     transition: transform 0.3s ease;
+    flex-shrink: 0;
   }
 
-  &:hover:not(:disabled) svg {
-    transform: translateX(4px);
+  @media (hover: hover) {
+    &:hover:not(:disabled) svg {
+      transform: translateX(4px);
+    }
+  }
+
+  @media (max-width: 360px) {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.75rem;
+    gap: 0.5rem;
+    letter-spacing: 0.05em;
   }
 `;
 
 // CV Modal Styles
 const CVContent = styled.div`
-  margin-top: 2rem;
+  margin-top: clamp(1.5rem, 3vw, 2rem);
 `;
 
 const CVSection = styled.div`
-  margin-bottom: 2rem;
-  padding-bottom: 1.5rem;
+  margin-bottom: clamp(1.5rem, 3vw, 2rem);
+  padding-bottom: clamp(1rem, 2vw, 1.5rem);
   border-bottom: 1px solid #e0e0e0;
 
   &:last-child {
@@ -602,13 +856,18 @@ const CVSection = styled.div`
     margin-bottom: 0;
     padding-bottom: 0;
   }
+
+  @media (max-width: 360px) {
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.875rem;
+  }
 `;
 
 const CVSectionTitle = styled.h3`
-  font-size: 1.25rem;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
   font-weight: 600;
   color: #000;
-  margin-bottom: 1rem;
+  margin-bottom: clamp(0.75rem, 2vw, 1rem);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   display: flex;
@@ -616,8 +875,15 @@ const CVSectionTitle = styled.h3`
   gap: 0.75rem;
 
   svg {
-    font-size: 1rem;
+    font-size: clamp(0.875rem, 2vw, 1rem);
     color: #666;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 360px) {
+    font-size: 0.9375rem;
+    gap: 0.5rem;
+    letter-spacing: 0.02em;
   }
 `;
 
@@ -625,6 +891,12 @@ const CVText = styled.p`
   color: #666;
   line-height: 1.6;
   margin-bottom: 0.75rem;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+
+  @media (max-width: 360px) {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
 `;
 
 const CVList = styled.ul`
@@ -633,26 +905,37 @@ const CVList = styled.ul`
   margin: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: clamp(0.5rem, 1.5vw, 0.75rem);
+
+  @media (max-width: 360px) {
+    gap: 0.375rem;
+  }
 `;
 
 const CVListItem = styled.li`
   background: #f0f0f0;
-  padding: 0.5rem 1rem;
+  padding: clamp(0.375rem, 1.5vw, 0.5rem) clamp(0.75rem, 2vw, 1rem);
   border-radius: 4px;
-  font-size: 0.875rem;
+  font-size: clamp(0.75rem, 1.75vw, 0.875rem);
   color: #333;
   transition: all 0.3s ease;
 
-  &:hover {
-    background: #e0e0e0;
+  @media (hover: hover) {
+    &:hover {
+      background: #e0e0e0;
+    }
+  }
+
+  @media (max-width: 360px) {
+    padding: 0.375rem 0.625rem;
+    font-size: 0.75rem;
   }
 `;
 
 const ContactInfo = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: clamp(0.375rem, 1vw, 0.5rem);
   margin-top: 0.5rem;
 `;
 
@@ -663,36 +946,55 @@ const ContactItem = styled.a`
   color: #666;
   text-decoration: none;
   transition: color 0.3s ease;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  word-break: break-word;
 
-  &:hover {
-    color: #000;
+  @media (hover: hover) {
+    &:hover {
+      color: #000;
+    }
   }
 
   svg {
-    font-size: 1rem;
+    font-size: clamp(0.875rem, 2vw, 1rem);
     color: #000;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 360px) {
+    font-size: 0.8125rem;
+    gap: 0.5rem;
   }
 `;
 
 const WorkExperience = styled.div`
-  margin-top: 1rem;
+  margin-top: clamp(0.75rem, 2vw, 1rem);
 `;
 
 const JobTitle = styled.h4`
-  font-size: 1.125rem;
+  font-size: clamp(1rem, 2.5vw, 1.125rem);
   font-weight: 600;
   color: #333;
   margin-bottom: 0.25rem;
+
+  @media (max-width: 360px) {
+    font-size: 0.9375rem;
+  }
 `;
 
 const Company = styled.p`
   color: #666;
   font-style: italic;
   margin-bottom: 0.5rem;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+
+  @media (max-width: 360px) {
+    font-size: 0.8125rem;
+  }
 `;
 
 const Duration = styled.span`
-  font-size: 0.875rem;
+  font-size: clamp(0.75rem, 1.75vw, 0.875rem);
   color: #999;
 `;
 
@@ -719,7 +1021,7 @@ const ContactModal = ({ isOpen, onClose }) => {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     
@@ -757,7 +1059,7 @@ const ContactModal = ({ isOpen, onClose }) => {
           Send me a message and let's create something amazing together!
         </ModalSubtitle>
 
-        <Form onSubmit={handleSubmit}>
+        <FormContainer>
           <FormGroup>
             <Label htmlFor="name">Your Name *</Label>
             <Input
@@ -810,7 +1112,7 @@ const ContactModal = ({ isOpen, onClose }) => {
           </FormGroup>
 
           <SubmitButton
-            type="submit"
+            onClick={handleSubmit}
             disabled={isSubmitting}
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.98 }}
@@ -818,7 +1120,7 @@ const ContactModal = ({ isOpen, onClose }) => {
             {isSubmitting ? 'Sending...' : 'Send Message'}
             <FaPaperPlane />
           </SubmitButton>
-        </Form>
+        </FormContainer>
       </ModalContent>
     </ModalOverlay>
   );
@@ -847,18 +1149,6 @@ const CVModal = ({ isOpen, onClose }) => {
         <ModalTitle>Curriculum Vitae</ModalTitle>
         
         <CVContent>
-          {/* <CVSection>
-            <CVSectionTitle>
-              <FaUser />
-              Profile
-            </CVSectionTitle>
-            <CVText>
-              Junior Cloud Technologist with a diploma in ICT Software Development and AWS certifications. 
-              Passionate about leveraging technology to drive efficiency and building innovative cloud solutions. 
-              Recently achieved AWS Solutions Architect certification and excited to contribute to cutting-edge projects.
-            </CVText>
-          </CVSection> */}
-
           <CVSection>
             <CVSectionTitle>
               <FaPhone />
@@ -869,7 +1159,7 @@ const CVModal = ({ isOpen, onClose }) => {
                 <FaPhone />
                 +27 (63) 818 4436
               </ContactItem>
-              <ContactItem href="mailto:Mkhonzasenzo525@gmail.com">
+              <ContactItem href="mailto:samukelo.mkhonza@outlook.com">
                 <FaEnvelope />
                 samukelo.mkhonza@outlook.com
               </ContactItem>
