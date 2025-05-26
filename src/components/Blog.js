@@ -297,7 +297,7 @@ const ModalOverlay = styled(motion.div)`
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(0, 0, 0, 0.9);
   backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
@@ -309,66 +309,49 @@ const ModalOverlay = styled(motion.div)`
 
 const ModalContent = styled(motion.div)`
   background: #ffffff;
-  border-radius: 12px;
-  padding: clamp(2rem, 5vw, 3.5rem);
-  max-width: min(90vw, 550px);
+  border-radius: 16px;
+  padding: clamp(2rem, 4vw, 3rem);
+  max-width: min(90vw, 450px);
   width: 100%;
   text-align: center;
   position: relative;
   margin: auto;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3);
-  max-height: 90vh;
-  max-height: 90dvh;
-  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   
-  /* Smooth scrolling on iOS */
-  -webkit-overflow-scrolling: touch;
-
   /* Small mobile */
   @media (max-width: 480px) {
-    padding: clamp(1.5rem, 5vw, 2.5rem);
-    border-radius: 8px;
-    max-height: 85vh;
-    max-height: 85dvh;
+    padding: clamp(1.5rem, 4vw, 2rem);
+    border-radius: 12px;
   }
 
   /* Very small screens */
   @media (max-width: 360px) {
-    padding: 1.25rem;
-    padding-top: 2.5rem;
-  }
-
-  /* Landscape mobile */
-  @media (max-height: 500px) and (orientation: landscape) {
-    padding: 1.5rem;
-    padding-top: 2.5rem;
-    max-height: 95vh;
-    max-height: 95dvh;
+    padding: 1.5rem 1rem;
   }
 `;
 
 const CloseButton = styled.button`
   position: absolute;
-  top: clamp(0.75rem, 2vw, 1rem);
-  right: clamp(0.75rem, 2vw, 1rem);
-  background: #f8f9fa;
-  border: none;
-  width: clamp(36px, 8vw, 44px);
-  height: clamp(36px, 8vw, 44px);
+  top: clamp(1rem, 2vw, 1.25rem);
+  right: clamp(1rem, 2vw, 1.25rem);
+  background: transparent;
+  border: 2px solid #e9ecef;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   cursor: pointer;
-  color: #495057;
-  transition: all 0.3s ease;
+  color: #6c757d;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  font-size: 1rem;
   
   @media (hover: hover) {
     &:hover {
-      background: #e9ecef;
+      border-color: #000;
       color: #000;
-      transform: rotate(90deg);
+      transform: scale(1.1);
     }
   }
   
@@ -376,47 +359,52 @@ const CloseButton = styled.button`
     transform: scale(0.95);
   }
 
-  /* Touch-friendly minimum size */
-  @media (max-width: 768px) {
-    min-width: 44px;
-    min-height: 44px;
-  }
-
   @media (max-width: 360px) {
-    top: 0.5rem;
-    right: 0.5rem;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 28px;
+    height: 28px;
+    font-size: 0.875rem;
   }
 `;
 
 const ModalIcon = styled(motion.div)`
-  font-size: clamp(3rem, 8vw, 4rem);
-  margin-bottom: clamp(1rem, 3vw, 1.5rem);
+  width: 60px;
+  height: 60px;
+  margin: 0 auto clamp(1.25rem, 2.5vw, 1.75rem);
   color: #000;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: #f8f9fa;
+  border-radius: 50%;
   
   svg {
-    width: 100%;
-    height: 100%;
+    width: 32px;
+    height: 32px;
+  }
+
+  @media (max-width: 360px) {
+    width: 52px;
+    height: 52px;
+    margin-bottom: 1.25rem;
+    
+    svg {
+      width: 28px;
+      height: 28px;
+    }
   }
 `;
 
 const ModalTitle = styled.h3`
-  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: clamp(0.75rem, 2vw, 1.25rem);
+  margin-bottom: clamp(0.5rem, 1.5vw, 0.75rem);
   color: #000;
   line-height: 1.2;
 
-  /* Small mobile */
-  @media (max-width: 480px) {
-    font-size: clamp(1.25rem, 5vw, 1.75rem);
-  }
-
-  /* Very small screens */
   @media (max-width: 360px) {
     font-size: 1.125rem;
     letter-spacing: 0.02em;
@@ -424,54 +412,59 @@ const ModalTitle = styled.h3`
 `;
 
 const ModalText = styled.p`
-  font-size: clamp(0.875rem, 2.5vw, 1.125rem);
-  line-height: 1.7;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  line-height: 1.6;
   color: #495057;
-  margin-bottom: clamp(1rem, 3vw, 1.5rem);
+  margin-bottom: clamp(1.5rem, 3vw, 2rem);
 
-  /* Small mobile */
-  @media (max-width: 480px) {
-    font-size: clamp(0.8125rem, 2.5vw, 1rem);
-    line-height: 1.6;
+  @media (max-width: 360px) {
+    font-size: 0.8125rem;
+    margin-bottom: 1.25rem;
   }
+`;
 
-  /* Very small screens */
+const ModalBlogTitle = styled.h4`
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  font-weight: 500;
+  color: #6c757d;
+  margin-bottom: clamp(1rem, 2vw, 1.5rem);
+  font-style: italic;
+
   @media (max-width: 360px) {
     font-size: 0.8125rem;
     margin-bottom: 0.875rem;
   }
 `;
 
-const ModalBlogTitle = styled.h4`
-  font-size: clamp(1rem, 3vw, 1.375rem);
-  font-weight: 600;
-  color: #333;
-  margin-bottom: clamp(0.75rem, 2vw, 1rem);
-  font-style: italic;
-  opacity: 0.8;
-
-  @media (max-width: 480px) {
-    font-size: clamp(0.875rem, 3.5vw, 1.125rem);
-  }
-
-  @media (max-width: 360px) {
-    font-size: 0.875rem;
-    margin-bottom: 0.625rem;
-  }
-`;
-
-const NewsletterHint = styled(ModalText)`
-  font-size: clamp(0.75rem, 2vw, 0.9375rem);
-  font-style: italic;
-  color: #6c757d;
-  background: #f8f9fa;
-  padding: clamp(0.75rem, 2vw, 1rem);
+const CTAButton = styled.button`
+  background: #000;
+  color: #fff;
+  border: none;
+  padding: clamp(0.625rem, 1.5vw, 0.75rem) clamp(1.5rem, 3vw, 2rem);
   border-radius: 6px;
-  margin-bottom: 0;
+  font-size: clamp(0.8125rem, 1.75vw, 0.875rem);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  @media (hover: hover) {
+    &:hover {
+      background: #333;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
 
   @media (max-width: 360px) {
-    font-size: 0.6875rem;
-    padding: 0.625rem;
+    font-size: 0.75rem;
+    padding: 0.5rem 1.25rem;
+    letter-spacing: 0.05em;
   }
 `;
 
@@ -564,12 +557,12 @@ const Blog = () => {
             onClick={closeModal}
           >
             <ModalContent
-              initial={{ scale: 0.85, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.85, opacity: 0, y: 20 }}
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
               transition={{ 
                 type: "spring",
-                damping: 25,
+                damping: 30,
                 stiffness: 300
               }}
               onClick={(e) => e.stopPropagation()}
@@ -579,31 +572,30 @@ const Blog = () => {
               </CloseButton>
               
               <ModalIcon
-                initial={{ scale: 0 }}
-                animate={{ scale: 1, rotate: 360 }}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
                 transition={{ 
                   delay: 0.1,
                   type: "spring",
-                  damping: 15
+                  damping: 25
                 }}
               >
                 <FaRocket />
               </ModalIcon>
               
-              <ModalTitle>Coming Soon!</ModalTitle>
+              <ModalTitle>Coming Soon</ModalTitle>
               
               {selectedPost && (
-                <ModalBlogTitle>"{selectedPost.title}"</ModalBlogTitle>
+                <ModalBlogTitle>{selectedPost.title}</ModalBlogTitle>
               )}
               
               <ModalText>
-                I'm working hard to bring you quality content. This blog post will be available soon. 
-                Stay tuned for in-depth technical insights and best practices!
+                This article is currently being written. Join my newsletter to be the first to know when it's published.
               </ModalText>
               
-              <NewsletterHint>
-                Subscribe to my newsletter to get notified when new content is published.
-              </NewsletterHint>
+              <CTAButton onClick={closeModal}>
+                Got it
+              </CTAButton>
             </ModalContent>
           </ModalOverlay>
         )}

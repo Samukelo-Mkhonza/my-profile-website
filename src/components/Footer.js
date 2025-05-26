@@ -95,6 +95,11 @@ const ContactSection = styled(motion.div)`
   display: flex;
   flex-direction: column;
   gap: clamp(1rem, 2vw, 1.5rem);
+
+  @media (max-width: 768px) {
+    align-items: center;
+    text-align: center;
+  }
 `;
 
 const SectionTitle = styled.h3`
@@ -115,6 +120,17 @@ const SectionTitle = styled.h3`
     width: clamp(3rem, 8vw, 4rem);
     height: 3px;
     background: linear-gradient(90deg, #fff, transparent);
+  }
+
+  @media (max-width: 768px) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    &:after {
+      left: 50%;
+      transform: translateX(-50%);
+    }
   }
 
   /* Small mobile */
@@ -139,6 +155,12 @@ const ContactInfo = styled.div`
   display: flex;
   flex-direction: column;
   gap: clamp(0.5rem, 1.5vw, 0.875rem);
+
+  @media (max-width: 768px) {
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+  }
 `;
 
 const ContactItem = styled(motion.a)`
@@ -167,6 +189,17 @@ const ContactItem = styled(motion.a)`
 
   &:active {
     transform: scale(0.98);
+  }
+
+  @media (max-width: 768px) {
+    justify-content: center;
+    width: 100%;
+    
+    @media (hover: hover) {
+      &:hover {
+        transform: translateX(0) scale(1.02);
+      }
+    }
   }
 
   /* Small mobile */
@@ -215,6 +248,8 @@ const QuickLinksGrid = styled.div`
 
   @media (max-width: 768px) {
     align-items: center;
+    width: 100%;
+    max-width: 300px;
   }
 
   @media (max-width: 360px) {
@@ -249,6 +284,18 @@ const QuickLink = styled(motion.a)`
 
   &:active {
     transform: scale(0.98);
+  }
+
+  @media (max-width: 768px) {
+    justify-content: center;
+    width: 100%;
+    text-align: center;
+    
+    @media (hover: hover) {
+      &:hover {
+        transform: translateX(0) scale(1.02);
+      }
+    }
   }
 
   /* Small mobile */
@@ -305,6 +352,10 @@ const NewsletterForm = styled.form`
     max-width: 400px;
   }
 
+  @media (max-width: 768px) {
+    align-items: center;
+  }
+
   @media (max-width: 480px) {
     gap: 0.75rem;
   }
@@ -320,6 +371,11 @@ const NewsletterInput = styled.input`
   transition: all 0.3s ease;
   flex: 1;
   min-height: 44px;
+  text-align: center;
+
+  @media (min-width: 769px) {
+    text-align: left;
+  }
 
   &::placeholder {
     color: rgba(255, 255, 255, 0.5);
@@ -330,6 +386,11 @@ const NewsletterInput = styled.input`
     border-color: rgba(255, 255, 255, 0.5);
     background: rgba(255, 255, 255, 0.12);
     box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    max-width: 350px;
   }
 
   /* Small mobile */
@@ -375,6 +436,11 @@ const NewsletterButton = styled(motion.button)`
 
   &:active {
     transform: scale(0.98);
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    max-width: 350px;
   }
 
   /* Small mobile */
@@ -533,6 +599,10 @@ const Copyright = styled.div`
   font-size: clamp(0.75rem, 1.75vw, 0.875rem);
   line-height: 1.5;
 
+  @media (max-width: 640px) {
+    justify-content: center;
+  }
+
   @media (max-width: 360px) {
     font-size: 0.6875rem;
     gap: 0.375rem;
@@ -546,6 +616,10 @@ const MadeWith = styled.div`
   color: rgba(255, 255, 255, 0.6);
   font-size: clamp(0.75rem, 1.75vw, 0.875rem);
   line-height: 1.5;
+
+  @media (max-width: 640px) {
+    justify-content: center;
+  }
 
   svg {
     color: #e74c3c;
