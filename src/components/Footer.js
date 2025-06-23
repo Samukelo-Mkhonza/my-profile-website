@@ -765,14 +765,6 @@ const Footer = () => {
                   <ContactIcon><FaEnvelope /></ContactIcon>
                   samukelo.mkhonza@outlook.com
                 </ContactItem>
-                <ContactItem 
-                  href="tel:+27638184436"
-                  whileHover={{ x: 8 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <ContactIcon><FaPhone /></ContactIcon>
-                  +27 (63) 818-4436
-                </ContactItem>
                 <ContactItem
                   as={motion.div}
                   whileHover={{ x: 8 }}
