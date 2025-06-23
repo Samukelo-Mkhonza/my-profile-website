@@ -1155,10 +1155,6 @@ const CVModal = ({ isOpen, onClose }) => {
               Contact
             </CVSectionTitle>
             <ContactInfo>
-              <ContactItem href="tel:+27638184436">
-                <FaPhone />
-                +27 (63) 818 4436
-              </ContactItem>
               <ContactItem href="mailto:samukelo.mkhonza@outlook.com">
                 <FaEnvelope />
                 samukelo.mkhonza@outlook.com
