@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaBars, FaTimes, FaCode, FaHome, FaUser, FaCog, FaBriefcase, FaBlog, FaEnvelope } from 'react-icons/fa';
+import { FaBars, FaTimes, FaCode, FaHome, FaUser, FaCog, FaBriefcase, FaBlog, FaEnvelope, FaSun, FaMoon } from 'react-icons/fa';
+import { useTheme } from '../context/ThemeContext';
 
 const NavContainer = styled(motion.nav)`
   position: fixed;
@@ -21,17 +22,15 @@ const NavContent = styled.div`
   justify-content: space-between;
   align-items: center;
   background: ${props => props.$scrolled 
-    ? 'rgba(255, 255, 255, 0.98)' 
-    : 'rgba(255, 255, 255, 0.95)'};
+    ? 'var(--glass-bg, rgba(255, 255, 255, 0.98))' 
+    : 'var(--glass-bg, rgba(255, 255, 255, 0.95))'};
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: ${props => props.$scrolled ? '0' : '0 0 16px 16px'};
-  border: 1px solid ${props => props.$scrolled 
-    ? 'rgba(0, 0, 0, 0.08)' 
-    : 'rgba(0, 0, 0, 0.05)'};
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.05));
   box-shadow: ${props => props.$scrolled 
-    ? '0 4px 20px rgba(0, 0, 0, 0.1)' 
-    : '0 2px 10px rgba(0, 0, 0, 0.05)'};
+    ? '0 4px 20px var(--shadow-color, rgba(0, 0, 0, 0.1))' 
+    : '0 2px 10px var(--shadow-color, rgba(0, 0, 0, 0.05))'};
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
 
@@ -62,7 +61,7 @@ const Logo = styled(motion.a)`
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #000;
+  color: var(--text-primary, #000);
   text-decoration: none;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -98,7 +97,7 @@ const LogoIcon = styled(motion.div)`
   height: ${props => props.$scrolled 
     ? 'clamp(2rem, 5vw, 2.5rem)' 
     : 'clamp(2.25rem, 6vw, 3rem)'};
-  background: linear-gradient(135deg, #000 0%, #333 100%);
+  background: linear-gradient(135deg, var(--accent, #000) 0%, var(--text-secondary, #333) 100%);
   border-radius: clamp(6px, 1.5vw, 10px);
   display: flex;
   align-items: center;
@@ -171,7 +170,7 @@ const MenuItem = styled(motion.a)`
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: ${props => props.$active ? '#000' : '#666'};
+  color: ${props => props.$active ? 'var(--text-primary, #000)' : 'var(--text-secondary, #666)'};
   text-decoration: none;
   border-radius: 8px;
   transition: all 0.3s ease;
@@ -188,7 +187,7 @@ const MenuItem = styled(motion.a)`
     left: 50%;
     width: ${props => props.$active ? '80%' : '0'};
     height: 3px;
-    background: #000;
+    background: var(--text-primary, #000);
     transform: translateX(-50%);
     transition: width 0.3s ease;
     border-radius: 2px;
@@ -196,8 +195,8 @@ const MenuItem = styled(motion.a)`
 
   @media (hover: hover) {
     &:hover {
-      color: #000;
-      background: rgba(0, 0, 0, 0.05);
+      color: var(--text-primary, #000);
+      background: rgba(128, 128, 128, 0.1);
       transform: translateY(-2px);
 
       &:before {
@@ -249,7 +248,7 @@ const MobileMenuButton = styled(motion.button)`
   cursor: pointer;
   padding: clamp(0.625rem, 2vw, 0.875rem);
   border-radius: 8px;
-  color: #000;
+  color: var(--text-primary, #000);
   font-size: clamp(1.125rem, 3vw, 1.375rem);
   transition: all 0.3s ease;
   min-width: 44px;
@@ -260,7 +259,7 @@ const MobileMenuButton = styled(motion.button)`
 
   @media (hover: hover) {
     &:hover {
-      background: rgba(0, 0, 0, 0.1);
+      background: rgba(128, 128, 128, 0.15);
       border-color: rgba(0, 0, 0, 0.1);
       transform: scale(1.05);
     }
@@ -296,10 +295,10 @@ const MobileMenu = styled(motion.div)`
   width: min(100%, 400px);
   height: 100vh;
   height: 100dvh;
-  background: rgba(255, 255, 255, 0.98);
+  background: var(--glass-bg, rgba(255, 255, 255, 0.98));
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  border-left: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
   padding: clamp(1.5rem, 4vw, 2rem);
   display: flex;
   flex-direction: column;
@@ -332,7 +331,7 @@ const MobileMenuHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   padding-bottom: clamp(0.75rem, 2vw, 1rem);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
   margin-bottom: clamp(0.75rem, 2vw, 1rem);
 `;
 
@@ -341,7 +340,7 @@ const MobileMenuLogo = styled.div`
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #000;
+  color: var(--text-primary, #000);
 
   @media (max-width: 360px) {
     font-size: 1rem;
@@ -350,12 +349,12 @@ const MobileMenuLogo = styled.div`
 `;
 
 const CloseButton = styled(motion.button)`
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(128, 128, 128, 0.1);
   border: none;
   cursor: pointer;
   padding: clamp(0.5rem, 1.5vw, 0.625rem);
   border-radius: 8px;
-  color: #000;
+  color: var(--text-primary, #000);
   font-size: clamp(1.25rem, 3vw, 1.5rem);
   transition: all 0.3s ease;
   min-width: 44px;
@@ -393,15 +392,15 @@ const MobileMenuItem = styled(motion.a)`
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: ${props => props.$active ? '#000' : '#666'};
+  color: ${props => props.$active ? 'var(--text-primary, #000)' : 'var(--text-secondary, #666)'};
   text-decoration: none;
   border-radius: 12px;
-  border: 2px solid ${props => props.$active ? 'rgba(0, 0, 0, 0.1)' : 'transparent'};
+  border: 2px solid ${props => props.$active ? 'var(--border-color, rgba(0, 0, 0, 0.1))' : 'transparent'};
   transition: all 0.3s ease;
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  background: ${props => props.$active ? 'rgba(0, 0, 0, 0.05)' : 'transparent'};
+  background: ${props => props.$active ? 'rgba(128, 128, 128, 0.1)' : 'transparent'};
   min-height: 52px;
   -webkit-tap-highlight-color: transparent;
 
@@ -418,9 +417,9 @@ const MobileMenuItem = styled(motion.a)`
 
   @media (hover: hover) {
     &:hover {
-      color: #000;
-      background: rgba(0, 0, 0, 0.05);
-      border-color: rgba(0, 0, 0, 0.1);
+      color: var(--text-primary, #000);
+      background: rgba(128, 128, 128, 0.1);
+      border-color: var(--border-color, rgba(0, 0, 0, 0.1));
       transform: translateX(8px);
 
       &:before {
@@ -582,11 +581,82 @@ const Overlay = styled(motion.div)`
   -webkit-backdrop-filter: blur(4px);
 `;
 
+const ThemeToggleBtn = styled(motion.button)`
+  background: rgba(0, 0, 0, 0.05);
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: clamp(0.5rem, 1.5vw, 0.625rem);
+  border-radius: 50%;
+  color: var(--text-primary, #000);
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  transition: all 0.3s ease;
+  min-width: 40px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  @media (hover: hover) {
+    &:hover {
+      background: rgba(0, 0, 0, 0.1);
+      border-color: rgba(0, 0, 0, 0.1);
+      transform: scale(1.1);
+    }
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+`;
+
+const HiddenFactBubble = styled(motion.div)`
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent, #000);
+  color: var(--accent-inverse, #fff);
+  padding: 0.75rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+  z-index: 1002;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid var(--accent, #000);
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.75rem;
+    padding: 0.5rem 1rem;
+    left: 0;
+    transform: none;
+
+    &:before {
+      left: 20px;
+    }
+  }
+`;
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
   const [scrollProgress, setScrollProgress] = useState(0);
+  const { isDark, toggleTheme } = useTheme();
+  const [logoClicks, setLogoClicks] = useState(0);
+  const [showFact, setShowFact] = useState(false);
 
   const links = [
     { href: '#hero', label: 'Home', icon: FaHome },
@@ -638,6 +708,29 @@ const Navbar = () => {
     };
   }, [isOpen]);
 
+  // Logo click easter egg: 7 clicks reveals a hidden fact
+  const hiddenFacts = [
+    "🎮 I once debugged code in my dreams!",
+    "☕ My first program was a calculator in Java",
+    "🌍 I want to visit every continent",
+    "🎵 I can code for 8 hours with the right playlist",
+    "🚀 I deployed my first app at 3 AM",
+  ];
+
+  const handleLogoEasterEgg = useCallback(() => {
+    const newCount = logoClicks + 1;
+    setLogoClicks(newCount);
+    if (newCount >= 7) {
+      setShowFact(true);
+      setLogoClicks(0);
+      setTimeout(() => setShowFact(false), 4000);
+    }
+  }, [logoClicks]);
+
+  const [currentFact] = useState(() =>
+    hiddenFacts[Math.floor(Math.random() * hiddenFacts.length)]
+  );
+
   const handleLinkClick = (href, e) => {
     e.preventDefault();
     setIsOpen(false);
@@ -671,10 +764,11 @@ const Navbar = () => {
         <NavContent $scrolled={scrolled}>
           <Logo
             href="#hero"
-            onClick={(e) => handleLinkClick('#hero', e)}
+            onClick={(e) => { handleLinkClick('#hero', e); handleLogoEasterEgg(); }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             aria-label="Go to home"
+            style={{ position: 'relative' }}
           >
             <LogoIcon 
               $scrolled={scrolled}
@@ -684,6 +778,17 @@ const Navbar = () => {
               <FaCode />
             </LogoIcon>
             <LogoText>SM</LogoText>
+            <AnimatePresence>
+              {showFact && (
+                <HiddenFactBubble
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                >
+                  {currentFact}
+                </HiddenFactBubble>
+              )}
+            </AnimatePresence>
           </Logo>
 
           <Menu>
@@ -702,6 +807,38 @@ const Navbar = () => {
               </MenuItem>
             ))}
           </Menu>
+
+          <ThemeToggleBtn
+            onClick={toggleTheme}
+            whileHover={{ scale: 1.1, rotate: 15 }}
+            whileTap={{ scale: 0.9 }}
+            aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+            title={isDark ? 'Light mode' : 'Dark mode'}
+          >
+            <AnimatePresence mode="wait">
+              {isDark ? (
+                <motion.div
+                  key="sun"
+                  initial={{ rotate: -90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <FaSun />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="moon"
+                  initial={{ rotate: 90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: -90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <FaMoon />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </ThemeToggleBtn>
 
           <MobileMenuButton
             onClick={toggleMenu}

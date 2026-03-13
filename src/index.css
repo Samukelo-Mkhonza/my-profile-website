@@ -9,11 +9,33 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Theme variables */
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f7f7f7;
+  --bg-card: #ffffff;
+  --bg-card-hover: #ffffff;
+  --text-primary: #000000;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --border-color: rgba(0, 0, 0, 0.1);
+  --border-card: #e0e0e0;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --accent: #000000;
+  --accent-inverse: #ffffff;
+  --glass-bg: rgba(255, 255, 255, 0.95);
+  --tag-bg: #f0f0f0;
+  --progress-bg: #e9ecef;
+  --skill-card-bg: #f8f9fa;
+}
+
 body {
   font-family: 'JetBrains Mono', monospace;
-  background: #ffffff;
-  color: #000000;
+  background: var(--bg-primary);
+  color: var(--text-primary);
   line-height: 1.6;
+  transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 a {
@@ -22,4 +44,20 @@ a {
 }
 ul {
   list-style: none;
+}
+
+/* Smooth theme transition for all elements */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-duration: 0.3s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Exclude elements that need their own transition timing */
+canvas,
+[data-no-theme-transition],
+.framer-motion * {
+  transition-property: none !important;
 }

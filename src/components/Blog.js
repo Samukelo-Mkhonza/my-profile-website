@@ -5,7 +5,7 @@ import { FaTimes, FaRocket, FaArrowRight } from 'react-icons/fa';
 
 const Section = styled.section`
   padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 4vw, 2rem);
-  background: #ffffff;
+  background: var(--bg-primary, #ffffff);
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;
@@ -39,7 +39,7 @@ const Heading = styled(motion.h2)`
   letter-spacing: 0.1em;
   text-align: center;
   margin-bottom: clamp(3rem, 6vw, 4rem);
-  color: #000;
+  color: var(--text-primary, #000);
   position: relative;
   
   /* Add underline decoration */
@@ -51,7 +51,7 @@ const Heading = styled(motion.h2)`
     transform: translateX(-50%);
     width: clamp(60px, 10vw, 100px);
     height: 3px;
-    background: #000;
+    background: var(--text-primary, #000);
   }
 
   /* Small mobile */
@@ -97,8 +97,8 @@ const BlogGrid = styled.div`
 `;
 
 const BlogCard = styled(motion.article)`
-  background: #f8f9fa;
-  border: 2px solid #e9ecef;
+  background: var(--skill-card-bg, #f8f9fa);
+  border: 2px solid var(--border-card, #e9ecef);
   border-radius: 8px;
   padding: clamp(1.5rem, 3vw, 2.5rem);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -123,8 +123,8 @@ const BlogCard = styled(motion.article)`
     &:hover {
       transform: translateY(-6px);
       box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-      border-color: #000;
-      background: #fff;
+      border-color: var(--accent, #000);
+      background: var(--bg-card, #fff);
       
       &:before {
         transform: translateY(0);
@@ -168,8 +168,8 @@ const ComingSoonBadge = styled.span`
   font-size: clamp(0.6875rem, 1.5vw, 0.8125rem);
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  color: #fff;
-  background: #000;
+  color: var(--accent-inverse, #fff);
+  background: var(--accent, #000);
   padding: clamp(0.375rem, 1vw, 0.5rem) clamp(0.75rem, 1.5vw, 1rem);
   border-radius: 4px;
   display: inline-block;
@@ -215,7 +215,7 @@ const BlogTitle = styled.h3`
   letter-spacing: 0.05em;
   margin-bottom: clamp(0.75rem, 2vw, 1.25rem);
   line-height: 1.2;
-  color: #000;
+  color: var(--text-primary, #000);
   transition: color 0.3s ease;
 
   ${BlogCard}:hover & {
@@ -268,7 +268,7 @@ const ReadMore = styled.span`
   align-items: center;
   gap: 0.5rem;
   transition: all 0.3s ease;
-  color: #000;
+  color: var(--text-primary, #000);
   
   svg {
     font-size: clamp(0.75rem, 1.5vw, 0.875rem);
@@ -308,7 +308,7 @@ const ModalOverlay = styled(motion.div)`
 `;
 
 const ModalContent = styled(motion.div)`
-  background: #ffffff;
+  background: var(--bg-card, #ffffff);
   border-radius: 16px;
   padding: clamp(2rem, 4vw, 3rem);
   max-width: min(90vw, 450px);
@@ -402,7 +402,7 @@ const ModalTitle = styled.h3`
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: clamp(0.5rem, 1.5vw, 0.75rem);
-  color: #000;
+  color: var(--text-primary, #000);
   line-height: 1.2;
 
   @media (max-width: 360px) {
@@ -414,7 +414,7 @@ const ModalTitle = styled.h3`
 const ModalText = styled.p`
   font-size: clamp(0.875rem, 2vw, 1rem);
   line-height: 1.6;
-  color: #495057;
+  color: var(--text-secondary, #495057);
   margin-bottom: clamp(1.5rem, 3vw, 2rem);
 
   @media (max-width: 360px) {
@@ -437,8 +437,8 @@ const ModalBlogTitle = styled.h4`
 `;
 
 const CTAButton = styled.button`
-  background: #000;
-  color: #fff;
+  background: var(--accent, #000);
+  color: var(--accent-inverse, #fff);
   border: none;
   padding: clamp(0.625rem, 1.5vw, 0.75rem) clamp(1.5rem, 3vw, 2rem);
   border-radius: 6px;

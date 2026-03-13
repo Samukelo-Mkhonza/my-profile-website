@@ -93,7 +93,7 @@ const Section = styled.section`
   align-items: center;
   justify-content: center;
   padding: clamp(1.5rem, 5vw, 4rem) clamp(1rem, 3vw, 2rem);
-  background: linear-gradient(-45deg, #ffffff, #f8f9fa, #ffffff, #f0f2f5);
+  background: linear-gradient(-45deg, var(--bg-primary, #ffffff), var(--bg-secondary, #f8f9fa), var(--bg-primary, #ffffff), var(--skill-card-bg, #f0f2f5));
   background-size: 400% 400%;
   animation: ${gradientShift} 15s ease infinite;
   position: relative;
@@ -204,7 +204,7 @@ const MainContent = styled(motion.div)`
 
 const Greeting = styled(motion.div)`
   font-size: clamp(0.875rem, 2vw, 1.125rem);
-  color: #666;
+  color: var(--text-secondary, #666);
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -228,7 +228,7 @@ const Title = styled(motion.h1)`
   text-transform: uppercase;
   letter-spacing: 0.05em;
   line-height: 1.1;
-  color: #000;
+  color: var(--text-primary, #000);
   margin: 0;
 
   /* Tablets */
@@ -259,7 +259,7 @@ const DynamicRole = styled(motion.div)`
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #333;
+  color: var(--text-secondary, #333);
   margin: clamp(0.25rem, 1.5vw, 1rem) 0;
   min-height: clamp(1.25rem, 3.5vw, 2.5rem);
 
@@ -277,7 +277,7 @@ const DynamicRole = styled(motion.div)`
 const Description = styled(motion.p)`
   font-size: clamp(0.875rem, 2vw, 1.125rem);
   line-height: 1.6;
-  color: #555;
+  color: var(--text-secondary, #555);
   margin: clamp(0.75rem, 2vw, 1.5rem) 0;
   max-width: 500px;
 
@@ -389,17 +389,17 @@ const Button = styled(motion.a)`
 `;
 
 const PrimaryButton = styled(Button)`
-  background: #000;
-  color: #fff;
-  border: 2px solid #000;
+  background: var(--accent, #000);
+  color: var(--accent-inverse, #fff);
+  border: 2px solid var(--accent, #000);
 
   &:before {
-    background: #fff;
+    background: var(--accent-inverse, #fff);
   }
 
   @media (hover: hover) {
     &:hover {
-      color: #000;
+      color: var(--accent, #000);
       transform: translateY(-2px);
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 
@@ -412,16 +412,16 @@ const PrimaryButton = styled(Button)`
 
 const SecondaryButton = styled(Button)`
   background: transparent;
-  color: #000;
-  border: 2px solid #000;
+  color: var(--text-primary, #000);
+  border: 2px solid var(--accent, #000);
 
   &:before {
-    background: #000;
+    background: var(--accent, #000);
   }
 
   @media (hover: hover) {
     &:hover {
-      color: #fff;
+      color: var(--accent-inverse, #fff);
       transform: translateY(-2px);
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 
@@ -437,11 +437,11 @@ const StatsSection = styled(motion.div)`
   flex-direction: column;
   gap: clamp(1rem, 2vw, 1.5rem);
   padding: clamp(1.5rem, 3vw, 2.5rem);
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--glass-bg, rgba(255, 255, 255, 0.8));
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
   border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px var(--shadow-color, rgba(0, 0, 0, 0.1));
 
   @media (max-width: 768px) {
     order: 2;
@@ -472,16 +472,16 @@ const StatsGrid = styled.div`
 const StatCard = styled(motion.div)`
   text-align: center;
   padding: clamp(0.75rem, 2vw, 1rem);
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--skill-card-bg, rgba(255, 255, 255, 0.6));
   border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.05));
   transition: all 0.3s ease;
 
   @media (hover: hover) {
     &:hover {
       transform: translateY(-4px);
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 8px 16px var(--shadow-color, rgba(0, 0, 0, 0.1));
+      background: var(--bg-card-hover, rgba(255, 255, 255, 0.9));
     }
   }
 
@@ -493,7 +493,7 @@ const StatCard = styled(motion.div)`
 const StatNumber = styled.div`
   font-size: clamp(1.25rem, 3vw, 2rem);
   font-weight: 700;
-  color: #000;
+  color: var(--text-primary, #000);
   margin-bottom: 0.25rem;
 
   @media (max-width: 360px) {
@@ -503,7 +503,7 @@ const StatNumber = styled.div`
 
 const StatLabel = styled.div`
   font-size: clamp(0.625rem, 1.5vw, 0.875rem);
-  color: #666;
+  color: var(--text-secondary, #666);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-weight: 500;
@@ -519,7 +519,7 @@ const QuickInfo = styled.div`
   flex-direction: column;
   gap: clamp(0.5rem, 1.5vw, 0.75rem);
   padding-top: clamp(0.75rem, 2vw, 1rem);
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
 
   @media (max-width: 360px) {
     gap: 0.5rem;
@@ -532,7 +532,7 @@ const InfoItem = styled.div`
   align-items: center;
   gap: 0.75rem;
   font-size: clamp(0.75rem, 1.75vw, 1rem);
-  color: #555;
+  color: var(--text-secondary, #555);
 
   @media (max-width: 360px) {
     gap: 0.5rem;
@@ -542,7 +542,7 @@ const InfoItem = styled.div`
 
 const InfoIcon = styled.div`
   font-size: clamp(0.875rem, 2vw, 1rem);
-  color: #000;
+  color: var(--text-primary, #000);
   width: 20px;
   display: flex;
   justify-content: center;
@@ -563,7 +563,7 @@ const ScrollIndicator = styled(motion.div)`
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
-  color: #666;
+  color: var(--text-secondary, #666);
   cursor: pointer;
 
   /* Hide on very short screens */

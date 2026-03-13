@@ -26,7 +26,7 @@ import {
 
 const Section = styled.section`
   padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 4vw, 2rem);
-  background: #ffffff;
+  background: var(--bg-primary, #ffffff);
   min-height: 100vh;
   min-height: 100dvh;
   position: relative;
@@ -58,7 +58,7 @@ const Heading = styled(motion.h2)`
   letter-spacing: 0.1em;
   text-align: center;
   margin-bottom: clamp(2rem, 4vw, 3rem);
-  color: #000;
+  color: var(--text-primary, #000);
   position: relative;
   
   /* Add underline decoration */
@@ -70,7 +70,7 @@ const Heading = styled(motion.h2)`
     transform: translateX(-50%);
     width: clamp(60px, 10vw, 100px);
     height: 3px;
-    background: #000;
+    background: var(--text-primary, #000);
   }
 
   /* Small mobile */
@@ -135,9 +135,9 @@ const FilterTabs = styled.div`
 `;
 
 const FilterTab = styled(motion.button)`
-  background: ${props => props.$active ? '#000' : 'transparent'};
-  color: ${props => props.$active ? '#fff' : '#666'};
-  border: 2px solid #000;
+  background: ${props => props.$active ? 'var(--accent, #000)' : 'transparent'};
+  color: ${props => props.$active ? 'var(--accent-inverse, #fff)' : 'var(--text-secondary, #666)'};
+  border: 2px solid var(--accent, #000);
   padding: clamp(0.625rem, 2vw, 0.875rem) clamp(1rem, 3vw, 1.5rem);
   border-radius: 8px;
   font-size: clamp(0.75rem, 1.75vw, 0.9375rem);
@@ -163,7 +163,7 @@ const FilterTab = styled(motion.button)`
     left: 0;
     right: 0;
     bottom: 0;
-    background: #000;
+    background: var(--accent, #000);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.3s ease;
@@ -172,7 +172,7 @@ const FilterTab = styled(motion.button)`
 
   @media (hover: hover) {
     &:hover:not([disabled]) {
-      color: #fff;
+      color: var(--accent-inverse, #fff);
       
       &:before {
         transform: scaleX(1);
@@ -232,8 +232,8 @@ const SkillsGrid = styled(motion.div)`
 `;
 
 const SkillCard = styled(motion.div)`
-  background: #f8f9fa;
-  border: 2px solid #e9ecef;
+  background: var(--skill-card-bg, #f8f9fa);
+  border: 2px solid var(--border-card, #e9ecef);
   border-radius: 12px;
   padding: clamp(1.25rem, 3vw, 2rem);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -245,8 +245,8 @@ const SkillCard = styled(motion.div)`
     &:hover {
       transform: translateY(-8px);
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-      border-color: #000;
-      background: #fff;
+      border-color: var(--accent, #000);
+      background: var(--bg-card, #fff);
     }
   }
 
@@ -298,7 +298,7 @@ const SkillHeader = styled.div`
 
 const IconWrapper = styled(motion.div)`
   font-size: clamp(2rem, 5vw, 2.5rem);
-  color: #000;
+  color: var(--text-primary, #000);
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
@@ -335,7 +335,7 @@ const SkillName = styled.h3`
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin: 0 0 0.25rem 0;
-  color: #000;
+  color: var(--text-primary, #000);
   line-height: 1.2;
 
   /* Small mobile */
@@ -414,7 +414,7 @@ const ProgressLabel = styled.div`
 const ProgressBar = styled.div`
   width: 100%;
   height: clamp(6px, 1.5vw, 8px);
-  background: #e9ecef;
+  background: var(--progress-bg, #e9ecef);
   border-radius: 4px;
   overflow: hidden;
   position: relative;
@@ -483,8 +483,8 @@ const Years = styled.span`
 `;
 
 const ProjectCount = styled.span`
-  background: #000;
-  color: #fff;
+  background: var(--accent, #000);
+  color: var(--accent-inverse, #fff);
   padding: clamp(0.25rem, 1vw, 0.375rem) clamp(0.625rem, 1.5vw, 0.875rem);
   border-radius: 20px;
   font-size: clamp(0.625rem, 1.5vw, 0.8125rem);

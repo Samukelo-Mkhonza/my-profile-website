@@ -860,6 +860,16 @@ const Footer = () => {
             <MadeWith>
               Made with <FaHeart /> and <FaCode /> in South Africa
             </MadeWith>
+            <span style={{ 
+              fontSize: '0.625rem', 
+              color: 'rgba(255,255,255,0.2)', 
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+              cursor: 'default',
+              userSelect: 'none'
+            }}>
+              ↑↑↓↓←→←→BA
+            </span>
           </FooterBottom>
         </FooterContent>
       </FooterContainer>
