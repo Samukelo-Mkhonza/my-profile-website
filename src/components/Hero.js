@@ -1234,8 +1234,10 @@ const Hero = () => {
   const [isCVModalOpen, setIsCVModalOpen] = useState(false);
 
   const scrollToAbout = () => {
-    // In a real app, this would scroll to the about section
-    console.log('Scrolling to about section...');
+    const target = document.getElementById('skills');
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const viewCV = () => {
