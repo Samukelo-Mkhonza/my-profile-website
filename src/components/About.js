@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { motion } from 'framer-motion';
-import { 
-  FaCode, 
-  FaCloud, 
-  FaLightbulb, 
-  FaUsers, 
+import {
+  FaCode,
+  FaCloud,
+  FaLightbulb,
+  FaUsers,
   FaRocket,
   FaGraduationCap,
   FaMapMarkerAlt,
@@ -14,13 +14,11 @@ import {
   FaGamepad
 } from 'react-icons/fa';
 
-// Cursor blink animation
 const blink = keyframes`
   0%, 100% { opacity: 1; }
   50%      { opacity: 0; }
 `;
 
-// Styled cursor element
 const Cursor = styled.span`
   display: inline-block;
   margin-left: 2px;
@@ -29,7 +27,6 @@ const Cursor = styled.span`
   animation: ${blink} 1s step-start infinite;
 `;
 
-// TypingText component: types out text character by character with blinking cursor
 const TypingText = ({ text, speed = 40 }) => {
   const [displayed, setDisplayed] = useState('');
 
@@ -53,8 +50,20 @@ const TypingText = ({ text, speed = 40 }) => {
 };
 
 const Section = styled.section`
-  padding: clamp(2rem, 5vw, 5rem) clamp(1rem, 5vw, 2rem);
-  background: #f7f7f7;
+  padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 5vw, 2rem);
+  background: var(--bg-secondary, #f7f7f7);
+  position: relative;
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: clamp(60px, 10vw, 100px);
+    height: 3px;
+    background: var(--text-primary, #000);
+  }
 `;
 
 const Container = styled.div`
@@ -71,6 +80,7 @@ const Heading = styled.h2`
   letter-spacing: 0.15em;
   text-align: center;
   margin-bottom: clamp(2rem, 4vw, 3rem);
+  color: var(--text-primary, #000);
 `;
 
 const MainContent = styled.div`
@@ -86,8 +96,8 @@ const MainContent = styled.div`
 `;
 
 const IntroCard = styled(motion.div)`
-  background: #ffffff;
-  border: 1px solid #e0e0e0;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-card, #e0e0e0);
   border-radius: 8px;
   padding: clamp(2rem, 4vw, 2.5rem);
   position: relative;
@@ -100,7 +110,7 @@ const IntroCard = styled(motion.div)`
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #000, #333);
+    background: linear-gradient(90deg, var(--text-primary, #000), var(--text-secondary, #333));
   }
 `;
 
@@ -114,12 +124,12 @@ const ProfileImage = styled.div`
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #000, #333);
+  background: linear-gradient(135deg, var(--text-primary, #000), var(--text-secondary, #333));
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 3rem;
-  color: white;
+  color: var(--accent-inverse, #fff);
   margin: 0 auto;
   position: relative;
   overflow: hidden;
@@ -134,7 +144,7 @@ const ProfileImage = styled.div`
 const IntroText = styled.p`
   font-size: clamp(1rem, 2.5vw, 1.125rem);
   line-height: 1.7;
-  color: #333;
+  color: var(--text-secondary, #333);
   margin-bottom: 1.5rem;
 `;
 
@@ -142,7 +152,7 @@ const LocationInfo = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #666;
+  color: var(--text-secondary, #666);
   font-size: clamp(0.875rem, 2vw, 1rem);
   margin-bottom: 1rem;
 `;
@@ -155,18 +165,20 @@ const StatsGrid = styled.div`
 `;
 
 const StatCard = styled(motion.div)`
-  background: #ffffff;
-  border: 1px solid #e0e0e0;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-card, #e0e0e0);
   border-radius: 8px;
   padding: clamp(1.5rem, 3vw, 2rem);
   text-align: center;
   transition: all 0.3s ease;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
 
   &:hover {
     transform: translateY(-8px);
-    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15);
-    border-color: #000;
+    box-shadow: 0 16px 32px var(--shadow-color, rgba(0, 0, 0, 0.15));
+    border-color: var(--text-primary, #000);
   }
 
   &:before {
@@ -176,13 +188,10 @@ const StatCard = styled(motion.div)`
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #000, #333);
+    background: linear-gradient(90deg, var(--text-primary, #000), var(--text-secondary, #333));
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.3s ease;
-    position: relative;
-    margin: -1.5rem -1.5rem 1rem -1.5rem;
-    border-radius: 8px 8px 0 0;
   }
 
   &:hover:before {
@@ -192,7 +201,7 @@ const StatCard = styled(motion.div)`
 
 const StatIcon = styled.div`
   font-size: clamp(2rem, 4vw, 2.5rem);
-  color: #000;
+  color: var(--text-primary, #000);
   margin-bottom: 1rem;
   transition: transform 0.3s ease;
 
@@ -204,13 +213,13 @@ const StatIcon = styled.div`
 const StatNumber = styled.div`
   font-size: clamp(1.5rem, 4vw, 2rem);
   font-weight: 700;
-  color: #000;
+  color: var(--text-primary, #000);
   margin-bottom: 0.5rem;
 `;
 
 const StatLabel = styled.div`
   font-size: clamp(0.875rem, 2vw, 1rem);
-  color: #666;
+  color: var(--text-secondary, #666);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-weight: 500;
@@ -227,7 +236,7 @@ const SectionTitle = styled.h3`
   letter-spacing: 0.1em;
   text-align: center;
   margin-bottom: clamp(1.5rem, 3vw, 2rem);
-  color: #000;
+  color: var(--text-primary, #000);
 `;
 
 const ValuesGrid = styled.div`
@@ -237,8 +246,8 @@ const ValuesGrid = styled.div`
 `;
 
 const ValueCard = styled(motion.div)`
-  background: #ffffff;
-  border: 1px solid #e0e0e0;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-card, #e0e0e0);
   border-radius: 8px;
   padding: clamp(1.5rem, 3vw, 2rem);
   text-align: center;
@@ -248,8 +257,8 @@ const ValueCard = styled(motion.div)`
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-    border-color: #000;
+    box-shadow: 0 12px 24px var(--shadow-color, rgba(0, 0, 0, 0.15));
+    border-color: var(--text-primary, #000);
   }
 
   &:before {
@@ -259,7 +268,7 @@ const ValueCard = styled(motion.div)`
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #000, #333);
+    background: linear-gradient(90deg, var(--text-primary, #000), var(--text-secondary, #333));
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.3s ease;
@@ -272,7 +281,7 @@ const ValueCard = styled(motion.div)`
 
 const ValueIcon = styled.div`
   font-size: clamp(1.5rem, 3vw, 2rem);
-  color: #000;
+  color: var(--text-primary, #000);
   margin-bottom: 1rem;
 `;
 
@@ -282,18 +291,18 @@ const ValueTitle = styled.h4`
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin-bottom: 0.75rem;
-  color: #000;
+  color: var(--text-primary, #000);
 `;
 
 const ValueDescription = styled.p`
   font-size: clamp(0.875rem, 2vw, 0.95rem);
   line-height: 1.6;
-  color: #666;
+  color: var(--text-secondary, #666);
 `;
 
 const PersonalSection = styled.div`
-  background: #ffffff;
-  border: 1px solid #e0e0e0;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-card, #e0e0e0);
   border-radius: 8px;
   padding: clamp(2rem, 4vw, 2.5rem);
   position: relative;
@@ -306,7 +315,7 @@ const PersonalSection = styled.div`
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #000, #333);
+    background: linear-gradient(90deg, var(--text-primary, #000), var(--text-secondary, #333));
   }
 `;
 
@@ -318,8 +327,8 @@ const InterestsList = styled.div`
 `;
 
 const InterestTag = styled(motion.span)`
-  background: #f0f0f0;
-  color: #333;
+  background: var(--tag-bg, #f0f0f0);
+  color: var(--text-secondary, #333);
   padding: 0.5rem 1rem;
   border-radius: 20px;
   font-size: clamp(0.75rem, 2vw, 0.875rem);
@@ -331,8 +340,8 @@ const InterestTag = styled(motion.span)`
   cursor: pointer;
 
   &:hover {
-    background: #000;
-    color: #fff;
+    background: var(--text-primary, #000);
+    color: var(--accent-inverse, #fff);
     transform: scale(1.05);
   }
 `;
@@ -418,10 +427,10 @@ const About = () => (
             <ProfileImage />
             <PersonalSection>
               <SectionTitle>When I'm Not Coding</SectionTitle>
-              <p style={{ 
-                fontSize: 'clamp(0.875rem, 2vw, 1rem)', 
-                lineHeight: '1.6', 
-                color: '#666',
+              <p style={{
+                fontSize: 'clamp(0.875rem, 2vw, 1rem)',
+                lineHeight: '1.6',
+                color: 'var(--text-secondary, #666)',
                 marginBottom: '1rem'
               }}>
                 I believe in maintaining a healthy work-life balance. Here are some things that keep me inspired and motivated outside of development.

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaTimes, FaRocket, FaArrowRight } from 'react-icons/fa';
+import { FaTimes, FaRocket, FaArrowRight, FaCloud, FaCubes, FaClock } from 'react-icons/fa';
+import { SiTerraform } from 'react-icons/si';
 
 const Section = styled.section`
   padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 4vw, 2rem);
@@ -146,21 +147,6 @@ const BlogCard = styled(motion.article)`
   @media (max-width: 360px) {
     padding: 1rem;
     border-radius: 6px;
-  }
-`;
-
-const BlogDate = styled.time`
-  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: #6c757d;
-  display: block;
-  margin-bottom: 0.75rem;
-  font-weight: 500;
-
-  @media (max-width: 360px) {
-    font-size: 0.6875rem;
-    letter-spacing: 0.05em;
   }
 `;
 
@@ -468,6 +454,84 @@ const CTAButton = styled.button`
   }
 `;
 
+const BlogSubtitle = styled(motion.p)`
+  text-align: center;
+  color: var(--text-secondary, #666);
+  font-size: clamp(0.875rem, 2vw, 1.0625rem);
+  line-height: 1.6;
+  max-width: 600px;
+  margin: -1rem auto clamp(2.5rem, 5vw, 3.5rem);
+
+  @media (max-width: 480px) {
+    font-size: clamp(0.8125rem, 2.5vw, 0.9375rem);
+    margin-top: -0.5rem;
+  }
+`;
+
+const BlogCardHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: clamp(0.75rem, 2vw, 1rem);
+`;
+
+const BlogIconWrapper = styled.div`
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--tag-bg, #f0f0f0);
+  border-radius: 8px;
+  color: var(--text-primary, #000);
+  font-size: 1.125rem;
+  transition: all 0.3s ease;
+
+  ${BlogCard}:hover & {
+    background: var(--accent, #000);
+    color: var(--accent-inverse, #fff);
+  }
+`;
+
+const BlogTags = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-bottom: clamp(0.75rem, 2vw, 1rem);
+`;
+
+const BlogTag = styled.span`
+  background: var(--tag-bg, #f0f0f0);
+  color: var(--text-secondary, #666);
+  padding: 0.1875rem 0.5rem;
+  border-radius: 4px;
+  font-size: clamp(0.625rem, 1.25vw, 0.75rem);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+`;
+
+const BlogFooter = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: clamp(0.75rem, 2vw, 1rem);
+  border-top: 1px solid var(--border-card, #e0e0e0);
+`;
+
+const BlogReadTime = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: clamp(0.6875rem, 1.5vw, 0.8125rem);
+  color: var(--text-secondary, #666);
+  font-weight: 500;
+
+  svg {
+    font-size: 0.75rem;
+  }
+`;
+
 // Sample blog posts data
 const blogPosts = [
   {
@@ -475,21 +539,30 @@ const blogPosts = [
     title: 'Building Scalable Microservices with AWS',
     excerpt: 'Exploring best practices for designing and deploying microservices architecture on AWS, including service mesh implementation and container orchestration strategies.',
     date: 'Coming Soon',
-    link: '#'
+    link: '#',
+    icon: FaCloud,
+    tags: ['AWS', 'Microservices', 'Docker'],
+    readTime: '8 min read',
   },
   {
     id: 2,
     title: 'Optimizing React Performance',
     excerpt: 'Deep dive into React performance optimization techniques, from memo and useMemo to code splitting and lazy loading strategies for modern web applications.',
     date: 'Coming Soon',
-    link: '#'
+    link: '#',
+    icon: FaCubes,
+    tags: ['React', 'Performance', 'JavaScript'],
+    readTime: '6 min read',
   },
   {
     id: 3,
     title: 'Infrastructure as Code with Terraform',
     excerpt: 'How to manage cloud infrastructure efficiently using Terraform, including modules, state management, and CI/CD integration for automated deployments.',
     date: 'Coming Soon',
-    link: '#'
+    link: '#',
+    icon: SiTerraform,
+    tags: ['Terraform', 'IaC', 'DevOps'],
+    readTime: '10 min read',
   }
 ];
 
@@ -518,7 +591,16 @@ const Blog = () => {
         >
           Blog
         </Heading>
-        
+
+        <BlogSubtitle
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          viewport={{ once: true }}
+        >
+          Thoughts on cloud architecture, frontend development, and engineering best practices. Articles coming soon.
+        </BlogSubtitle>
+
         <BlogGrid>
           {blogPosts.map((post, index) => (
             <BlogCard
@@ -535,12 +617,25 @@ const Blog = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <ComingSoonBadge>Coming Soon</ComingSoonBadge>
+              <BlogCardHeader>
+                <BlogIconWrapper>
+                  <post.icon />
+                </BlogIconWrapper>
+                <ComingSoonBadge>Coming Soon</ComingSoonBadge>
+              </BlogCardHeader>
               <BlogTitle>{post.title}</BlogTitle>
               <BlogExcerpt>{post.excerpt}</BlogExcerpt>
-              <ReadMore>
-                Read More <FaArrowRight />
-              </ReadMore>
+              <BlogTags>
+                {post.tags.map((tag, idx) => (
+                  <BlogTag key={idx}>{tag}</BlogTag>
+                ))}
+              </BlogTags>
+              <BlogFooter>
+                <BlogReadTime><FaClock /> {post.readTime}</BlogReadTime>
+                <ReadMore>
+                  Read More <FaArrowRight />
+                </ReadMore>
+              </BlogFooter>
             </BlogCard>
           ))}
         </BlogGrid>
