@@ -3,8 +3,9 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 
 const Section = styled.section`
-  padding: clamp(2rem, 5vw, 5rem) clamp(1rem, 5vw, 2rem);
-  background: #f7f7f7;
+  padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 5vw, 2rem);
+  background: var(--bg-primary, #ffffff);
+  position: relative;
 `;
 
 const Container = styled.div`
@@ -21,12 +22,24 @@ const Heading = styled.h2`
   letter-spacing: 0.15em;
   text-align: center;
   margin-bottom: clamp(2rem, 4vw, 3rem);
+  color: var(--text-primary, #000);
+  position: relative;
+
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: -0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: clamp(60px, 10vw, 100px);
+    height: 3px;
+    background: var(--text-primary, #000);
+  }
 `;
 
 const Timeline = styled.div`
   position: relative;
 
-  /* central line */
   &:before {
     content: '';
     position: absolute;
@@ -34,7 +47,7 @@ const Timeline = styled.div`
     top: 0;
     width: 3px;
     height: 100%;
-    background: #ddd;
+    background: var(--border-card, #ddd);
     transform: translateX(-50%);
   }
 
@@ -52,7 +65,6 @@ const Entry = styled(motion.div)`
   padding: 0;
   margin-bottom: clamp(2rem, 4vw, 3rem);
 
-  /* alternate sides */
   ${({ align }) =>
     align === 'left'
       ? `
@@ -75,18 +87,18 @@ const Entry = styled(motion.div)`
 `;
 
 const ExperienceCard = styled(motion.div)`
-  background: #ffffff;
-  border: 1px solid #e0e0e0;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-card, #e0e0e0);
   border-radius: 8px;
   padding: clamp(1.5rem, 3vw, 2rem);
   position: relative;
   transition: all 0.3s ease;
   cursor: pointer;
-  
+
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-    border-color: #000;
+    box-shadow: 0 12px 24px var(--shadow-color, rgba(0, 0, 0, 0.15));
+    border-color: var(--text-primary, #000);
   }
 
   @media (max-width: 768px) {
@@ -99,12 +111,12 @@ const Circle = styled.div`
   top: 2rem;
   width: 16px;
   height: 16px;
-  background: #000;
+  background: var(--text-primary, #000);
   border-radius: 50%;
-  border: 3px solid #fff;
-  box-shadow: 0 0 0 3px #ddd;
+  border: 3px solid var(--bg-primary, #fff);
+  box-shadow: 0 0 0 3px var(--border-card, #ddd);
   z-index: 10;
-  
+
   ${({ align }) => (align === 'left' ? 'right: -8px;' : 'left: -8px;')}
 
   @media (max-width: 768px) {
@@ -117,7 +129,7 @@ const Period = styled.time`
   font-size: clamp(0.75rem, 2vw, 0.875rem);
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #666;
+  color: var(--text-secondary, #666);
   display: block;
   margin-bottom: 0.75rem;
   font-weight: 500;
@@ -130,13 +142,13 @@ const Role = styled.h3`
   letter-spacing: 0.1em;
   margin-bottom: 1rem;
   line-height: 1.3;
-  color: #000;
+  color: var(--text-primary, #000);
 `;
 
 const Company = styled.h4`
   font-size: clamp(1rem, 2.5vw, 1.125rem);
   font-weight: 500;
-  color: #333;
+  color: var(--text-secondary, #333);
   margin-bottom: 1rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -145,7 +157,7 @@ const Company = styled.h4`
 const Description = styled.p`
   font-size: clamp(0.875rem, 2.5vw, 1rem);
   line-height: 1.6;
-  color: #333;
+  color: var(--text-secondary, #333);
   margin-bottom: 1.5rem;
 `;
 
@@ -153,11 +165,11 @@ const Skills = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  
+
   @media (max-width: 768px) {
     justify-content: flex-start;
   }
-  
+
   ${({ align }) => align === 'left' && `
     @media (min-width: 769px) {
       justify-content: flex-end;
@@ -166,8 +178,8 @@ const Skills = styled.div`
 `;
 
 const SkillTag = styled.span`
-  background: #f0f0f0;
-  color: #333;
+  background: var(--tag-bg, #f0f0f0);
+  color: var(--text-secondary, #333);
   padding: 0.25rem 0.75rem;
   border-radius: 4px;
   font-size: clamp(0.75rem, 2vw, 0.875rem);
@@ -175,46 +187,27 @@ const SkillTag = styled.span`
   text-transform: uppercase;
   letter-spacing: 0.05em;
   transition: all 0.3s ease;
-  
-  ${ExperienceCard}:hover & {
-    background: #000;
-    color: #fff;
-  }
-`;
 
-const ViewMore = styled.span`
-  font-size: clamp(0.75rem, 2vw, 0.875rem);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  display: inline-flex;
-  align-items: center;
-  margin-top: 1rem;
-  transition: all 0.3s ease;
-  color: #666;
-  
-  &:after {
-    content: '→';
-    margin-left: 0.5rem;
-    transition: transform 0.3s ease;
-  }
-  
   ${ExperienceCard}:hover & {
-    color: #000;
-    &:after {
-      transform: translateX(4px);
-    }
+    background: var(--text-primary, #000);
+    color: var(--accent-inverse, #fff);
   }
 `;
 
 const experiences = [
   {
-    period: '2023 – Present',
+    period: '2023 - Present',
     role: 'Cloud Technologist',
     company: 'CloudZA',
     description: 'Architecting and implementing cloud-native solutions using AWS services. Leading the development of scalable web applications and microservices architecture. Optimizing infrastructure costs and improving deployment pipelines.',
     skills: ['AWS', 'React', 'Node.js', 'Docker', 'Terraform'],
-    link: '#'
+  },
+  {
+    period: 'Dec 2023 - Dec 2024',
+    role: 'Junior Cloud Technologist (Intern)',
+    company: 'CloudZA',
+    description: 'Assisted in implementing and maintaining cloud infrastructure, contributed to AWS architecture documentation, and collaborated with senior technologists to optimize AWS solutions.',
+    skills: ['AWS', 'Python', 'CloudFormation', 'S3', 'EC2'],
   },
 ];
 
@@ -236,7 +229,6 @@ const Experience = () => (
             >
               <Circle align={alignment} />
               <ExperienceCard
-                onClick={() => window.open(exp.link, '_blank')}
                 whileHover={{ scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
               >
@@ -249,7 +241,6 @@ const Experience = () => (
                     <SkillTag key={idx}>{skill}</SkillTag>
                   ))}
                 </Skills>
-                <ViewMore>View Details</ViewMore>
               </ExperienceCard>
             </Entry>
           );

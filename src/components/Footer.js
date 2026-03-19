@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  FaGithub, 
-  FaLinkedin, 
-  FaTwitter, 
-  FaEnvelope, 
-  FaPhone,
+import {
+  FaGithub,
+  FaLinkedin,
+  FaEnvelope,
   FaMapMarkerAlt,
   FaArrowUp,
   FaHeart,
   FaCode,
-  FaRocket,
   FaPaperPlane
 } from 'react-icons/fa';
 
@@ -722,7 +719,10 @@ const Footer = () => {
 
   const quickLinks = [
     { href: '#hero', label: 'Home' },
+    { href: '#about', label: 'About' },
+    { href: '#experience', label: 'Experience' },
     { href: '#skills', label: 'Skills' },
+    { href: '#projects', label: 'Projects' },
     { href: '#blog', label: 'Blog' },
   ];
 

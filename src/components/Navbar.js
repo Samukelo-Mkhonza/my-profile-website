@@ -660,7 +660,10 @@ const Navbar = () => {
 
   const links = [
     { href: '#hero', label: 'Home', icon: FaHome },
+    { href: '#about', label: 'About', icon: FaUser },
+    { href: '#experience', label: 'Experience', icon: FaBriefcase },
     { href: '#skills', label: 'Skills', icon: FaCog },
+    { href: '#projects', label: 'Projects', icon: FaCode },
     { href: '#blog', label: 'Blog', icon: FaBlog },
     { href: '#contact', label: 'Contact', icon: FaEnvelope },
   ];

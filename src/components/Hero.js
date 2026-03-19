@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { motion } from 'framer-motion';
-import { 
-  FaArrowDown, 
-  FaDownload, 
+import {
+  FaArrowDown,
   FaEnvelope,
   FaCode,
   FaCloud,
@@ -14,11 +13,9 @@ import {
   FaEye,
   FaPhone,
   FaLinkedin,
-  FaGithub,
   FaCertificate,
   FaGraduationCap,
-  FaBriefcase,
-  FaUser
+  FaBriefcase
 } from 'react-icons/fa';
 
 // Floating animation for background elements
@@ -1234,7 +1231,7 @@ const Hero = () => {
   const [isCVModalOpen, setIsCVModalOpen] = useState(false);
 
   const scrollToAbout = () => {
-    const target = document.getElementById('skills');
+    const target = document.getElementById('about');
     if (target) {
       target.scrollIntoView({ behavior: 'smooth' });
     }
@@ -1285,7 +1282,7 @@ const Hero = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <span></span>
+              <span>Hello, I'm</span>
             </Greeting>
 
             <Title
