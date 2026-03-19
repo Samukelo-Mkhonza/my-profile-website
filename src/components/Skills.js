@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  SiJavascript, 
-  SiReact, 
-  SiPython, 
+import {
+  SiJavascript,
+  SiReact,
+  SiPython,
   SiNodedotjs,
   SiTypescript,
   SiDocker,
@@ -12,16 +12,14 @@ import {
   SiTerraform,
   SiPostgresql,
   SiMongodb,
-  SiRedis,
   SiGit
 } from 'react-icons/si';
-import { 
-  FaAws, 
+import {
+  FaAws,
   FaServer,
   FaCode,
   FaDatabase,
-  FaTools,
-  FaTimes
+  FaTools
 } from 'react-icons/fa';
 
 const Section = styled.section`
@@ -508,10 +506,15 @@ const ProjectCount = styled.span`
 
 // Skill categories with updated structure
 const skillCategories = [
-  { 
-    id: 'frontend', 
-    label: 'Frontend', 
-    icon: SiReact 
+  {
+    id: 'all',
+    label: 'All',
+    icon: FaCode
+  },
+  {
+    id: 'frontend',
+    label: 'Frontend',
+    icon: SiReact
   },
   { 
     id: 'backend', 
@@ -672,11 +675,11 @@ const skillsData = [
 ];
 
 const Skills = () => {
-  const [activeFilter, setActiveFilter] = useState('frontend');
+  const [activeFilter, setActiveFilter] = useState('all');
 
-  const filteredSkills = skillsData.filter(skill => 
-    skill.category === activeFilter
-  );
+  const filteredSkills = activeFilter === 'all'
+    ? skillsData
+    : skillsData.filter(skill => skill.category === activeFilter);
 
   return (
     <Section id="skills">
