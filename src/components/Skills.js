@@ -121,7 +121,7 @@ const FilterTabs = styled.div`
       top: 0;
       bottom: 0;
       width: 2rem;
-      background: linear-gradient(to right, transparent, white);
+      background: linear-gradient(to right, transparent, var(--bg-primary, #ffffff));
       pointer-events: none;
     }
   }
