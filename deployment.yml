@@ -178,6 +178,9 @@ Resources:
           - Name: REACT_APP_EMAILJS_TEMPLATE_ID
             Value: /portfolio/emailjs/template_id
             Type: PARAMETER_STORE
+          - Name: REACT_APP_EMAILJS_AUTOREPLY_TEMPLATE_ID
+            Value: /portfolio/emailjs/autoreply_template_id
+            Type: PARAMETER_STORE
           - Name: REACT_APP_EMAILJS_PUBLIC_KEY
             Value: /portfolio/emailjs/public_key
             Type: PARAMETER_STORE

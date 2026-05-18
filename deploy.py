@@ -58,11 +58,15 @@ GITHUB_BRANCH = "main"
 CREDENTIAL_KEYS = {
     "REACT_APP_EMAILJS_SERVICE_ID":  (
         "/portfolio/emailjs/service_id",
-        "EmailJS Service ID   (e.g. service_xxxxxxx)",
+        "EmailJS Service ID            (e.g. service_xxxxxxx)",
     ),
     "REACT_APP_EMAILJS_TEMPLATE_ID": (
         "/portfolio/emailjs/template_id",
-        "EmailJS Template ID  (e.g. template_xxxxxxx)",
+        "EmailJS Notification Template (e.g. template_xxxxxxx)",
+    ),
+    "REACT_APP_EMAILJS_AUTOREPLY_TEMPLATE_ID": (
+        "/portfolio/emailjs/autoreply_template_id",
+        "EmailJS Auto-Reply Template   (e.g. template_xxxxxxx)",
     ),
     "REACT_APP_EMAILJS_PUBLIC_KEY":  (
         "/portfolio/emailjs/public_key",

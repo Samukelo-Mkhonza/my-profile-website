@@ -1024,6 +1024,11 @@ const ContactModal = ({ isOpen, onClose }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState(null); // 'success' | 'error' | null
 
+  useEffect(() => {
+    const key = process.env.REACT_APP_EMAILJS_PUBLIC_KEY;
+    if (key) emailjs.init({ publicKey: key });
+  }, []);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     if (status) setStatus(null);
@@ -1039,19 +1044,34 @@ const ContactModal = ({ isOpen, onClose }) => {
     setIsSubmitting(true);
     setStatus(null);
 
+    const serviceId         = process.env.REACT_APP_EMAILJS_SERVICE_ID;
+    const templateId        = process.env.REACT_APP_EMAILJS_TEMPLATE_ID;
+    const autoReplyId       = process.env.REACT_APP_EMAILJS_AUTOREPLY_TEMPLATE_ID;
+    const publicKey         = process.env.REACT_APP_EMAILJS_PUBLIC_KEY;
+
+    if (!serviceId || !templateId || !publicKey) {
+      setStatus('error');
+      setIsSubmitting(false);
+      return;
+    }
+
+    const params = {
+      from_name:  formData.name,
+      from_email: formData.email,
+      subject:    formData.subject,
+      message:    formData.message,
+      to_name:    'Samukelo',
+    };
+
     try {
-      await emailjs.send(
-        process.env.REACT_APP_EMAILJS_SERVICE_ID,
-        process.env.REACT_APP_EMAILJS_TEMPLATE_ID,
-        {
-          from_name: formData.name,
-          from_email: formData.email,
-          subject: formData.subject,
-          message: formData.message,
-          to_name: 'Samukelo',
-        },
-        process.env.REACT_APP_EMAILJS_PUBLIC_KEY
-      );
+      // 1 — Notify Samukelo
+      await emailjs.send(serviceId, templateId, params);
+
+      // 2 — Auto-reply to the person who submitted
+      if (autoReplyId) {
+        await emailjs.send(serviceId, autoReplyId, params);
+      }
+
       setStatus('success');
       setFormData({ name: '', email: '', subject: '', message: '' });
     } catch {
