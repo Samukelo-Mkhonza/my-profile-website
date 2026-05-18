@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { motion } from 'framer-motion';
+import emailjs from '@emailjs/browser';
 import {
   FaArrowDown,
   FaEnvelope,
@@ -15,7 +16,9 @@ import {
   FaLinkedin,
   FaCertificate,
   FaGraduationCap,
-  FaBriefcase
+  FaBriefcase,
+  FaCheckCircle,
+  FaExclamationCircle
 } from 'react-icons/fa';
 
 // Floating animation for background elements
@@ -1002,33 +1005,60 @@ const roles = [
   "Problem Solver"
 ];
 
+const StatusBanner = styled(motion.div)`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  background: ${p => p.$type === 'success' ? '#f0fdf4' : '#fef2f2'};
+  color: ${p => p.$type === 'success' ? '#166534' : '#991b1b'};
+  border: 1px solid ${p => p.$type === 'success' ? '#bbf7d0' : '#fecaca'};
+  svg { flex-shrink: 0; font-size: 1rem; }
+`;
+
 const ContactModal = ({ isOpen, onClose }) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
-  });
+  const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState(null); // 'success' | 'error' | null
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (status) setStatus(null);
   };
 
-  const handleSubmit = (e) => {
+  const handleClose = () => {
+    setStatus(null);
+    onClose();
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate form submission
-    setTimeout(() => {
-      alert('Thank you for your message! I\'ll get back to you soon.');
+    setStatus(null);
+
+    try {
+      await emailjs.send(
+        process.env.REACT_APP_EMAILJS_SERVICE_ID,
+        process.env.REACT_APP_EMAILJS_TEMPLATE_ID,
+        {
+          from_name: formData.name,
+          from_email: formData.email,
+          subject: formData.subject,
+          message: formData.message,
+          to_name: 'Samukelo',
+        },
+        process.env.REACT_APP_EMAILJS_PUBLIC_KEY
+      );
+      setStatus('success');
       setFormData({ name: '', email: '', subject: '', message: '' });
+    } catch {
+      setStatus('error');
+    } finally {
       setIsSubmitting(false);
-      onClose();
-    }, 1500);
+    }
   };
 
   if (!isOpen) return null;
@@ -1038,7 +1068,7 @@ const ContactModal = ({ isOpen, onClose }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      onClick={onClose}
+      onClick={handleClose}
     >
       <ModalContent
         initial={{ scale: 0.9, opacity: 0 }}
@@ -1046,15 +1076,37 @@ const ContactModal = ({ isOpen, onClose }) => {
         exit={{ scale: 0.9, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
       >
-        <CloseButton onClick={onClose}>
+        <CloseButton onClick={handleClose}>
           <FaTimes />
         </CloseButton>
-        
+
         <ModalTitle>Get In Touch</ModalTitle>
         <ModalSubtitle>
-          Have a project in mind or want to collaborate? I'd love to hear from you. 
+          Have a project in mind or want to collaborate? I'd love to hear from you.
           Send me a message and let's create something amazing together!
         </ModalSubtitle>
+
+        {status === 'success' && (
+          <StatusBanner
+            $type="success"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <FaCheckCircle />
+            Message sent! I'll get back to you soon.
+          </StatusBanner>
+        )}
+
+        {status === 'error' && (
+          <StatusBanner
+            $type="error"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <FaExclamationCircle />
+            Something went wrong. Please try again or email me directly.
+          </StatusBanner>
+        )}
 
         <FormContainer>
           <FormGroup>
@@ -1110,11 +1162,11 @@ const ContactModal = ({ isOpen, onClose }) => {
 
           <SubmitButton
             onClick={handleSubmit}
-            disabled={isSubmitting}
+            disabled={isSubmitting || status === 'success'}
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.98 }}
           >
-            {isSubmitting ? 'Sending...' : 'Send Message'}
+            {isSubmitting ? 'Sending…' : status === 'success' ? 'Sent!' : 'Send Message'}
             <FaPaperPlane />
           </SubmitButton>
         </FormContainer>

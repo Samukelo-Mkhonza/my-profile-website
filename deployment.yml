@@ -131,6 +131,12 @@ Resources:
                   - cloudfront:CreateInvalidation
                 Resource:
                   - !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}'
+              - Effect: Allow
+                Action:
+                  - ssm:GetParameter
+                  - ssm:GetParameters
+                Resource:
+                  - !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/portfolio/emailjs/*'
 
   CodeBuildProject:
     Type: AWS::CodeBuild::Project
@@ -166,6 +172,15 @@ Resources:
             Value: !Ref WebsiteBucket
           - Name: DISTRIBUTION_ID
             Value: !Ref CloudFrontDistribution
+          - Name: REACT_APP_EMAILJS_SERVICE_ID
+            Value: /portfolio/emailjs/service_id
+            Type: PARAMETER_STORE
+          - Name: REACT_APP_EMAILJS_TEMPLATE_ID
+            Value: /portfolio/emailjs/template_id
+            Type: PARAMETER_STORE
+          - Name: REACT_APP_EMAILJS_PUBLIC_KEY
+            Value: /portfolio/emailjs/public_key
+            Type: PARAMETER_STORE
       TimeoutInMinutes: 30
 
   InvalidationProject:
