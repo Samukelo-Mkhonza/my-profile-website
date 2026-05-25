@@ -601,7 +601,7 @@ const ModalOverlay = styled(motion.div)`
 `;
 
 const ModalContent = styled(motion.div)`
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 12px;
   padding: clamp(1.5rem, 4vw, 3rem);
   width: 100%;
@@ -642,7 +642,7 @@ const CloseButton = styled.button`
   background: none;
   border: none;
   font-size: clamp(1.25rem, 3vw, 1.5rem);
-  color: #666;
+  color: var(--text-secondary);
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 50%;
@@ -655,8 +655,8 @@ const CloseButton = styled.button`
 
   @media (hover: hover) {
     &:hover {
-      background: rgba(0, 0, 0, 0.1);
-      color: #000;
+      background: var(--border-color);
+      color: var(--text-primary);
     }
   }
 
@@ -674,7 +674,7 @@ const CloseButton = styled.button`
 const ModalTitle = styled.h2`
   font-size: clamp(1.25rem, 3.5vw, 2rem);
   font-weight: 700;
-  color: #000;
+  color: var(--text-primary);
   margin: 0 0 clamp(0.75rem, 2vw, 1rem) 0;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -691,7 +691,7 @@ const ModalTitle = styled.h2`
 `;
 
 const ModalSubtitle = styled.p`
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: clamp(1.5rem, 3vw, 2rem);
   line-height: 1.6;
   font-size: clamp(0.875rem, 2vw, 1rem);
@@ -721,7 +721,7 @@ const FormGroup = styled.div`
 
 const Label = styled.label`
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-size: clamp(0.75rem, 1.5vw, 0.875rem);
@@ -733,20 +733,21 @@ const Label = styled.label`
 
 const Input = styled.input`
   padding: clamp(0.75rem, 2vw, 1rem);
-  border: 2px solid #e0e0e0;
+  border: 2px solid var(--border-card);
   border-radius: 8px;
   font-size: clamp(0.875rem, 2vw, 1rem);
   transition: all 0.3s ease;
-  background: #fff;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
 
   &:focus {
     outline: none;
-    border-color: #000;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--border-color);
   }
 
   &::placeholder {
-    color: #999;
+    color: var(--text-muted);
   }
 
   @media (max-width: 360px) {
@@ -758,23 +759,24 @@ const Input = styled.input`
 
 const TextArea = styled.textarea`
   padding: clamp(0.75rem, 2vw, 1rem);
-  border: 2px solid #e0e0e0;
+  border: 2px solid var(--border-card);
   border-radius: 8px;
   font-size: clamp(0.875rem, 2vw, 1rem);
   min-height: clamp(100px, 20vw, 120px);
   resize: vertical;
   font-family: inherit;
   transition: all 0.3s ease;
-  background: #fff;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
 
   &:focus {
     outline: none;
-    border-color: #000;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--border-color);
   }
 
   &::placeholder {
-    color: #999;
+    color: var(--text-muted);
   }
 
   @media (max-width: 360px) {
@@ -791,9 +793,9 @@ const SubmitButton = styled(motion.button)`
   justify-content: center;
   gap: 0.75rem;
   padding: clamp(0.875rem, 2vw, 1rem) clamp(1.5rem, 3vw, 2rem);
-  background: #000;
-  color: #fff;
-  border: 2px solid #000;
+  background: var(--accent);
+  color: var(--accent-inverse);
+  border: 2px solid var(--accent);
   border-radius: 8px;
   font-size: clamp(0.875rem, 2vw, 1rem);
   font-weight: 600;
@@ -849,7 +851,7 @@ const CVContent = styled.div`
 const CVSection = styled.div`
   margin-bottom: clamp(1.5rem, 3vw, 2rem);
   padding-bottom: clamp(1rem, 2vw, 1.5rem);
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--border-card);
 
   &:last-child {
     border-bottom: none;
@@ -866,7 +868,7 @@ const CVSection = styled.div`
 const CVSectionTitle = styled.h3`
   font-size: clamp(1rem, 2.5vw, 1.25rem);
   font-weight: 600;
-  color: #000;
+  color: var(--text-primary);
   margin-bottom: clamp(0.75rem, 2vw, 1rem);
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -876,7 +878,7 @@ const CVSectionTitle = styled.h3`
 
   svg {
     font-size: clamp(0.875rem, 2vw, 1rem);
-    color: #666;
+    color: var(--text-secondary);
     flex-shrink: 0;
   }
 
@@ -888,7 +890,7 @@ const CVSectionTitle = styled.h3`
 `;
 
 const CVText = styled.p`
-  color: #666;
+  color: var(--text-secondary);
   line-height: 1.6;
   margin-bottom: 0.75rem;
   font-size: clamp(0.875rem, 2vw, 1rem);
@@ -913,16 +915,16 @@ const CVList = styled.ul`
 `;
 
 const CVListItem = styled.li`
-  background: #f0f0f0;
+  background: var(--tag-bg);
   padding: clamp(0.375rem, 1.5vw, 0.5rem) clamp(0.75rem, 2vw, 1rem);
   border-radius: 4px;
   font-size: clamp(0.75rem, 1.75vw, 0.875rem);
-  color: #333;
+  color: var(--text-primary);
   transition: all 0.3s ease;
 
   @media (hover: hover) {
     &:hover {
-      background: #e0e0e0;
+      background: var(--border-card);
     }
   }
 
@@ -943,7 +945,7 @@ const ContactItem = styled.a`
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  color: #666;
+  color: var(--text-secondary);
   text-decoration: none;
   transition: color 0.3s ease;
   font-size: clamp(0.875rem, 2vw, 1rem);
@@ -951,13 +953,13 @@ const ContactItem = styled.a`
 
   @media (hover: hover) {
     &:hover {
-      color: #000;
+      color: var(--text-primary);
     }
   }
 
   svg {
     font-size: clamp(0.875rem, 2vw, 1rem);
-    color: #000;
+    color: var(--text-primary);
     flex-shrink: 0;
   }
 
@@ -974,7 +976,7 @@ const WorkExperience = styled.div`
 const JobTitle = styled.h4`
   font-size: clamp(1rem, 2.5vw, 1.125rem);
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
   margin-bottom: 0.25rem;
 
   @media (max-width: 360px) {
@@ -983,7 +985,7 @@ const JobTitle = styled.h4`
 `;
 
 const Company = styled.p`
-  color: #666;
+  color: var(--text-secondary);
   font-style: italic;
   margin-bottom: 0.5rem;
   font-size: clamp(0.875rem, 2vw, 1rem);
@@ -995,7 +997,7 @@ const Company = styled.p`
 
 const Duration = styled.span`
   font-size: clamp(0.75rem, 1.75vw, 0.875rem);
-  color: #999;
+  color: var(--text-muted);
 `;
 
 const roles = [
