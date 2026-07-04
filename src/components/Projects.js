@@ -38,7 +38,7 @@ const LANGUAGE_COLORS = {
 
 const Section = styled.section`
   padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 4vw, 2rem);
-  background: var(--bg-secondary, #f7f7f7);
+  background: var(--bg-secondary-glass, rgba(247, 247, 247, 0.86));
   position: relative;
   &:before {
     content: '';

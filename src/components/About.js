@@ -52,7 +52,7 @@ const TypingText = ({ text, speed = 40 }) => {
 
 const Section = styled.section`
   padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 5vw, 2rem);
-  background: var(--bg-secondary, #f7f7f7);
+  background: var(--bg-secondary-glass, rgba(247, 247, 247, 0.86));
   position: relative;
 
   &:before {
