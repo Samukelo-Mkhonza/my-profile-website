@@ -3,9 +3,11 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 /**
- * Lazy-loaded WebGL background for the Hero section: a wireframe
+ * Lazy-loaded WebGL background for the whole page: a wireframe
  * icosahedron with an inner solid core plus an orbiting particle
- * shell, all gently steering toward the cursor. Monochrome so it
+ * shell. One fixed canvas sits behind every section (sections use
+ * translucent backgrounds so it shows through), steering toward
+ * the cursor and drifting as the page scrolls. Monochrome so it
  * works with both the light and dark theme.
  */
 
@@ -84,27 +86,42 @@ const CoreShape = ({ wireColor, coreColor }) => {
   );
 };
 
-// Steers the whole scene toward the cursor with a soft lag.
-const MouseRig = ({ children }) => {
+// Steers the whole scene toward the cursor with a soft lag, and
+// slowly rotates/drifts it as the page scrolls so every section
+// sees the shape from a different angle.
+const MouseScrollRig = ({ children }) => {
   const ref = useRef();
   const pointer = useRef({ x: 0, y: 0 });
+  const scrollY = useRef(0);
 
   useEffect(() => {
     const onMove = (e) => {
       pointer.current.x = (e.clientX / window.innerWidth) * 2 - 1;
       pointer.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
     };
+    const onScroll = () => {
+      scrollY.current = window.scrollY;
+    };
+    onScroll();
     window.addEventListener('mousemove', onMove);
-    return () => window.removeEventListener('mousemove', onMove);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('scroll', onScroll);
+    };
   }, []);
 
   useFrame(() => {
     if (!ref.current) return;
+    const s = scrollY.current;
     ref.current.rotation.x = THREE.MathUtils.lerp(
-      ref.current.rotation.x, pointer.current.y * 0.3, 0.04
+      ref.current.rotation.x, pointer.current.y * 0.3 + s * 0.0003, 0.04
     );
     ref.current.rotation.y = THREE.MathUtils.lerp(
-      ref.current.rotation.y, pointer.current.x * 0.45, 0.04
+      ref.current.rotation.y, pointer.current.x * 0.45 + s * 0.0004, 0.04
+    );
+    ref.current.rotation.z = THREE.MathUtils.lerp(
+      ref.current.rotation.z, s * 0.00015, 0.04
     );
     ref.current.position.x = THREE.MathUtils.lerp(
       ref.current.position.x, pointer.current.x * 0.3, 0.04
@@ -114,7 +131,7 @@ const MouseRig = ({ children }) => {
   return <group ref={ref}>{children}</group>;
 };
 
-const Hero3D = ({ isDark }) => {
+const Background3D = ({ isDark }) => {
   const wireColor = isDark ? '#e8e8e8' : '#1a1a1a';
   const coreColor = isDark ? '#ffffff' : '#333333';
   const particleColor = isDark ? '#bbbbbb' : '#444444';
@@ -129,17 +146,17 @@ const Hero3D = ({ isDark }) => {
       dpr={[1, 1.75]}
       camera={{ position: [0, 0, 6], fov: 45 }}
       gl={{ antialias: true, alpha: true, powerPreference: 'low-power' }}
-      style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
+      style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}
       aria-hidden="true"
     >
       <ambientLight intensity={0.7} />
       <directionalLight position={[4, 6, 5]} intensity={0.8} />
-      <MouseRig>
+      <MouseScrollRig>
         <CoreShape wireColor={wireColor} coreColor={coreColor} />
         <Particles color={particleColor} count={count} />
-      </MouseRig>
+      </MouseScrollRig>
     </Canvas>
   );
 };
 
-export default Hero3D;
+export default Background3D;

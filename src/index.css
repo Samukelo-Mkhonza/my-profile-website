@@ -14,6 +14,8 @@ html {
 :root {
   --bg-primary: #ffffff;
   --bg-secondary: #f7f7f7;
+  --bg-primary-glass: rgba(255, 255, 255, 0.86);
+  --bg-secondary-glass: rgba(247, 247, 247, 0.86);
   --bg-card: #ffffff;
   --bg-card-hover: #ffffff;
   --text-primary: #000000;

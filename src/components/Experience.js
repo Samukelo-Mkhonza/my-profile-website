@@ -9,7 +9,7 @@ import {
 
 const Section = styled.section`
   padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 5vw, 2rem);
-  background: var(--bg-primary, #ffffff);
+  background: var(--bg-primary-glass, rgba(255, 255, 255, 0.86));
   position: relative;
 `;
 

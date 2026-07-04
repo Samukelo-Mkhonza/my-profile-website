@@ -15,6 +15,9 @@ export const ThemeProvider = ({ children }) => {
     root.setAttribute('data-theme', dark ? 'dark' : 'light');
     root.style.setProperty('--bg-primary', dark ? '#0a0a0a' : '#ffffff');
     root.style.setProperty('--bg-secondary', dark ? '#1a1a1a' : '#f7f7f7');
+    // Translucent section backgrounds so the fixed 3D scene shows through
+    root.style.setProperty('--bg-primary-glass', dark ? 'rgba(10,10,10,0.84)' : 'rgba(255,255,255,0.86)');
+    root.style.setProperty('--bg-secondary-glass', dark ? 'rgba(26,26,26,0.84)' : 'rgba(247,247,247,0.86)');
     root.style.setProperty('--bg-card', dark ? '#1e1e1e' : '#ffffff');
     root.style.setProperty('--bg-card-hover', dark ? '#2a2a2a' : '#ffffff');
     root.style.setProperty('--text-primary', dark ? '#f0f0f0' : '#000000');
