@@ -1,0 +1,95 @@
+# Deploy — ships the site to S3 + CloudFront after CI succeeds on main.
+#
+# Triggers:
+#   * automatically, when the "CI" workflow completes successfully on main
+#   * manually, via the "Run workflow" button (workflow_dispatch)
+#
+# Auth is OIDC-based (no long-lived AWS keys): the job assumes the IAM role in
+# the AWS_DEPLOY_ROLE_ARN repository variable. Until that variable is set the
+# job is skipped, so this workflow is safe to merge before the AWS side exists.
+# Setup instructions, including the IAM trust/permissions policies, live in
+# .github/DEPLOYMENT.md.
+
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  id-token: write   # required for OIDC auth to AWS
+  contents: read
+
+# Never run two production deploys at once, and never cancel one mid-flight.
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to S3 + CloudFront
+    runs-on: ubuntu-latest
+    environment: production
+    # Run only if CI succeeded (or this is a manual dispatch), and only once
+    # the AWS role variable has been configured.
+    if: >-
+      vars.AWS_DEPLOY_ROLE_ARN != '' &&
+      (github.event_name == 'workflow_dispatch' ||
+       github.event.workflow_run.conclusion == 'success')
+    steps:
+      # For workflow_run events, check out the exact commit CI validated —
+      # not whatever main points at by the time this job starts.
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Set up Node 20 with npm cache
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build
+        run: npm run build
+        env:
+          CI: true
+          REACT_APP_EMAILJS_SERVICE_ID: ${{ secrets.REACT_APP_EMAILJS_SERVICE_ID }}
+          REACT_APP_EMAILJS_TEMPLATE_ID: ${{ secrets.REACT_APP_EMAILJS_TEMPLATE_ID }}
+          REACT_APP_EMAILJS_AUTOREPLY_TEMPLATE_ID: ${{ secrets.REACT_APP_EMAILJS_AUTOREPLY_TEMPLATE_ID }}
+          REACT_APP_EMAILJS_PUBLIC_KEY: ${{ secrets.REACT_APP_EMAILJS_PUBLIC_KEY }}
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      # Hashed assets under static/ are immutable — cache them for a year.
+      # Everything else (index.html, manifest, icons) must revalidate so a new
+      # deploy is picked up immediately.
+      - name: Sync build to S3
+        env:
+          S3_BUCKET: ${{ vars.S3_BUCKET }}
+        run: |
+          aws s3 sync build/static "s3://${S3_BUCKET}/static" \
+            --cache-control "public,max-age=31536000,immutable" \
+            --delete
+          aws s3 sync build "s3://${S3_BUCKET}" \
+            --exclude "static/*" \
+            --cache-control "public,max-age=0,must-revalidate" \
+            --delete
+
+      - name: Invalidate CloudFront cache
+        env:
+          DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "${DISTRIBUTION_ID}" \
+            --paths "/*"

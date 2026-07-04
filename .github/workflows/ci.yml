@@ -1,0 +1,85 @@
+# CI — runs on every push and pull request targeting main.
+#
+# Job graph:
+#   lint-test ──> build
+#
+# The production build needs the EmailJS keys at compile time (Create React App
+# inlines REACT_APP_* variables into the bundle), so they are supplied from
+# GitHub Actions secrets. See .github/DEPLOYMENT.md for the full list.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel superseded runs on the same branch/PR to save minutes.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint-test:
+    name: Lint & test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node 20 with npm cache
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      # Uses the react-app ESLint config declared in package.json.
+      # --max-warnings=0 makes warnings fail the job, matching what
+      # `CI=true npm run build` enforces later.
+      - name: Lint
+        run: npx eslint src --ext .js --max-warnings=0
+
+      - name: Run tests with coverage
+        run: npm test -- --coverage --watchAll=false
+        env:
+          CI: true
+
+  build:
+    name: Production build
+    runs-on: ubuntu-latest
+    needs: lint-test
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node 20 with npm cache
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build
+        run: npm run build
+        env:
+          CI: true
+          REACT_APP_EMAILJS_SERVICE_ID: ${{ secrets.REACT_APP_EMAILJS_SERVICE_ID }}
+          REACT_APP_EMAILJS_TEMPLATE_ID: ${{ secrets.REACT_APP_EMAILJS_TEMPLATE_ID }}
+          REACT_APP_EMAILJS_AUTOREPLY_TEMPLATE_ID: ${{ secrets.REACT_APP_EMAILJS_AUTOREPLY_TEMPLATE_ID }}
+          REACT_APP_EMAILJS_PUBLIC_KEY: ${{ secrets.REACT_APP_EMAILJS_PUBLIC_KEY }}
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: build
+          path: build/
+          retention-days: 7

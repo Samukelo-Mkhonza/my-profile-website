@@ -1,5 +1,8 @@
 # Profile Website
 
+[![CI](https://github.com/Samukelo-Mkhonza/my-profile-website/actions/workflows/ci.yml/badge.svg)](https://github.com/Samukelo-Mkhonza/my-profile-website/actions/workflows/ci.yml)
+[![Deploy](https://github.com/Samukelo-Mkhonza/my-profile-website/actions/workflows/deploy.yml/badge.svg)](https://github.com/Samukelo-Mkhonza/my-profile-website/actions/workflows/deploy.yml)
+
 A sleek, production-ready React portfolio site for **Samukelo Mkhonza**, Software Developer, showcasing skills, experience, and contact links. Styled with JetBrains Mono font, animated with Framer Motion, and scoped via Styled Components.
 
 ## Features
@@ -14,5 +17,34 @@ A sleek, production-ready React portfolio site for **Samukelo Mkhonza**, Softwar
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/<your-username>/profile-website.git
-   cd profile-website
+   git clone https://github.com/Samukelo-Mkhonza/my-profile-website.git
+   cd my-profile-website
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm ci
+   ```
+
+3. Start the dev server:
+   ```bash
+   npm start
+   ```
+
+## Testing & linting
+
+```bash
+npm test                              # jest + React Testing Library
+npx eslint src --ext .js              # same lint check CI runs
+npm run build                         # production build
+```
+
+## CI/CD
+
+Every push and pull request to `main` runs the **CI** workflow (lint → tests →
+production build). When CI succeeds on `main`, the **Deploy** workflow ships
+the build to S3 and invalidates CloudFront, authenticating to AWS via OIDC —
+no stored access keys.
+
+Setup instructions (GitHub secrets/variables, the IAM role, and how to retire
+the old CodePipeline stack) are in [.github/DEPLOYMENT.md](.github/DEPLOYMENT.md).
