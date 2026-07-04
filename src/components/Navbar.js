@@ -649,6 +649,16 @@ const HiddenFactBubble = styled(motion.div)`
   }
 `;
 
+const links = [
+  { href: '#hero', label: 'Home', icon: FaHome },
+  { href: '#about', label: 'About', icon: FaUser },
+  { href: '#experience', label: 'Experience', icon: FaBriefcase },
+  { href: '#skills', label: 'Skills', icon: FaCog },
+  { href: '#projects', label: 'Projects', icon: FaCode },
+  { href: '#blog', label: 'Blog', icon: FaBlog },
+  { href: '#contact', label: 'Contact', icon: FaEnvelope },
+];
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -657,16 +667,6 @@ const Navbar = () => {
   const { isDark, toggleTheme } = useTheme();
   const [logoClicks, setLogoClicks] = useState(0);
   const [showFact, setShowFact] = useState(false);
-
-  const links = [
-    { href: '#hero', label: 'Home', icon: FaHome },
-    { href: '#about', label: 'About', icon: FaUser },
-    { href: '#experience', label: 'Experience', icon: FaBriefcase },
-    { href: '#skills', label: 'Skills', icon: FaCog },
-    { href: '#projects', label: 'Projects', icon: FaCode },
-    { href: '#blog', label: 'Blog', icon: FaBlog },
-    { href: '#contact', label: 'Contact', icon: FaEnvelope },
-  ];
 
   useEffect(() => {
     const handleScroll = () => {
