@@ -9,6 +9,7 @@ import {
   FaAws, FaServer, FaCode, FaDatabase, FaTools,
   FaTimes, FaCheckCircle
 } from 'react-icons/fa';
+import TiltCard from './TiltCard';
 
 /* ─── Layout ──────────────────────────────────────────────────────────────── */
 
@@ -135,9 +136,9 @@ const SkillCard = styled(motion.div)`
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  height: 100%;
   @media (hover: hover) {
     &:hover {
-      transform: translateY(-8px);
       box-shadow: 0 20px 40px rgba(0,0,0,0.15);
       border-color: var(--accent, #000);
       background: var(--bg-card, #fff);
@@ -792,8 +793,8 @@ const Skills = () => {
             transition={{ duration: 0.3 }}
           >
             {filteredSkills.map((skill, index) => (
+              <TiltCard key={skill.id}>
               <SkillCard
-                key={skill.id}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1, ease: [0.4, 0, 0.2, 1] }}
@@ -839,6 +840,7 @@ const Skills = () => {
 
                 <ClickHint>Click to see how I use it →</ClickHint>
               </SkillCard>
+              </TiltCard>
             ))}
           </SkillsGrid>
         </AnimatePresence>

@@ -16,6 +16,15 @@ class MockIntersectionObserver {
 }
 window.IntersectionObserver = MockIntersectionObserver;
 
+// jsdom does not implement ResizeObserver either, which
+// @react-three/fiber's Canvas (react-use-measure) requires.
+class MockResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+window.ResizeObserver = MockResizeObserver;
+
 // jsdom's canvas getContext() returns null, which would crash CursorTrail and
 // EasterEggs. Return a stub whose every method is a no-op jest.fn().
 HTMLCanvasElement.prototype.getContext = function getContext() {

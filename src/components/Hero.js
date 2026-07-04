@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import emailjs from '@emailjs/browser';
+import { useTheme } from '../context/ThemeContext';
 import {
   FaArrowDown,
   FaEnvelope,
@@ -20,6 +21,9 @@ import {
   FaCheckCircle,
   FaExclamationCircle
 } from 'react-icons/fa';
+
+// WebGL scene is heavy, so it is code-split and only loaded after first paint
+const Hero3D = lazy(() => import('./Hero3D'));
 
 // Floating animation for background elements
 const float = keyframes`
@@ -130,7 +134,7 @@ const Section = styled.section`
   }
 `;
 
-const BackgroundElements = styled.div`
+const BackgroundElements = styled(motion.div)`
   position: absolute;
   top: 0;
   left: 0;
@@ -143,6 +147,13 @@ const BackgroundElements = styled.div`
   @media (max-width: 360px) {
     display: none;
   }
+`;
+
+const CanvasHolder = styled(motion.div)`
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
 `;
 
 const FloatingIcon = styled(motion.div)`
@@ -158,7 +169,7 @@ const FloatingIcon = styled(motion.div)`
   }
 `;
 
-const Container = styled.div`
+const Container = styled(motion.div)`
   max-width: 1200px;
   width: 100%;
   display: grid;
@@ -1303,6 +1314,26 @@ const CVModal = ({ isOpen, onClose }) => {
 const Hero = () => {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [isCVModalOpen, setIsCVModalOpen] = useState(false);
+  const [show3D, setShow3D] = useState(false);
+  const sectionRef = useRef(null);
+  const { isDark } = useTheme();
+  const reducedMotion = useReducedMotion();
+
+  // Defer the WebGL scene until after first paint
+  useEffect(() => {
+    if (reducedMotion) return;
+    const timer = setTimeout(() => setShow3D(true), 200);
+    return () => clearTimeout(timer);
+  }, [reducedMotion]);
+
+  // Parallax: background drifts down, content drifts up as you scroll away
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end start'],
+  });
+  const yBg = useTransform(scrollYProgress, [0, 1], [0, 140]);
+  const yContent = useTransform(scrollYProgress, [0, 1], [0, -80]);
+  const fadeOut = useTransform(scrollYProgress, [0, 0.9], [1, 0.3]);
 
   const scrollToAbout = () => {
     const target = document.getElementById('about');
@@ -1329,8 +1360,15 @@ const Hero = () => {
 
   return (
     <>
-      <Section id="hero">
-        <BackgroundElements>
+      <Section id="hero" ref={sectionRef}>
+        {show3D && (
+          <Suspense fallback={null}>
+            <CanvasHolder style={{ y: yBg }}>
+              <Hero3D isDark={isDark} />
+            </CanvasHolder>
+          </Suspense>
+        )}
+        <BackgroundElements style={{ y: yBg }}>
           <FloatingIcon size="3rem" duration="8s" delay="0s" style={{ top: '10%', left: '10%' }}>
             <FaCode />
           </FloatingIcon>
@@ -1345,7 +1383,7 @@ const Hero = () => {
           </FloatingIcon>
         </BackgroundElements>
 
-        <Container>
+        <Container style={{ y: yContent, opacity: fadeOut }}>
           <MainContent
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
