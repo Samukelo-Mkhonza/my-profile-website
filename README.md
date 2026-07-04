@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/Samukelo-Mkhonza/my-profile-website/actions/workflows/ci.yml/badge.svg)](https://github.com/Samukelo-Mkhonza/my-profile-website/actions/workflows/ci.yml)
 [![Deploy](https://github.com/Samukelo-Mkhonza/my-profile-website/actions/workflows/deploy.yml/badge.svg)](https://github.com/Samukelo-Mkhonza/my-profile-website/actions/workflows/deploy.yml)
+[![Pages](https://github.com/Samukelo-Mkhonza/my-profile-website/actions/workflows/pages.yml/badge.svg)](https://github.com/Samukelo-Mkhonza/my-profile-website/actions/workflows/pages.yml)
 
 A sleek, production-ready React portfolio site for **Samukelo Mkhonza**, Software Developer, showcasing skills, experience, and contact links. Styled with JetBrains Mono font, animated with Framer Motion, and scoped via Styled Components.
 
@@ -42,9 +43,12 @@ npm run build                         # production build
 ## CI/CD
 
 Every push and pull request to `main` runs the **CI** workflow (lint → tests →
-production build). When CI succeeds on `main`, the **Deploy** workflow ships
-the build to S3 and invalidates CloudFront, authenticating to AWS via OIDC —
-no stored access keys.
+production build). When CI succeeds on `main`, two deploy workflows run in
+parallel: **Deploy** ships the build to S3 and invalidates CloudFront
+(authenticating to AWS via OIDC — no stored access keys), and **Pages**
+publishes to [GitHub Pages](https://samukelo-mkhonza.github.io/my-profile-website/).
+Each target skips itself until its switch is flipped (`AWS_DEPLOY_ROLE_ARN` /
+`PAGES_ENABLED` repository variables).
 
 Setup instructions (GitHub secrets/variables, the IAM role, and how to retire
 the old CodePipeline stack) are in [.github/DEPLOYMENT.md](.github/DEPLOYMENT.md).
