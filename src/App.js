@@ -1,3 +1,4 @@
+import { motion, useScroll, useSpring } from 'framer-motion';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -10,10 +11,36 @@ import EasterEggs from './components/EasterEggs';
 import CursorTrail from './components/CursorTrail';
 import { ThemeProvider } from './context/ThemeContext';
 
+const ScrollProgress = () => {
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 120,
+    damping: 30,
+    restDelta: 0.001,
+  });
+
+  return (
+    <motion.div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: 3,
+        transformOrigin: '0 0',
+        scaleX,
+        background: 'var(--accent, #000)',
+        zIndex: 2000,
+      }}
+    />
+  );
+};
+
 function App() {
   return (
     <ThemeProvider>
       <main>
+        <ScrollProgress />
         <CursorTrail />
         <EasterEggs />
         <Navbar />

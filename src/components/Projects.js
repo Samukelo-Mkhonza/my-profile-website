@@ -5,6 +5,8 @@ import {
   FaGithub, FaStar, FaCodeBranch, FaEye,
   FaTimes, FaExternalLinkAlt, FaCalendarAlt, FaCircle, FaSpinner
 } from 'react-icons/fa';
+import TiltCard from './TiltCard';
+import projectPlaceholder from '../assets/project-card-placeholder.svg';
 
 const GITHUB_USERNAME = 'Samukelo-Mkhonza';
 
@@ -151,13 +153,12 @@ const ProjectCard = styled(motion.div)`
   background: var(--bg-card, #ffffff);
   border: 1px solid var(--border-card, #e0e0e0);
   border-radius: 12px;
-  padding: clamp(1.5rem, 3vw, 2rem);
   position: relative;
   overflow: hidden;
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  height: 100%;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 
   &:before {
@@ -169,18 +170,57 @@ const ProjectCard = styled(motion.div)`
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.3s ease;
+    z-index: 2;
   }
 
   @media (hover: hover) {
     &:hover {
-      transform: translateY(-6px);
       box-shadow: 0 20px 40px var(--shadow-color, rgba(0,0,0,0.12));
       border-color: var(--text-primary, #000);
       &:before { transform: scaleX(1); }
     }
   }
 
-  @media (max-width: 480px) { padding: clamp(1.25rem, 4vw, 1.5rem); border-radius: 8px; }
+  @media (max-width: 480px) { border-radius: 8px; }
+`;
+
+const CardImageWrap = styled.div`
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  overflow: hidden;
+  background: var(--skill-card-bg, #f0f2f5);
+  border-bottom: 1px solid var(--border-card, #e0e0e0);
+  position: relative;
+
+  &:after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 60%, var(--bg-card, #fff) 130%);
+    pointer-events: none;
+  }
+`;
+
+const CardImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+
+  @media (hover: hover) {
+    ${ProjectCard}:hover & { transform: scale(1.07); }
+  }
+`;
+
+const CardBody = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+
+  @media (max-width: 480px) { padding: clamp(1rem, 4vw, 1.5rem); }
 `;
 
 const CardHeader = styled.div`
@@ -520,54 +560,69 @@ const Projects = () => {
               transition={{ duration: 0.3 }}
             >
               {filtered.map((repo, i) => (
-                <ProjectCard
-                  key={repo.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.45, delay: i * 0.06, ease: [0.4, 0, 0.2, 1] }}
-                  onClick={() => setSelectedRepo(repo)}
-                >
-                  <CardHeader>
-                    <RepoName>{formatName(repo.name)}</RepoName>
-                    <GithubIconLink
-                      href={repo.html_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={e => e.stopPropagation()}
-                      title="Open on GitHub"
-                    >
-                      <FaGithub />
-                    </GithubIconLink>
-                  </CardHeader>
+                <TiltCard key={repo.id}>
+                  <ProjectCard
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.45, delay: i * 0.06, ease: [0.4, 0, 0.2, 1] }}
+                    onClick={() => setSelectedRepo(repo)}
+                  >
+                    <CardImageWrap>
+                      <CardImage
+                        src={`https://opengraph.githubassets.com/1/${repo.full_name}`}
+                        alt={`${formatName(repo.name)} preview`}
+                        loading="lazy"
+                        onError={e => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = projectPlaceholder;
+                        }}
+                      />
+                    </CardImageWrap>
 
-                  <RepoDescription>
-                    {repo.description || 'No description provided.'}
-                  </RepoDescription>
+                    <CardBody>
+                      <CardHeader>
+                        <RepoName>{formatName(repo.name)}</RepoName>
+                        <GithubIconLink
+                          href={repo.html_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={e => e.stopPropagation()}
+                          title="Open on GitHub"
+                        >
+                          <FaGithub />
+                        </GithubIconLink>
+                      </CardHeader>
 
-                  {repo.topics?.length > 0 && (
-                    <TagsRow>
-                      {repo.topics.slice(0, 4).map(t => (
-                        <TopicTag key={t}>{t}</TopicTag>
-                      ))}
-                    </TagsRow>
-                  )}
+                      <RepoDescription>
+                        {repo.description || 'No description provided.'}
+                      </RepoDescription>
 
-                  <CardFooter>
-                    {repo.stargazers_count > 0 && (
-                      <Stat><FaStar />{repo.stargazers_count}</Stat>
-                    )}
-                    {repo.forks_count > 0 && (
-                      <Stat><FaCodeBranch />{repo.forks_count}</Stat>
-                    )}
-                    <ViewDetailsHint>View details →</ViewDetailsHint>
-                    {repo.language && (
-                      <LangDot>
-                        <LangCircle $color={LANGUAGE_COLORS[repo.language]} />
-                        {repo.language}
-                      </LangDot>
-                    )}
-                  </CardFooter>
-                </ProjectCard>
+                      {repo.topics?.length > 0 && (
+                        <TagsRow>
+                          {repo.topics.slice(0, 4).map(t => (
+                            <TopicTag key={t}>{t}</TopicTag>
+                          ))}
+                        </TagsRow>
+                      )}
+
+                      <CardFooter>
+                        {repo.stargazers_count > 0 && (
+                          <Stat><FaStar />{repo.stargazers_count}</Stat>
+                        )}
+                        {repo.forks_count > 0 && (
+                          <Stat><FaCodeBranch />{repo.forks_count}</Stat>
+                        )}
+                        <ViewDetailsHint>View details →</ViewDetailsHint>
+                        {repo.language && (
+                          <LangDot>
+                            <LangCircle $color={LANGUAGE_COLORS[repo.language]} />
+                            {repo.language}
+                          </LangDot>
+                        )}
+                      </CardFooter>
+                    </CardBody>
+                  </ProjectCard>
+                </TiltCard>
               ))}
             </ProjectsGrid>
           </AnimatePresence>

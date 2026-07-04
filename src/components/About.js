@@ -13,6 +13,7 @@ import {
   FaMusic,
   FaGamepad
 } from 'react-icons/fa';
+import profilePhoto from '../assets/profile-photo-placeholder.svg';
 
 const blink = keyframes`
   0%, 100% { opacity: 1; }
@@ -120,25 +121,25 @@ const ProfileSection = styled(motion.div)`
   gap: 1.5rem;
 `;
 
-const ProfileImage = styled.div`
-  width: 120px;
-  height: 120px;
+const ProfileImageWrap = styled(motion.div)`
+  width: clamp(150px, 22vw, 200px);
+  aspect-ratio: 1;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--text-primary, #000), var(--text-secondary, #333));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 3rem;
-  color: var(--accent-inverse, #fff);
   margin: 0 auto;
-  position: relative;
-  overflow: hidden;
+  padding: 5px;
+  background: linear-gradient(135deg, var(--text-primary, #000), var(--text-secondary, #666));
+  box-shadow: 0 12px 32px var(--shadow-color, rgba(0, 0, 0, 0.2)),
+              0 4px 12px var(--shadow-color, rgba(0, 0, 0, 0.1));
+  cursor: pointer;
+`;
 
-  &:before {
-    content: 'SM';
-    font-weight: 700;
-    letter-spacing: 0.1em;
-  }
+const ProfileImg = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+  background: var(--bg-card, #fff);
 `;
 
 const IntroText = styled.p`
@@ -424,7 +425,12 @@ const About = () => (
             transition={{ duration: 0.6, delay: 0.4 }}
             viewport={{ once: true }}
           >
-            <ProfileImage />
+            <ProfileImageWrap
+              whileHover={{ scale: 1.06, rotate: 2 }}
+              transition={{ type: 'spring', stiffness: 260, damping: 18 }}
+            >
+              <ProfileImg src={profilePhoto} alt="Samukelo Mkhonza" />
+            </ProfileImageWrap>
             <PersonalSection>
               <SectionTitle>When I'm Not Coding</SectionTitle>
               <p style={{

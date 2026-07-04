@@ -2,6 +2,9 @@ import { act } from 'react';
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
+// The Hero 3D scene needs a real WebGL context, which jsdom cannot provide.
+jest.mock('./components/Hero3D', () => () => null);
+
 test('renders the full page without crashing', async () => {
   render(<App />);
 

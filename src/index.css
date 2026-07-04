@@ -63,3 +63,18 @@ canvas,
 .framer-motion * {
   transition-property: none !important;
 }
+
+/* Respect users who prefer reduced motion: kill CSS animations and
+   transitions; the JS-driven 3D scene and tilt effects opt out via
+   framer-motion's useReducedMotion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
