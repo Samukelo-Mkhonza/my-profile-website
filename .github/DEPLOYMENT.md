@@ -1,6 +1,6 @@
 # CI/CD with GitHub Actions
 
-This repo has three workflows in [`.github/workflows/`](workflows/):
+This repo has four workflows in [`.github/workflows/`](workflows/):
 
 ```
 push / PR to main
@@ -28,6 +28,10 @@ push / PR to main
 Both deploy workflows are gated and **skip themselves until you flip their
 switch** — `AWS_DEPLOY_ROLE_ARN` for AWS, `PAGES_ENABLED` for Pages — so
 everything can be merged safely before either target is wired up.
+
+The fourth workflow, **Release** ([`release-please.yml`](workflows/release-please.yml)),
+runs alongside CI on every push to `main` and automates versioned GitHub
+Releases from the commit messages — see [§7](#7-automatic-releases-release-please).
 
 The two targets serve the same site from different roots (CloudFront from `/`,
 Pages from `/my-profile-website/`), which is why `package.json` has **no
@@ -196,11 +200,67 @@ aws codepipeline delete-webhook --webhook-name <name>
 aws cloudformation delete-stack --stack-name portfolio-website
 ```
 
-## 7. Day-to-day
+## 7. Automatic releases (release-please)
+
+[`release-please.yml`](workflows/release-please.yml) turns the conventional
+commit messages already used in this repo (`feat:`, `fix:`, `docs:`, …) into
+versioned GitHub Releases:
+
+1. On every push to `main`, release-please maintains a **release PR** that
+   bumps the version in `package.json` / `.release-please-manifest.json` and
+   rewrites `CHANGELOG.md` from the commits since the last release.
+2. **Merging that PR** creates the `vX.Y.Z` tag and the GitHub Release. The
+   merge is a normal push to `main`, so CI → Deploy/Pages run as usual.
+3. Until you merge it, the PR keeps absorbing new commits — release whenever
+   you like; nothing ships on its own.
+
+Version bumps follow the commit types, configured in
+[`release-please-config.json`](../release-please-config.json):
+
+| Commit | Effect |
+|---|---|
+| `fix: …` | patch bump (0.2.0 → 0.2.1) |
+| `feat: …` | minor bump (0.2.0 → 0.3.0) |
+| `feat!: …` / `BREAKING CHANGE:` | major bump — but minor while < 1.0.0 (`bump-minor-pre-major`) |
+| `docs:` / `refactor:` / `perf:` | no bump on their own, but listed in the changelog |
+| `chore:` / `test:` / `ci:` / `build:` / `style:` | no bump, hidden from the changelog |
+
+To force a specific version (e.g. the jump to 1.0.0), add `Release-As: 1.0.0`
+on its own line in a commit message footer.
+
+**One-time setup — pick one** (the PAT is recommended):
+
+- **Fine-grained PAT (recommended).** GitHub never triggers workflows on
+  events caused by the built-in `GITHUB_TOKEN`, so release PRs opened with it
+  get **no CI runs** — and `main`'s branch protection requires the "Lint &
+  test" and "Production build" checks, leaving such PRs mergeable only via
+  admin bypass. A PAT makes release PRs behave like your own: CI runs, checks
+  go green, normal merge.
+  `github.com → Settings → Developer settings → Fine-grained tokens →
+  Generate new token`: repository access = *only this repo*; permissions =
+  **Contents: Read and write** + **Pull requests: Read and write**. Store it
+  as the `RELEASE_PLEASE_TOKEN` repository secret
+  (`Settings → Secrets and variables → Actions → Secrets`). Set a calendar
+  reminder for the token's expiry date.
+- **Plain `GITHUB_TOKEN` fallback.** Enable `Settings → Actions → General →
+  Workflow permissions → "Allow GitHub Actions to create and approve pull
+  requests"`. Release PRs will then be created, but with no CI checks — merge
+  them with the admin "bypass requirements" option.
+
+Notes:
+
+- The **first release PR** will propose **v0.2.0** with a changelog built from
+  the repo's entire history (there is no earlier tag to anchor to).
+- The site's `/changelog` page is hand-curated content under `src/content/` —
+  it is *not* generated from `CHANGELOG.md`; the two evolve independently.
+
+## 8. Day-to-day
 
 - **PR to `main`** → CI runs lint + tests + build; merge is safe when green.
 - **Push/merge to `main`** → CI, then automatic deploys to every enabled
   target (AWS and/or Pages).
+- **Cut a release** → merge the open *release PR* (created automatically by
+  the Release workflow) → tag + GitHub Release + updated `CHANGELOG.md`.
 - **Re-deploy without a new commit** → Actions tab → Deploy or Pages →
   *Run workflow*.
 - **Rotate EmailJS keys** → update the four secrets, then run manual deploys.
