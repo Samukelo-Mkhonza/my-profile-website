@@ -1,0 +1,47 @@
+# Release — automates versioned releases from conventional commit messages.
+#
+# How it works (release-please, manifest mode):
+#   * on every push to main, release-please maintains a "release PR" that
+#     bumps the version in package.json / .release-please-manifest.json and
+#     rewrites CHANGELOG.md from the commits since the last release
+#   * merging that PR creates the vX.Y.Z tag and the GitHub Release
+#   * fix: → patch bump, feat: → minor, breaking change → major (while the
+#     version is < 1.0.0 breaking changes bump the minor instead — see
+#     release-please-config.json)
+#
+# Merging the release PR is itself a normal push to main, so CI → Deploy /
+# Pages all run as usual; releases never bypass the pipeline.
+#
+# Token: uses the RELEASE_PLEASE_TOKEN secret (a fine-grained PAT) when
+# present, else falls back to the built-in GITHUB_TOKEN. The PAT matters:
+# GitHub never triggers workflows on events caused by GITHUB_TOKEN, so
+# release PRs opened with it get no CI runs — and main's protection requires
+# the CI checks. Setup steps live in .github/DEPLOYMENT.md § Releases.
+
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write        # create tags and GitHub Releases
+  pull-requests: write   # open/update the release PR
+
+# One release computation at a time; never cancel one mid-flight.
+concurrency:
+  group: release-please
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    name: Release PR / GitHub Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run release-please
+        uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
