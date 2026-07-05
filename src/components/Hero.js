@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import emailjs from '@emailjs/browser';
 import {
   FaArrowDown,
@@ -47,6 +47,7 @@ const Cursor = styled.span`
   width: 1ch;
   background-color: currentColor;
   animation: ${blink} 1s step-start infinite;
+  @media (prefers-reduced-motion: reduce) { animation: none; }
 `;
 
 // TypingText component with enhanced functionality
@@ -54,10 +55,14 @@ const TypingText = ({ texts, speed = 50, pause = 2000 }) => {
   const [displayed, setDisplayed] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
+  // Users who prefer reduced motion get the first role as static text
+  // instead of the endless type/delete cycle.
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
+    if (reducedMotion) return;
     const currentText = texts[currentIndex];
-    
+
     const timeout = setTimeout(() => {
       if (!isDeleting) {
         if (displayed.length < currentText.length) {
@@ -76,7 +81,11 @@ const TypingText = ({ texts, speed = 50, pause = 2000 }) => {
     }, isDeleting ? speed / 2 : speed);
 
     return () => clearTimeout(timeout);
-  }, [displayed, currentIndex, isDeleting, texts, speed, pause]);
+  }, [displayed, currentIndex, isDeleting, texts, speed, pause, reducedMotion]);
+
+  if (reducedMotion) {
+    return <span>{texts[0]}</span>;
+  }
 
   return (
     <span>
@@ -93,12 +102,15 @@ const Section = styled.section`
   align-items: center;
   justify-content: center;
   padding: clamp(1.5rem, 5vw, 4rem) clamp(1rem, 3vw, 2rem);
+  /* Keep content clear of the fixed navbar */
+  padding-top: clamp(6.5rem, 12vh, 8rem);
   /* Translucent so the fixed page-wide 3D scene shows through */
   background: linear-gradient(-45deg, var(--bg-primary-glass, rgba(255, 255, 255, 0.86)), var(--bg-secondary-glass, rgba(247, 247, 247, 0.86)), var(--bg-primary-glass, rgba(255, 255, 255, 0.86)), var(--bg-secondary-glass, rgba(247, 247, 247, 0.86)));
   background-size: 400% 400%;
   animation: ${gradientShift} 15s ease infinite;
   position: relative;
   overflow: hidden;
+  @media (prefers-reduced-motion: reduce) { animation: none; }
 
   /* Small mobile devices */
   @media (max-width: 480px) {
@@ -109,12 +121,13 @@ const Section = styled.section`
   /* Tablets and small laptops */
   @media (min-width: 481px) and (max-width: 1024px) {
     padding: clamp(3rem, 8vw, 6rem) clamp(1.5rem, 4vw, 3rem);
+    padding-top: clamp(6.5rem, 12vh, 8rem);
   }
 
   /* Landscape mobile */
   @media (max-height: 600px) and (orientation: landscape) {
     min-height: auto;
-    padding: 2rem 2rem 3rem;
+    padding: 5.5rem 2rem 3rem;
   }
 
   &:before {
@@ -152,6 +165,7 @@ const FloatingIcon = styled(motion.div)`
   font-size: ${props => props.size || '2rem'};
   animation: ${float} ${props => props.duration || '6s'} ease-in-out infinite;
   animation-delay: ${props => props.delay || '0s'};
+  @media (prefers-reduced-motion: reduce) { animation: none; }
 
   /* Reduce size on mobile */
   @media (max-width: 768px) {
@@ -449,25 +463,12 @@ const StatsSection = styled(motion.div)`
     width: 100%;
     max-width: 500px;
   }
-
-  @media (max-width: 480px) {
-    padding: clamp(1.25rem, 4vw, 2rem);
-  }
-
-  /* Landscape mobile */
-  @media (max-height: 600px) and (orientation: landscape) {
-    padding: 1.5rem;
-  }
 `;
 
 const StatsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: clamp(0.75rem, 2vw, 1.5rem);
-
-  @media (max-width: 360px) {
-    gap: 0.625rem;
-  }
 `;
 
 const StatCard = styled(motion.div)`
@@ -484,10 +485,6 @@ const StatCard = styled(motion.div)`
       box-shadow: 0 8px 16px var(--shadow-color, rgba(0, 0, 0, 0.1));
       background: var(--bg-card-hover, rgba(255, 255, 255, 0.9));
     }
-  }
-
-  @media (max-width: 360px) {
-    padding: 0.625rem;
   }
 `;
 
@@ -1319,6 +1316,7 @@ const Hero = () => {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [isCVModalOpen, setIsCVModalOpen] = useState(false);
   const sectionRef = useRef(null);
+  const reducedMotion = useReducedMotion();
 
   // Parallax: background drifts down, content drifts up as you scroll away
   const { scrollYProgress } = useScroll({
@@ -1446,8 +1444,8 @@ const Hero = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.2 }}
               >
-                <StatNumber>25+</StatNumber>
-                <StatLabel>Projects</StatLabel>
+                <StatNumber>5+</StatNumber>
+                <StatLabel>Years in Tech</StatLabel>
               </StatCard>
               <StatCard
                 whileHover={{ y: -4 }}
@@ -1455,8 +1453,8 @@ const Hero = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.4 }}
               >
-                <StatNumber>3+</StatNumber>
-                <StatLabel>Years Exp</StatLabel>
+                <StatNumber>12</StatNumber>
+                <StatLabel>Technologies</StatLabel>
               </StatCard>
               <StatCard
                 whileHover={{ y: -4 }}
@@ -1464,8 +1462,8 @@ const Hero = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.6 }}
               >
-                <StatNumber>10+</StatNumber>
-                <StatLabel>Technologies</StatLabel>
+                <StatNumber>99.9%</StatNumber>
+                <StatLabel>Uptime Achieved</StatLabel>
               </StatCard>
               <StatCard
                 whileHover={{ y: -4 }}
@@ -1473,8 +1471,8 @@ const Hero = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.8 }}
               >
-                <StatNumber>15+</StatNumber>
-                <StatLabel>Deployments</StatLabel>
+                <StatNumber>35%</StatNumber>
+                <StatLabel>Costs Cut</StatLabel>
               </StatCard>
             </StatsGrid>
 
@@ -1504,7 +1502,7 @@ const Hero = () => {
         >
           <ScrollText>Explore More</ScrollText>
           <motion.div
-            animate={{ y: [0, 8, 0] }}
+            animate={reducedMotion ? {} : { y: [0, 8, 0] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
             <FaArrowDown />

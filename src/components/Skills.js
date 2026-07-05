@@ -1,16 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  SiJavascript, SiReact, SiPython, SiNodedotjs, SiTypescript,
-  SiDocker, SiKubernetes, SiTerraform, SiPostgresql, SiMongodb, SiGit
-} from 'react-icons/si';
-import {
-  FaAws, FaServer, FaCode, FaDatabase, FaTools,
-  FaTimes, FaCheckCircle
-} from 'react-icons/fa';
+import { FaTimes, FaCheckCircle, FaExternalLinkAlt } from 'react-icons/fa';
 import TiltCard from './TiltCard';
 import useIsNarrowViewport from '../lib/useIsNarrowViewport';
+import { skillCategories, skillsData } from '../content/skills';
 
 /* ─── Layout ──────────────────────────────────────────────────────────────── */
 
@@ -174,13 +168,15 @@ const SkillCard = styled(motion.div)`
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #000 0%, #666 100%);
+    background: linear-gradient(90deg, var(--accent, #000) 0%, var(--text-secondary, #666) 100%);
     transform: translateY(-100%);
     transition: transform 0.3s ease;
   }
   @media (hover: hover) { &:hover:before { transform: translateY(0); } }
-  @media (max-width: 480px) { padding: clamp(1rem, 4vw, 1.5rem); border-radius: 8px; }
-  @media (max-width: 360px) { padding: 0.875rem; }
+  &:focus-visible {
+    outline: 2px solid var(--accent, #000);
+    outline-offset: 2px;
+  }
 `;
 
 const SkillHeader = styled.div`
@@ -199,7 +195,7 @@ const IconWrapper = styled(motion.div)`
   align-items: center;
   justify-content: center;
   min-width: clamp(2rem, 5vw, 2.5rem);
-  @media (hover: hover) { ${SkillCard}:hover & { transform: scale(1.15) rotate(5deg); color: #333; } }
+  @media (hover: hover) { ${SkillCard}:hover & { transform: scale(1.15) rotate(5deg); color: var(--text-secondary, #333); } }
   @media (max-width: 480px) { font-size: clamp(1.75rem, 6vw, 2.25rem); }
   @media (max-width: 360px) { font-size: 1.5rem; min-width: 1.5rem; }
 `;
@@ -223,12 +219,12 @@ const SkillName = styled.h3`
 
 const SkillLevel = styled.span`
   font-size: clamp(0.6875rem, 1.75vw, 0.875rem);
-  color: #6c757d;
+  color: var(--text-secondary, #6c757d);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-weight: 600;
   display: inline-block;
-  background: #e9ecef;
+  background: var(--tag-bg, #e9ecef);
   padding: 0.125rem 0.5rem;
   border-radius: 4px;
   @media (max-width: 360px) { font-size: 0.625rem; letter-spacing: 0.05em; padding: 0.125rem 0.375rem; }
@@ -237,54 +233,13 @@ const SkillLevel = styled.span`
 const SkillDescription = styled.p`
   font-size: clamp(0.8125rem, 2vw, 1rem);
   line-height: 1.7;
-  color: #495057;
+  color: var(--text-secondary, #495057);
   margin-bottom: clamp(0.75rem, 2vw, 1rem);
   @media (max-width: 480px) { font-size: clamp(0.75rem, 2.5vw, 0.875rem); line-height: 1.6; }
   @media (max-width: 360px) { font-size: 0.75rem; margin-bottom: 0.625rem; line-height: 1.5; }
 `;
 
-const ProgressBarContainer = styled.div`
-  margin-bottom: clamp(0.75rem, 2vw, 1rem);
-  @media (max-width: 360px) { margin-bottom: 0.625rem; }
-`;
-
-const ProgressLabel = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-  font-size: clamp(0.6875rem, 1.5vw, 0.8125rem);
-  color: #6c757d;
-  font-weight: 600;
-  @media (max-width: 360px) { font-size: 0.625rem; margin-bottom: 0.375rem; }
-`;
-
-const ProgressBar = styled.div`
-  width: 100%;
-  height: clamp(6px, 1.5vw, 8px);
-  background: var(--progress-bg, #e9ecef);
-  border-radius: 4px;
-  overflow: hidden;
-  @media (max-width: 360px) { height: 5px; }
-`;
-
-const Progress = styled(motion.div)`
-  height: 100%;
-  background: linear-gradient(90deg, #000 0%, #495057 100%);
-  border-radius: 4px;
-  position: relative;
-  &:after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-    transform: translateX(-100%);
-    animation: shimmer 2s infinite;
-  }
-  @keyframes shimmer { to { transform: translateX(100%); } }
-`;
-
-const ExperienceYears = styled.div`
+const CardFooter = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -296,26 +251,12 @@ const ExperienceYears = styled.div`
 
 const Years = styled.span`
   font-size: clamp(0.6875rem, 1.75vw, 0.875rem);
-  color: #6c757d;
+  color: var(--text-secondary, #6c757d);
   font-weight: 600;
   display: flex;
   align-items: center;
   gap: 0.25rem;
   @media (max-width: 360px) { font-size: 0.625rem; }
-`;
-
-const ProjectCount = styled.span`
-  background: var(--accent, #000);
-  color: var(--accent-inverse, #fff);
-  padding: clamp(0.25rem, 1vw, 0.375rem) clamp(0.625rem, 1.5vw, 0.875rem);
-  border-radius: 20px;
-  font-size: clamp(0.625rem, 1.5vw, 0.8125rem);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  transition: all 0.3s ease;
-  @media (hover: hover) { ${SkillCard}:hover & { background: #333; transform: scale(1.05); } }
-  @media (max-width: 360px) { font-size: 0.625rem; padding: 0.25rem 0.5rem; }
 `;
 
 const ClickHint = styled.span`
@@ -326,7 +267,8 @@ const ClickHint = styled.span`
   color: var(--text-primary, #000);
   opacity: 0;
   transition: opacity 0.2s;
-  ${SkillCard}:hover & { opacity: 1; }
+  ${SkillCard}:hover &,
+  ${SkillCard}:focus-visible & { opacity: 1; }
 `;
 
 /* ─── Modal ───────────────────────────────────────────────────────────────── */
@@ -356,6 +298,7 @@ const Modal = styled(motion.div)`
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  &:focus { outline: none; }
 `;
 
 const CloseButton = styled(motion.button)`
@@ -417,11 +360,11 @@ const ModalMeta = styled.div`
 
 const LevelBadge = styled.span`
   font-size: 0.75rem;
-  color: #6c757d;
+  color: var(--text-secondary, #6c757d);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-weight: 600;
-  background: #e9ecef;
+  background: var(--tag-bg, #e9ecef);
   padding: 0.2rem 0.6rem;
   border-radius: 4px;
 `;
@@ -498,270 +441,19 @@ const ToolChip = styled.span`
   font-weight: 500;
 `;
 
-const ModalProgressBar = styled.div`
-  width: 100%;
-  height: 8px;
-  background: var(--progress-bg, #e9ecef);
-  border-radius: 4px;
-  overflow: hidden;
-`;
-
-const ModalProgress = styled(motion.div)`
-  height: 100%;
-  background: linear-gradient(90deg, #000 0%, #495057 100%);
-  border-radius: 4px;
-`;
-
-const ModalProgressLabel = styled.div`
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.8rem;
-  color: var(--text-secondary, #666);
+const ProofLink = styled.a`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: clamp(0.8125rem, 2vw, 0.9375rem);
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  color: var(--text-primary, #000);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: opacity 0.2s;
+  svg { font-size: 0.7rem; flex-shrink: 0; }
+  &:hover { opacity: 0.7; }
 `;
-
-/* ─── Data ────────────────────────────────────────────────────────────────── */
-
-const skillCategories = [
-  { id: 'all',      label: 'All',      icon: FaCode },
-  { id: 'frontend', label: 'Frontend', icon: SiReact },
-  { id: 'backend',  label: 'Backend',  icon: FaServer },
-  { id: 'cloud',    label: 'Cloud',    icon: FaAws },
-  { id: 'database', label: 'Database', icon: FaDatabase },
-  { id: 'tools',    label: 'Tools',    icon: FaTools },
-];
-
-const skillsData = [
-  {
-    id: 1,
-    name: 'JavaScript',
-    icon: SiJavascript,
-    category: 'frontend',
-    level: 'Expert',
-    proficiency: 95,
-    years: '5+ years',
-    projects: 25,
-    description: 'Modern ES6+ JavaScript, DOM manipulation, asynchronous programming, and functional programming concepts.',
-    usageItems: [
-      'Built single-page applications from scratch before adopting React',
-      'Implemented complex async workflows using Promises, async/await, and event loops',
-      'Created reusable utility libraries for data transformation and validation',
-      'Wrote browser automation scripts and developer tooling',
-      'Integrated third-party APIs and SDKs across multiple client projects',
-    ],
-    tools: ['Webpack', 'Babel', 'ESLint', 'Prettier', 'Jest', 'Vite'],
-  },
-  {
-    id: 2,
-    name: 'React',
-    icon: SiReact,
-    category: 'frontend',
-    level: 'Expert',
-    proficiency: 90,
-    years: '4+ years',
-    projects: 20,
-    description: 'React hooks, context API, component lifecycle, state management with Redux, and modern React patterns.',
-    usageItems: [
-      'Architected large-scale SPAs with component-driven design and custom hooks',
-      'Used Context API and Redux Toolkit to manage global application state',
-      'Built accessible, reusable component libraries with Storybook documentation',
-      'Optimised render performance with React.memo, useMemo, and useCallback',
-      'Integrated React Query for server-state management and data fetching',
-    ],
-    tools: ['Redux Toolkit', 'React Query', 'Framer Motion', 'React Router', 'Storybook'],
-  },
-  {
-    id: 3,
-    name: 'TypeScript',
-    icon: SiTypescript,
-    category: 'frontend',
-    level: 'Advanced',
-    proficiency: 85,
-    years: '3+ years',
-    projects: 15,
-    description: 'Type-safe development, interfaces, generics, advanced types, and integration with React applications.',
-    usageItems: [
-      'Migrated existing JavaScript codebases to strict TypeScript for safer refactoring',
-      'Designed shared type definitions consumed across frontend and backend services',
-      'Used generics and conditional types to build flexible, reusable utility types',
-      'Enforced API contract types with Zod schema validation at runtime boundaries',
-      'Configured tsconfig paths and project references for monorepo setups',
-    ],
-    tools: ['Zod', 'ts-node', 'tRPC', 'TypeDoc'],
-  },
-  {
-    id: 4,
-    name: 'Node.js',
-    icon: SiNodedotjs,
-    category: 'backend',
-    level: 'Expert',
-    proficiency: 88,
-    years: '4+ years',
-    projects: 18,
-    description: 'RESTful APIs, Express.js, middleware development, authentication, and microservices architecture.',
-    usageItems: [
-      'Designed and deployed production REST APIs handling thousands of daily requests',
-      'Built JWT and OAuth2 authentication middleware from first principles',
-      'Created event-driven microservices communicating over message queues',
-      'Implemented rate limiting, caching, and request logging middleware',
-      'Developed CLI tools and background job processors using Node.js workers',
-    ],
-    tools: ['Express', 'Fastify', 'Passport.js', 'Bull', 'Winston', 'Nodemon'],
-  },
-  {
-    id: 5,
-    name: 'Python',
-    icon: SiPython,
-    category: 'backend',
-    level: 'Advanced',
-    proficiency: 82,
-    years: '3+ years',
-    projects: 12,
-    description: 'Django, Flask, data analysis, automation scripts, and API development with modern Python practices.',
-    usageItems: [
-      'Built RESTful APIs with Django REST Framework and FastAPI',
-      'Wrote automation and data-pipeline scripts for ETL processing',
-      'Created serverless Lambda functions deployed on AWS',
-      'Used Pandas and NumPy for data cleaning and exploratory analysis',
-      'Scripted infrastructure tasks and deployment automation with Python',
-    ],
-    tools: ['Django', 'FastAPI', 'Flask', 'Pandas', 'Boto3', 'pytest'],
-  },
-  {
-    id: 6,
-    name: 'AWS',
-    icon: FaAws,
-    category: 'cloud',
-    level: 'Expert',
-    proficiency: 92,
-    years: '3+ years',
-    projects: 16,
-    description: 'EC2, S3, Lambda, CloudFormation, RDS, API Gateway, and serverless architecture implementation.',
-    usageItems: [
-      'Designed multi-region, high-availability architectures on AWS',
-      'Built serverless backends using Lambda, API Gateway, and DynamoDB',
-      'Configured CI/CD pipelines with CodePipeline and CodeBuild',
-      'Managed IAM roles, policies, and cross-account access strategies',
-      'Set up CloudWatch dashboards and alarms for production observability',
-    ],
-    tools: ['Lambda', 'S3', 'ECS', 'RDS', 'CloudFormation', 'CloudWatch', 'IAM'],
-  },
-  {
-    id: 7,
-    name: 'Docker',
-    icon: SiDocker,
-    category: 'cloud',
-    level: 'Advanced',
-    proficiency: 85,
-    years: '3+ years',
-    projects: 14,
-    description: 'Containerisation, multi-stage builds, Docker Compose, and container orchestration strategies.',
-    usageItems: [
-      'Containerised full-stack applications for consistent dev and prod environments',
-      'Wrote multi-stage Dockerfiles to minimise production image sizes',
-      'Managed local multi-service environments with Docker Compose',
-      'Published versioned images to Docker Hub and AWS ECR',
-      'Debugged container networking and volume mount issues in production',
-    ],
-    tools: ['Docker Compose', 'Docker Hub', 'AWS ECR', 'Buildx', 'Dive'],
-  },
-  {
-    id: 8,
-    name: 'Kubernetes',
-    icon: SiKubernetes,
-    category: 'cloud',
-    level: 'Intermediate',
-    proficiency: 75,
-    years: '2+ years',
-    projects: 8,
-    description: 'Pod management, services, deployments, ingress controllers, and cluster administration.',
-    usageItems: [
-      'Deployed and scaled containerised workloads on managed EKS clusters',
-      'Configured Deployments, Services, and Ingress rules for production traffic',
-      'Used Helm charts to manage application releases and rollbacks',
-      'Set up Horizontal Pod Autoscaling based on CPU and custom metrics',
-      'Investigated pod crashes and resource constraints using kubectl and logs',
-    ],
-    tools: ['kubectl', 'Helm', 'EKS', 'Lens', 'kube-proxy'],
-  },
-  {
-    id: 9,
-    name: 'Terraform',
-    icon: SiTerraform,
-    category: 'cloud',
-    level: 'Advanced',
-    proficiency: 80,
-    years: '2+ years',
-    projects: 10,
-    description: 'Infrastructure as Code, modules, state management, and cloud resource provisioning.',
-    usageItems: [
-      'Provisioned complete AWS environments from scratch using Terraform modules',
-      'Managed remote state in S3 with DynamoDB locking for team collaboration',
-      'Wrote reusable modules for VPC, ECS, and RDS patterns across projects',
-      'Integrated Terraform with CI/CD pipelines for automated infrastructure updates',
-      'Refactored legacy click-ops infrastructure into reproducible IaC codebases',
-    ],
-    tools: ['Terraform Cloud', 'Terragrunt', 'tfsec', 'Infracost', 'AWS provider'],
-  },
-  {
-    id: 10,
-    name: 'PostgreSQL',
-    icon: SiPostgresql,
-    category: 'database',
-    level: 'Advanced',
-    proficiency: 83,
-    years: '4+ years',
-    projects: 15,
-    description: 'Complex queries, indexing, performance optimisation, and database design principles.',
-    usageItems: [
-      'Designed normalised schemas and defined foreign key constraints for data integrity',
-      'Wrote complex queries using CTEs, window functions, and lateral joins',
-      'Analysed and optimised slow queries using EXPLAIN ANALYZE and pg_stat_statements',
-      'Created partial and composite indexes to speed up high-traffic query paths',
-      'Managed database migrations using Flyway and Alembic in production deployments',
-    ],
-    tools: ['pgAdmin', 'Flyway', 'Alembic', 'PostGIS', 'pg_stat_statements'],
-  },
-  {
-    id: 11,
-    name: 'MongoDB',
-    icon: SiMongodb,
-    category: 'database',
-    level: 'Advanced',
-    proficiency: 78,
-    years: '3+ years',
-    projects: 12,
-    description: 'Document modelling, aggregation pipelines, indexing strategies, and NoSQL design patterns.',
-    usageItems: [
-      'Modelled document schemas to match read-heavy access patterns',
-      'Built multi-stage aggregation pipelines for reporting and analytics features',
-      'Created compound and text indexes to support full-text search queries',
-      'Used MongoDB Atlas with VPC peering for secure cloud database hosting',
-      'Implemented change streams to trigger real-time notifications on data updates',
-    ],
-    tools: ['Mongoose', 'MongoDB Atlas', 'Compass', 'mongosh', 'Atlas Search'],
-  },
-  {
-    id: 12,
-    name: 'Git',
-    icon: SiGit,
-    category: 'tools',
-    level: 'Expert',
-    proficiency: 95,
-    years: '5+ years',
-    projects: 30,
-    description: 'Version control, branching strategies, collaborative workflows, and advanced Git operations.',
-    usageItems: [
-      'Led teams using Git Flow and trunk-based development branching strategies',
-      'Resolved complex merge conflicts during large feature integrations',
-      'Used interactive rebase to clean up commit history before pull requests',
-      'Configured Git hooks for pre-commit linting and commit message validation',
-      'Set up protected branch rules and required code review workflows in GitHub',
-    ],
-    tools: ['GitHub', 'GitLab', 'Husky', 'Commitlint', 'GitHub Actions'],
-  },
-];
 
 /* ─── Component ───────────────────────────────────────────────────────────── */
 
@@ -776,13 +468,44 @@ const Skills = () => {
   const [selectedSkill, setSelectedSkill] = useState(null);
   const [showAll, setShowAll] = useState(false);
   const previewCount = useIsNarrowViewport() ? PREVIEW_COUNT_NARROW : PREVIEW_COUNT;
+  const modalRef = useRef(null);
 
   const closeModal = useCallback(() => setSelectedSkill(null), []);
 
+  // Dialog behaviour while the modal is open: lock body scroll, move focus
+  // into the dialog, trap Tab inside it, close on Escape, and hand focus back
+  // to the card that opened it.
   useEffect(() => {
-    const onKey = e => { if (e.key === 'Escape') closeModal(); };
-    if (selectedSkill) document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
+    if (!selectedSkill) return;
+    const openerElement = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    modalRef.current?.focus();
+
+    const onKey = (e) => {
+      if (e.key === 'Escape') { closeModal(); return; }
+      if (e.key !== 'Tab' || !modalRef.current) return;
+      const focusables = modalRef.current.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement;
+      if (e.shiftKey && (active === first || active === modalRef.current)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = previousOverflow;
+      if (openerElement instanceof HTMLElement) openerElement.focus();
+    };
   }, [selectedSkill, closeModal]);
 
   const filteredSkills = activeFilter === 'all'
@@ -855,27 +578,10 @@ const Skills = () => {
 
                 <SkillDescription>{skill.description}</SkillDescription>
 
-                <ProgressBarContainer>
-                  <ProgressLabel>
-                    <span>Proficiency</span>
-                    <span>{skill.proficiency}%</span>
-                  </ProgressLabel>
-                  <ProgressBar>
-                    <Progress
-                      initial={{ width: 0 }}
-                      whileInView={{ width: `${skill.proficiency}%` }}
-                      transition={{ duration: 1, delay: Math.min(index * 0.1, 0.5), ease: 'easeOut' }}
-                      viewport={{ once: true, margin: '-50px' }}
-                    />
-                  </ProgressBar>
-                </ProgressBarContainer>
-
-                <ExperienceYears>
+                <CardFooter>
                   <Years>{skill.years} experience</Years>
-                  <ProjectCount>{skill.projects}+ projects</ProjectCount>
-                </ExperienceYears>
-
-                <ClickHint>Click to see how I use it →</ClickHint>
+                  <ClickHint>See how I use it →</ClickHint>
+                </CardFooter>
               </SkillCard>
               </TiltCard>
             ))}
@@ -907,6 +613,11 @@ const Skills = () => {
             onClick={closeModal}
           >
             <Modal
+              ref={modalRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="skill-modal-title"
+              tabIndex={-1}
               initial={{ opacity: 0, y: 40, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 40, scale: 0.96 }}
@@ -925,7 +636,7 @@ const Skills = () => {
               <ModalHeader>
                 <ModalIcon><selectedSkill.icon /></ModalIcon>
                 <ModalTitleGroup>
-                  <ModalTitle>{selectedSkill.name}</ModalTitle>
+                  <ModalTitle id="skill-modal-title">{selectedSkill.name}</ModalTitle>
                   <ModalMeta>
                     <LevelBadge>{selectedSkill.level}</LevelBadge>
                     <YearsBadge>{selectedSkill.years}</YearsBadge>
@@ -934,20 +645,6 @@ const Skills = () => {
               </ModalHeader>
 
               <ModalDescription>{selectedSkill.description}</ModalDescription>
-
-              <ModalSection>
-                <ModalProgressLabel>
-                  <span>Proficiency</span>
-                  <span>{selectedSkill.proficiency}%</span>
-                </ModalProgressLabel>
-                <ModalProgressBar>
-                  <ModalProgress
-                    initial={{ width: 0 }}
-                    animate={{ width: `${selectedSkill.proficiency}%` }}
-                    transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
-                  />
-                </ModalProgressBar>
-              </ModalSection>
 
               <Divider />
 
@@ -973,6 +670,31 @@ const Skills = () => {
                         <ToolChip key={t}>{t}</ToolChip>
                       ))}
                     </ToolsRow>
+                  </ModalSection>
+                </>
+              )}
+
+              {selectedSkill.proof && (
+                <>
+                  <Divider />
+                  <ModalSection>
+                    <SectionLabel>See it in action</SectionLabel>
+                    {selectedSkill.proof.href.startsWith('http') ? (
+                      <ProofLink
+                        href={selectedSkill.proof.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {selectedSkill.proof.label} <FaExternalLinkAlt />
+                      </ProofLink>
+                    ) : (
+                      <ProofLink
+                        href={selectedSkill.proof.href}
+                        onClick={closeModal}
+                      >
+                        {selectedSkill.proof.label} →
+                      </ProofLink>
+                    )}
                   </ModalSection>
                 </>
               )}

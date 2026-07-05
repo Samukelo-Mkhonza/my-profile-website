@@ -167,7 +167,6 @@ const StatsGrid = styled.div`
   /* Phones: 2×2 instead of four full-width cards stacked */
   @media (max-width: 640px) {
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
   }
 `;
 
@@ -253,10 +252,6 @@ const ValuesGrid = styled.div`
 
   @media (max-width: 900px) {
     grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (max-width: 480px) {
-    gap: 0.75rem;
   }
 `;
 

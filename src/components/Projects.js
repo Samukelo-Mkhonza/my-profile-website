@@ -187,8 +187,6 @@ const ProjectCard = styled(motion.div)`
       &:before { transform: scaleX(1); }
     }
   }
-
-  @media (max-width: 480px) { border-radius: 8px; }
 `;
 
 const CardImageWrap = styled.div`
@@ -226,8 +224,6 @@ const CardBody = styled.div`
   gap: 0.75rem;
   flex: 1;
   padding: clamp(1.25rem, 3vw, 1.75rem);
-
-  @media (max-width: 480px) { padding: clamp(1rem, 4vw, 1.5rem); }
 `;
 
 const CardHeader = styled.div`
