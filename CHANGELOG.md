@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.0](https://github.com/Samukelo-Mkhonza/my-profile-website/compare/v0.3.0...v0.4.0) (2026-07-05)
+
+
+### Features
+
+* improve SEO, content credibility, accessibility, and motion preferences ([6d5e032](https://github.com/Samukelo-Mkhonza/my-profile-website/commit/6d5e0322257d1226b342962b41a7076348f92b31))
+* improve SEO, content credibility, accessibility, and motion preferences ([ed68867](https://github.com/Samukelo-Mkhonza/my-profile-website/commit/ed688670e4654b969535f8591a5013365c754406))
+
 ## [0.3.0](https://github.com/Samukelo-Mkhonza/my-profile-website/compare/v0.2.0...v0.3.0) (2026-07-05)
 
 
