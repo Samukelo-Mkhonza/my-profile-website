@@ -64,8 +64,8 @@ const Entry = styled(motion.div)`
   position: relative;
   width: 50%;
   margin-bottom: clamp(2rem, 4vw, 3rem);
-  ${({ align }) =>
-    align === 'left'
+  ${({ $align }) =>
+    $align === 'left'
       ? 'left: 0; text-align: right; padding-right: 3rem;'
       : 'left: 50%; text-align: left; padding-left: 3rem;'}
   @media (max-width: 768px) {
@@ -113,7 +113,7 @@ const Circle = styled.div`
   border: 3px solid var(--bg-primary, #fff);
   box-shadow: 0 0 0 3px var(--border-card, #ddd);
   z-index: 10;
-  ${({ align }) => (align === 'left' ? 'right: -8px;' : 'left: -8px;')}
+  ${({ $align }) => ($align === 'left' ? 'right: -8px;' : 'left: -8px;')}
   @media (max-width: 768px) { left: -8px !important; right: auto !important; }
 `;
 
@@ -158,7 +158,7 @@ const SkillTags = styled.div`
   flex-wrap: wrap;
   gap: 0.5rem;
   @media (max-width: 768px) { justify-content: flex-start; }
-  ${({ align }) => align === 'left' && `@media (min-width: 769px) { justify-content: flex-end; }`}
+  ${({ $align }) => $align === 'left' && `@media (min-width: 769px) { justify-content: flex-end; }`}
 `;
 
 const SkillTag = styled.span`
@@ -419,23 +419,26 @@ const Experience = () => {
             return (
               <Entry
                 key={i}
-                align={alignment}
+                $align={alignment}
                 initial={{ opacity: 0, x: alignment === 'left' ? -100 : 100 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: i * 0.2 }}
                 viewport={{ once: true }}
               >
-                <Circle align={alignment} />
+                <Circle $align={alignment} />
                 <ExperienceCard
                   whileHover={{ scale: 1.02 }}
                   transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                   onClick={() => setSelectedExp(exp)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedExp(exp); } }}
                 >
                   <Period>{exp.period}</Period>
                   <Role>{exp.role}</Role>
                   <Company>{exp.company}</Company>
                   <Description>{exp.description}</Description>
-                  <SkillTags align={alignment}>
+                  <SkillTags $align={alignment}>
                     {exp.skills.map((skill, idx) => (
                       <SkillTag key={idx}>{skill}</SkillTag>
                     ))}
