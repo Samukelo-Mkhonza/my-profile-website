@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaTimes, FaRocket, FaArrowRight, FaCloud, FaCubes, FaClock } from 'react-icons/fa';
-import { SiTerraform } from 'react-icons/si';
+import { FaTimes, FaRocket, FaArrowRight } from 'react-icons/fa';
+import { blogPosts } from '../content/blogPosts';
 
 const Section = styled.section`
   padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 4vw, 2rem);
@@ -130,17 +130,6 @@ const BlogCard = styled(motion.article)`
   /* Touch feedback */
   &:active {
     transform: scale(0.98);
-  }
-
-  /* Small mobile */
-  @media (max-width: 480px) {
-    padding: clamp(1.25rem, 4vw, 1.75rem);
-  }
-
-  /* Very small screens */
-  @media (max-width: 360px) {
-    padding: 1rem;
-    border-radius: 6px;
   }
 `;
 
@@ -508,57 +497,10 @@ const BlogTag = styled.span`
 const BlogFooter = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding-top: clamp(0.75rem, 2vw, 1rem);
   border-top: 1px solid var(--border-card, #e0e0e0);
 `;
-
-const BlogReadTime = styled.span`
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  font-size: clamp(0.6875rem, 1.5vw, 0.8125rem);
-  color: var(--text-secondary, #666);
-  font-weight: 500;
-
-  svg {
-    font-size: 0.75rem;
-  }
-`;
-
-// Sample blog posts data
-const blogPosts = [
-  {
-    id: 1,
-    title: 'Building Scalable Microservices with AWS',
-    excerpt: 'Exploring best practices for designing and deploying microservices architecture on AWS, including service mesh implementation and container orchestration strategies.',
-    date: 'Coming Soon',
-    link: '#',
-    icon: FaCloud,
-    tags: ['AWS', 'Microservices', 'Docker'],
-    readTime: '8 min read',
-  },
-  {
-    id: 2,
-    title: 'Optimizing React Performance',
-    excerpt: 'Deep dive into React performance optimization techniques, from memo and useMemo to code splitting and lazy loading strategies for modern web applications.',
-    date: 'Coming Soon',
-    link: '#',
-    icon: FaCubes,
-    tags: ['React', 'Performance', 'JavaScript'],
-    readTime: '6 min read',
-  },
-  {
-    id: 3,
-    title: 'Infrastructure as Code with Terraform',
-    excerpt: 'How to manage cloud infrastructure efficiently using Terraform, including modules, state management, and CI/CD integration for automated deployments.',
-    date: 'Coming Soon',
-    link: '#',
-    icon: SiTerraform,
-    tags: ['Terraform', 'IaC', 'DevOps'],
-    readTime: '10 min read',
-  }
-];
 
 const Blog = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -628,7 +570,6 @@ const Blog = () => {
                 ))}
               </BlogTags>
               <BlogFooter>
-                <BlogReadTime><FaClock /> {post.readTime}</BlogReadTime>
                 <ReadMore>
                   Read More <FaArrowRight />
                 </ReadMore>
@@ -682,7 +623,7 @@ const Blog = () => {
               )}
               
               <ModalText>
-                This article is currently being written. Join my newsletter to be the first to know when it's published.
+                This article is currently being written. Check back soon — or reach out via the contact form if you'd like to talk about the topic in the meantime.
               </ModalText>
               
               <CTAButton onClick={closeModal}>
