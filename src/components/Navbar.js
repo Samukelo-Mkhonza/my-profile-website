@@ -65,6 +65,7 @@ const Logo = styled(motion.a)`
   text-decoration: none;
   cursor: pointer;
   transition: all 0.3s ease;
+  flex-shrink: 0;
   -webkit-tap-highlight-color: transparent;
 
   @media (hover: hover) {
@@ -156,17 +157,18 @@ const LogoText = styled.span`
 const Menu = styled.div`
   display: flex;
   align-items: center;
-  gap: clamp(0.25rem, 1.5vw, 0.875rem);
+  gap: clamp(0.125rem, 0.5vw, 0.5rem);
+  min-width: 0;
 
-  @media (max-width: 768px) {
+  @media (max-width: 968px) {
     display: none;
   }
 `;
 
 const MenuItem = styled(motion.a)`
   position: relative;
-  padding: clamp(0.625rem, 1.5vw, 0.875rem) clamp(0.875rem, 2vw, 1.25rem);
-  font-size: clamp(0.75rem, 1.5vw, 0.9375rem);
+  padding: clamp(0.5rem, 1vw, 0.75rem) clamp(0.5rem, 1.2vw, 0.875rem);
+  font-size: clamp(0.6875rem, 1.1vw, 0.875rem);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -210,15 +212,12 @@ const MenuItem = styled(motion.a)`
   }
 
   svg {
-    font-size: clamp(0.75rem, 1.5vw, 0.9375rem);
+    font-size: clamp(0.6875rem, 1.1vw, 0.875rem);
     opacity: 0.7;
   }
 
-  /* Tablets */
-  @media (max-width: 1024px) {
-    padding: 0.625rem 0.875rem;
-    font-size: 0.8125rem;
-    
+  /* Hide link icons when horizontal space gets tight */
+  @media (max-width: 1280px) {
     svg {
       display: none;
     }
@@ -269,7 +268,7 @@ const MobileMenuButton = styled(motion.button)`
     transform: scale(0.95);
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 968px) {
     display: flex;
   }
 
@@ -596,6 +595,7 @@ const ThemeToggleBtn = styled(motion.button)`
   align-items: center;
   justify-content: center;
   position: relative;
+  flex-shrink: 0;
 
   @media (hover: hover) {
     &:hover {
@@ -607,6 +607,13 @@ const ThemeToggleBtn = styled(motion.button)`
 
   &:active {
     transform: scale(0.95);
+  }
+
+  /* When the menu collapses to the hamburger, keep the toggle grouped
+     with it on the right instead of floating mid-bar via space-between */
+  @media (max-width: 968px) {
+    margin-left: auto;
+    margin-right: 0.75rem;
   }
 `;
 
