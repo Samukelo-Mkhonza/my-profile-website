@@ -13,6 +13,18 @@ A sleek, production-ready React portfolio site for **Samukelo Mkhonza**, Softwar
 - **Smooth Animations**: Entrance and scroll-triggered effects via Framer Motion
 - **Component-based**: Reusable React components with Styled Components
 - **Easy Deployment**: Build with Create React App and host on Netlify, Vercel, GitHub Pages, etc.
+- **Interactive terminal**: press ``Ctrl+` `` (or the ❯_ button) — `help`, `whoami`,
+  `ls projects` (live from GitHub), `open <page>`, and a couple of secrets
+- **Extra pages** via hash routes — [`#/now`](https://samukelo-mkhonza.github.io/my-profile-website/#/now),
+  `#/uses`, `#/til` (digital garden), `#/case-studies`, `#/changelog`
+  (build-in-public feed from real commit history), `#/playground`
+  (sandboxed client-side JS playground)
+- **Editable content**: every new page reads from one plain file in
+  [`src/content/`](src/content/) — see [CONTENT.md](CONTENT.md)
+
+Backend-dependent features (AI chatbot, live metrics, Spotify now-playing) are
+deliberately not stubbed with fake data; the plan lives in
+[docs/BACKEND_FEATURES.md](docs/BACKEND_FEATURES.md).
 
 ## Installation
 
