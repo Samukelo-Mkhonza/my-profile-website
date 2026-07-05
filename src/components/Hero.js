@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import emailjs from '@emailjs/browser';
@@ -704,7 +704,7 @@ const ModalSubtitle = styled.p`
   }
 `;
 
-const FormContainer = styled.div`
+const FormContainer = styled.form`
   display: flex;
   flex-direction: column;
   gap: clamp(1rem, 2.5vw, 1.5rem);
@@ -1037,10 +1037,17 @@ const ContactModal = ({ isOpen, onClose }) => {
     if (status) setStatus(null);
   };
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setStatus(null);
     onClose();
-  };
+  }, [onClose]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e) => { if (e.key === 'Escape') handleClose(); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [isOpen, handleClose]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -1131,7 +1138,7 @@ const ContactModal = ({ isOpen, onClose }) => {
           </StatusBanner>
         )}
 
-        <FormContainer>
+        <FormContainer onSubmit={handleSubmit}>
           <FormGroup>
             <Label htmlFor="name">Your Name *</Label>
             <Input
@@ -1184,7 +1191,7 @@ const ContactModal = ({ isOpen, onClose }) => {
           </FormGroup>
 
           <SubmitButton
-            onClick={handleSubmit}
+            type="submit"
             disabled={isSubmitting || status === 'success'}
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.98 }}
@@ -1199,6 +1206,13 @@ const ContactModal = ({ isOpen, onClose }) => {
 };
 
 const CVModal = ({ isOpen, onClose }) => {
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
