@@ -198,12 +198,32 @@ const EasterEggs = () => {
       'border-radius: 8px',
       'font-family: JetBrains Mono, monospace',
     ].join(';');
+    const ascii = String.raw`
+ ____                        _        _
+/ ___|  __ _ _ __ ___  _   _| | _____| | ___
+\___ \ / _' | '_ ' _ \| | | | |/ / _ \ |/ _ \
+ ___) | (_| | | | | | | |_| |   <  __/ | (_) |
+|____/ \__,_|_| |_| |_|\__,_|_|\_\___|_|\___/
+`;
+    console.log(
+      `%c${ascii}`,
+      'color: #888; font-family: JetBrains Mono, monospace; font-size: 10px; line-height: 1.2;'
+    );
     console.log('%c👋 Hey developer! Curious minds are always welcome here.', styles);
     console.log(
-      '%cTry the Konami code or press Ctrl+Shift+K for a surprise...',
+      '%cPoking around the console is exactly the kind of curiosity I like to work with.\n' +
+        'Hiring? → samukelo.mkhonza@outlook.com\n' +
+        'Bored?  → press Ctrl+` for a terminal, try the Konami code, or Ctrl+Shift+K.',
       'color: #666; font-size: 12px; font-family: JetBrains Mono, monospace;'
     );
   }, []);
+
+  // Other components (e.g. the terminal's `sudo hire-me`) can fire the
+  // confetti burst without importing this component.
+  useEffect(() => {
+    window.addEventListener('site:confetti', burst);
+    return () => window.removeEventListener('site:confetti', burst);
+  }, [burst]);
 
   // Konami code listener
   useEffect(() => {
