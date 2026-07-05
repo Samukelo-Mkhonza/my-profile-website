@@ -7,6 +7,7 @@ import Experience from './components/Experience';
 import Skills from './components/Skills';
 import Projects from './components/Projects';
 import Blog from './components/Blog';
+import Explore from './components/Explore';
 import Footer from './components/Footer';
 import EasterEggs from './components/EasterEggs';
 import CursorTrail from './components/CursorTrail';
@@ -81,6 +82,7 @@ function App() {
           <Skills />
           <Projects />
           <Blog />
+          <Explore />
           <Footer />
         </div>
         {/* Hash-routed extra pages (#/now, #/uses, …) + terminal overlay */}
