@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaBars, FaTimes, FaCode, FaHome, FaUser, FaCog, FaBriefcase, FaBlog, FaEnvelope, FaSun, FaMoon } from 'react-icons/fa';
+import { FaBars, FaTimes, FaCode, FaHome, FaUser, FaCog, FaBriefcase, FaBlog, FaEnvelope, FaSun, FaMoon, FaCompass } from 'react-icons/fa';
 import { useTheme } from '../context/ThemeContext';
 
 const NavContainer = styled(motion.nav)`
@@ -656,6 +656,7 @@ const links = [
   { href: '#skills', label: 'Skills', icon: FaCog },
   { href: '#projects', label: 'Projects', icon: FaCode },
   { href: '#blog', label: 'Blog', icon: FaBlog },
+  { href: '#explore', label: 'Explore', icon: FaCompass },
   { href: '#contact', label: 'Contact', icon: FaEnvelope },
 ];
 
