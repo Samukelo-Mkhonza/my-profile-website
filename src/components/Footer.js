@@ -724,6 +724,14 @@ const Footer = () => {
     { href: '#skills', label: 'Skills' },
     { href: '#projects', label: 'Projects' },
     { href: '#blog', label: 'Blog' },
+    // Hash-routed extra pages (see src/components/SitePages.js)
+    { href: '#/now', label: 'Now' },
+    { href: '#/uses', label: 'Uses' },
+    { href: '#/til', label: 'TIL' },
+    { href: '#/case-studies', label: 'Case Studies' },
+    { href: '#/changelog', label: 'Changelog' },
+    { href: '#/playground', label: 'Playground' },
+    { href: '#/terminal', label: 'Terminal' },
   ];
 
   const socialLinks = [

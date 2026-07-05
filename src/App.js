@@ -10,6 +10,7 @@ import Blog from './components/Blog';
 import Footer from './components/Footer';
 import EasterEggs from './components/EasterEggs';
 import CursorTrail from './components/CursorTrail';
+import SitePages from './components/SitePages';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 
 // WebGL scene is heavy, so it is code-split and only loaded after first paint
@@ -82,6 +83,8 @@ function App() {
           <Blog />
           <Footer />
         </div>
+        {/* Hash-routed extra pages (#/now, #/uses, …) + terminal overlay */}
+        <SitePages />
       </main>
     </ThemeProvider>
   );
