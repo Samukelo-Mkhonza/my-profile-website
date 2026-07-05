@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.0](https://github.com/Samukelo-Mkhonza/my-profile-website/compare/v0.2.0...v0.3.0) (2026-07-05)
+
+
+### Features
+
+* enhance responsive design with viewport-based adjustments and s… ([5307037](https://github.com/Samukelo-Mkhonza/my-profile-website/commit/5307037b83731033874c41bb5e7b7dce295ed646))
+* enhance responsive design with viewport-based adjustments and show more functionality ([d17bae2](https://github.com/Samukelo-Mkhonza/my-profile-website/commit/d17bae2f72d06bf3af634a09cd444356f680d021))
+
 ## [0.2.0](https://github.com/Samukelo-Mkhonza/my-profile-website/compare/v0.1.0...v0.2.0) (2026-07-05)
 
 
