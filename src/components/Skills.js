@@ -10,17 +10,16 @@ import {
   FaTimes, FaCheckCircle
 } from 'react-icons/fa';
 import TiltCard from './TiltCard';
+import useIsNarrowViewport from '../lib/useIsNarrowViewport';
 
 /* ─── Layout ──────────────────────────────────────────────────────────────── */
 
 const Section = styled.section`
   padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 4vw, 2rem);
   background: var(--bg-primary-glass, rgba(255, 255, 255, 0.86));
-  min-height: 100vh;
-  min-height: 100dvh;
   position: relative;
-  @media (max-width: 480px) { padding: clamp(2rem, 6vw, 3rem) clamp(0.75rem, 3vw, 1.5rem); min-height: auto; }
-  @media (max-height: 600px) and (orientation: landscape) { min-height: auto; padding: 2rem; }
+  @media (max-width: 480px) { padding: clamp(2rem, 6vw, 3rem) clamp(0.75rem, 3vw, 1.5rem); }
+  @media (max-height: 600px) and (orientation: landscape) { padding: 2rem; }
 `;
 
 const Container = styled.div`
@@ -114,6 +113,31 @@ const FilterTab = styled(motion.button)`
   svg { font-size: clamp(0.875rem, 2vw, 1.125rem); }
   @media (max-width: 480px) { padding: 0.625rem 1rem; font-size: 0.75rem; gap: 0.375rem; }
   @media (max-width: 360px) { padding: 0.5rem 0.75rem; font-size: 0.6875rem; letter-spacing: 0.03em; }
+`;
+
+const ShowMoreWrap = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+`;
+
+const ShowMoreButton = styled(motion.button)`
+  background: transparent;
+  color: var(--text-primary, #000);
+  border: 2px solid var(--accent, #000);
+  padding: clamp(0.625rem, 2vw, 0.875rem) clamp(1.5rem, 4vw, 2.5rem);
+  border-radius: 8px;
+  font-size: clamp(0.75rem, 1.75vw, 0.9375rem);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 44px;
+  @media (hover: hover) {
+    &:hover { background: var(--accent, #000); color: var(--accent-inverse, #fff); }
+  }
+  &:active { transform: scale(0.95); }
 `;
 
 /* ─── Grid & Cards ────────────────────────────────────────────────────────── */
@@ -741,9 +765,17 @@ const skillsData = [
 
 /* ─── Component ───────────────────────────────────────────────────────────── */
 
+// Cards shown per filter before "Show all" expands the grid, so the section
+// stays about one viewport tall on the main page. Phones stack cards in one
+// column, so they get a smaller preview.
+const PREVIEW_COUNT = 6;
+const PREVIEW_COUNT_NARROW = 3;
+
 const Skills = () => {
   const [activeFilter, setActiveFilter] = useState('all');
   const [selectedSkill, setSelectedSkill] = useState(null);
+  const [showAll, setShowAll] = useState(false);
+  const previewCount = useIsNarrowViewport() ? PREVIEW_COUNT_NARROW : PREVIEW_COUNT;
 
   const closeModal = useCallback(() => setSelectedSkill(null), []);
 
@@ -756,6 +788,8 @@ const Skills = () => {
   const filteredSkills = activeFilter === 'all'
     ? skillsData
     : skillsData.filter(s => s.category === activeFilter);
+
+  const visibleSkills = showAll ? filteredSkills : filteredSkills.slice(0, previewCount);
 
   return (
     <Section id="skills">
@@ -774,7 +808,7 @@ const Skills = () => {
             <FilterTab
               key={cat.id}
               $active={activeFilter === cat.id}
-              onClick={() => setActiveFilter(cat.id)}
+              onClick={() => { setActiveFilter(cat.id); setShowAll(false); }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -792,12 +826,12 @@ const Skills = () => {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
           >
-            {filteredSkills.map((skill, index) => (
+            {visibleSkills.map((skill, index) => (
               <TiltCard key={skill.id}>
               <SkillCard
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1, ease: [0.4, 0, 0.2, 1] }}
+                transition={{ duration: 0.5, delay: Math.min(index * 0.1, 0.5), ease: [0.4, 0, 0.2, 1] }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setSelectedSkill(skill)}
@@ -809,7 +843,7 @@ const Skills = () => {
                   <IconWrapper
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    transition={{ delay: index * 0.1 + 0.2, type: 'spring', damping: 15 }}
+                    transition={{ delay: Math.min(index * 0.1, 0.5) + 0.2, type: 'spring', damping: 15 }}
                   >
                     <skill.icon />
                   </IconWrapper>
@@ -830,7 +864,7 @@ const Skills = () => {
                     <Progress
                       initial={{ width: 0 }}
                       whileInView={{ width: `${skill.proficiency}%` }}
-                      transition={{ duration: 1, delay: index * 0.1, ease: 'easeOut' }}
+                      transition={{ duration: 1, delay: Math.min(index * 0.1, 0.5), ease: 'easeOut' }}
                       viewport={{ once: true, margin: '-50px' }}
                     />
                   </ProgressBar>
@@ -847,6 +881,20 @@ const Skills = () => {
             ))}
           </SkillsGrid>
         </AnimatePresence>
+
+        {filteredSkills.length > previewCount && (
+          <ShowMoreWrap>
+            <ShowMoreButton
+              onClick={() => setShowAll(prev => !prev)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {showAll
+                ? 'Show fewer skills'
+                : `Show all ${filteredSkills.length} skills`}
+            </ShowMoreButton>
+          </ShowMoreWrap>
+        )}
       </Container>
 
       {/* ── Modal ── */}

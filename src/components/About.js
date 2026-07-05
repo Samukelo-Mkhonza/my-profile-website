@@ -163,6 +163,12 @@ const StatsGrid = styled.div`
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: clamp(1.5rem, 3vw, 2rem);
   margin-bottom: clamp(3rem, 5vw, 4rem);
+
+  /* Phones: 2×2 instead of four full-width cards stacked */
+  @media (max-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
 `;
 
 const StatCard = styled(motion.div)`
@@ -227,7 +233,7 @@ const StatLabel = styled.div`
 `;
 
 const ValuesSection = styled.div`
-  margin-bottom: clamp(3rem, 5vw, 4rem);
+  margin-bottom: 0;
 `;
 
 const SectionTitle = styled.h3`
@@ -242,15 +248,23 @@ const SectionTitle = styled.h3`
 
 const ValuesGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: clamp(1.5rem, 3vw, 2rem);
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(1rem, 2vw, 1.5rem);
+
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 480px) {
+    gap: 0.75rem;
+  }
 `;
 
 const ValueCard = styled(motion.div)`
   background: var(--bg-card, #ffffff);
   border: 1px solid var(--border-card, #e0e0e0);
   border-radius: 8px;
-  padding: clamp(1.5rem, 3vw, 2rem);
+  padding: clamp(1rem, 2vw, 1.25rem);
   text-align: center;
   transition: all 0.3s ease;
   position: relative;
@@ -281,17 +295,17 @@ const ValueCard = styled(motion.div)`
 `;
 
 const ValueIcon = styled.div`
-  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-size: clamp(1.25rem, 2.5vw, 1.5rem);
   color: var(--text-primary, #000);
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 `;
 
 const ValueTitle = styled.h4`
-  font-size: clamp(1rem, 2.5vw, 1.125rem);
+  font-size: clamp(0.9375rem, 2vw, 1rem);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
   color: var(--text-primary, #000);
 `;
 

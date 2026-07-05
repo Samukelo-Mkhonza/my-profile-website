@@ -7,21 +7,15 @@ import { SiTerraform } from 'react-icons/si';
 const Section = styled.section`
   padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 4vw, 2rem);
   background: var(--bg-primary-glass, rgba(255, 255, 255, 0.86));
-  min-height: 100vh;
-  min-height: 100dvh;
-  display: flex;
-  align-items: center;
   position: relative;
 
   /* Small mobile */
   @media (max-width: 480px) {
     padding: clamp(2rem, 6vw, 3rem) clamp(0.75rem, 3vw, 1.5rem);
-    min-height: auto;
   }
 
   /* Landscape mobile */
   @media (max-height: 600px) and (orientation: landscape) {
-    min-height: auto;
     padding: 2rem 2rem;
   }
 `;

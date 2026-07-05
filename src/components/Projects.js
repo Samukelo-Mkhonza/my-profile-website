@@ -7,8 +7,15 @@ import {
 } from 'react-icons/fa';
 import TiltCard from './TiltCard';
 import projectPlaceholder from '../assets/project-card-placeholder.svg';
+import useIsNarrowViewport from '../lib/useIsNarrowViewport';
 
 const GITHUB_USERNAME = 'Samukelo-Mkhonza';
+
+// Repos shown per filter before "Show all" expands the grid, so the section
+// stays compact no matter how many repos the GitHub fetch returns. Phones
+// stack cards in one column, so they get a smaller preview.
+const PREVIEW_COUNT = 6;
+const PREVIEW_COUNT_NARROW = 3;
 
 const LANGUAGE_COLORS = {
   JavaScript: '#f1e05a',
@@ -453,6 +460,31 @@ const GitHubButton = styled(motion.a)`
   svg { font-size: 1.1rem; }
 `;
 
+const ShowMoreWrap = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+`;
+
+const ShowMoreButton = styled(motion.button)`
+  background: transparent;
+  color: var(--text-primary, #000);
+  border: 2px solid var(--accent, #000);
+  padding: clamp(0.625rem, 2vw, 0.875rem) clamp(1.5rem, 4vw, 2.5rem);
+  border-radius: 8px;
+  font-size: clamp(0.75rem, 1.75vw, 0.9375rem);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 44px;
+  @media (hover: hover) {
+    &:hover { background: var(--accent, #000); color: var(--accent-inverse, #fff); }
+  }
+  &:active { transform: scale(0.95); }
+`;
+
 /* ─── Helpers ─────────────────────────────────────────────────────────────── */
 
 const formatName = name =>
@@ -469,6 +501,8 @@ const Projects = () => {
   const [error, setError] = useState(null);
   const [activeFilter, setActiveFilter] = useState('all');
   const [selectedRepo, setSelectedRepo] = useState(null);
+  const [showAll, setShowAll] = useState(false);
+  const previewCount = useIsNarrowViewport() ? PREVIEW_COUNT_NARROW : PREVIEW_COUNT;
 
   useEffect(() => {
     fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=50`)
@@ -500,6 +534,8 @@ const Projects = () => {
     ? repos
     : repos.filter(r => r.language === activeFilter);
 
+  const visibleRepos = showAll ? filtered : filtered.slice(0, previewCount);
+
   return (
     <Section id="projects">
       <Container>
@@ -527,7 +563,7 @@ const Projects = () => {
               <FilterTab
                 key={lang}
                 $active={activeFilter === lang}
-                onClick={() => setActiveFilter(lang)}
+                onClick={() => { setActiveFilter(lang); setShowAll(false); }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -559,12 +595,12 @@ const Projects = () => {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
-              {filtered.map((repo, i) => (
+              {visibleRepos.map((repo, i) => (
                 <TiltCard key={repo.id}>
                   <ProjectCard
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.45, delay: i * 0.06, ease: [0.4, 0, 0.2, 1] }}
+                    transition={{ duration: 0.45, delay: Math.min(i * 0.06, 0.4), ease: [0.4, 0, 0.2, 1] }}
                     onClick={() => setSelectedRepo(repo)}
                     role="button"
                     tabIndex={0}
@@ -629,6 +665,20 @@ const Projects = () => {
               ))}
             </ProjectsGrid>
           </AnimatePresence>
+        )}
+
+        {!loading && !error && filtered.length > previewCount && (
+          <ShowMoreWrap>
+            <ShowMoreButton
+              onClick={() => setShowAll(prev => !prev)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {showAll
+                ? 'Show fewer repositories'
+                : `Show all ${filtered.length} repositories`}
+            </ShowMoreButton>
+          </ShowMoreWrap>
         )}
       </Container>
 
