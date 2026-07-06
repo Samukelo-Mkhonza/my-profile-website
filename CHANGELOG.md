@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.0](https://github.com/Samukelo-Mkhonza/my-profile-website/compare/v0.4.0...v0.5.0) (2026-07-06)
+
+
+### Features
+
+* serve GitHub Pages at custom domain samukelo.mkhonza.net ([44d2077](https://github.com/Samukelo-Mkhonza/my-profile-website/commit/44d20775078995b714380c48c9cb2554b72dfecc))
+* serve GitHub Pages at custom domain samukelo.mkhonza.net ([abdf8de](https://github.com/Samukelo-Mkhonza/my-profile-website/commit/abdf8ded7e69a45497484ad3f48fb626e758282e))
+
 ## [0.4.0](https://github.com/Samukelo-Mkhonza/my-profile-website/compare/v0.3.0...v0.4.0) (2026-07-05)
 
 
