@@ -1,10 +1,9 @@
 # Pages — publishes the site to GitHub Pages after CI succeeds on main.
 #
-# Runs ALONGSIDE the AWS deploy (deploy.yml). The two targets need different
-# asset roots: Pages serves from /my-profile-website/, CloudFront from /.
-# That's why PUBLIC_URL is set only in this workflow's build step and
-# package.json deliberately has NO "homepage" field — adding one would break
-# the AWS build's asset paths.
+# Runs ALONGSIDE the AWS deploy (deploy.yml). Pages serves from the custom
+# domain https://samukelo.mkhonza.net/ (Settings → Pages), so both targets
+# serve from the root path. PUBLIC_URL is pinned to / to keep that explicit;
+# package.json deliberately has NO "homepage" field.
 #
 # This workflow skips itself until the PAGES_ENABLED repository variable is
 # set to 'true' (after you enable Pages in Settings → Pages → Source:
@@ -59,13 +58,13 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
-      # PUBLIC_URL makes CRA emit asset URLs under /my-profile-website/,
-      # matching https://samukelo-mkhonza.github.io/my-profile-website/
+      # The custom domain samukelo.mkhonza.net serves from the root, so
+      # assets must be root-relative (the old github.io URL redirects there).
       - name: Build for GitHub Pages
         run: npm run build
         env:
           CI: true
-          PUBLIC_URL: /my-profile-website
+          PUBLIC_URL: /
           REACT_APP_EMAILJS_SERVICE_ID: ${{ secrets.REACT_APP_EMAILJS_SERVICE_ID }}
           REACT_APP_EMAILJS_TEMPLATE_ID: ${{ secrets.REACT_APP_EMAILJS_TEMPLATE_ID }}
           REACT_APP_EMAILJS_AUTOREPLY_TEMPLATE_ID: ${{ secrets.REACT_APP_EMAILJS_AUTOREPLY_TEMPLATE_ID }}
