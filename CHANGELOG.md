@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.0](https://github.com/Samukelo-Mkhonza/my-profile-website/compare/v0.5.0...v0.6.0) (2026-07-07)
+
+
+### Features
+
+* add rule-based chatbot widget answering from a local knowledge base ([b6e7b9f](https://github.com/Samukelo-Mkhonza/my-profile-website/commit/b6e7b9fef321ad68f3f384331c95c66e3a8a4d6b))
+* add rule-based chatbot widget answering from a local knowledge base ([51500d0](https://github.com/Samukelo-Mkhonza/my-profile-website/commit/51500d0d5a1bcfbe907f67b328587daf20c4c4c6))
+
 ## [0.5.0](https://github.com/Samukelo-Mkhonza/my-profile-website/compare/v0.4.0...v0.5.0) (2026-07-06)
 
 
