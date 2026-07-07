@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.0](https://github.com/Samukelo-Mkhonza/my-profile-website/compare/v0.6.0...v0.7.0) (2026-07-07)
+
+
+### Features
+
+* make chatbot widget draggable around the viewport ([a4380f7](https://github.com/Samukelo-Mkhonza/my-profile-website/commit/a4380f7d08ca9c7cd186a8cdc60468b0f596d064))
+* make chatbot widget draggable around the viewport ([2ceb8e5](https://github.com/Samukelo-Mkhonza/my-profile-website/commit/2ceb8e5218864f277fb89f639c88ca14e44ac05e))
+
 ## [0.6.0](https://github.com/Samukelo-Mkhonza/my-profile-website/compare/v0.5.0...v0.6.0) (2026-07-07)
 
 
