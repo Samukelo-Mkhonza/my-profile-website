@@ -1,6 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import {
+  AnimatePresence,
+  motion,
+  useDragControls,
+  useMotionValue,
+  useReducedMotion,
+} from 'framer-motion';
 import { FaCommentDots, FaTimes, FaPaperPlane } from 'react-icons/fa';
 import { profile } from '../content/profile';
 import { suggestedQuestions } from '../content/chatbotKnowledge';
@@ -9,6 +15,10 @@ import { getBotReply } from '../lib/chatbotMatcher';
 // Floating rule-based chat widget, shown on every page. All answers come from
 // the local knowledge base via getBotReply() — no network, no AI. Sits below
 // the terminal overlay (z-index 1300) so the terminal always wins.
+//
+// The whole widget is draggable: grab the launcher button or the panel header.
+// Drag is constrained to the viewport, and opening the panel nudges the widget
+// back on-screen if it was parked somewhere the panel wouldn't fit.
 
 const firstName = profile.name.split(' ')[0];
 
@@ -18,11 +28,26 @@ const GREETING = {
   text: `Hi! I'm ${firstName}'s site assistant — a simple rule-based bot (no AI). Ask me anything about him, or tap a question below.`,
 };
 
-const Launcher = styled(motion.button)`
+// Fills the viewport so framer-motion can use it as drag constraints;
+// pointer-events: none keeps it from swallowing clicks.
+const DragBounds = styled.div`
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+`;
+
+const Widget = styled(motion.div)`
   position: fixed;
   bottom: 1.25rem;
   right: 1.25rem;
   z-index: 1250;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.75rem;
+`;
+
+const Launcher = styled(motion.button)`
   width: 56px;
   height: 56px;
   border-radius: 50%;
@@ -33,8 +58,13 @@ const Launcher = styled(motion.button)`
   align-items: center;
   justify-content: center;
   font-size: 1.3rem;
-  cursor: pointer;
+  cursor: grab;
+  touch-action: none;
   box-shadow: 0 8px 24px var(--shadow-color, rgba(0, 0, 0, 0.25));
+
+  &:active {
+    cursor: grabbing;
+  }
 
   &:focus-visible {
     outline: 2px solid var(--accent, #000);
@@ -43,10 +73,6 @@ const Launcher = styled(motion.button)`
 `;
 
 const Panel = styled(motion.div)`
-  position: fixed;
-  bottom: 5.75rem;
-  right: 1.25rem;
-  z-index: 1250;
   width: min(360px, calc(100vw - 1.5rem));
   height: min(520px, calc(100vh - 8rem));
   background: var(--bg-card, #fff);
@@ -56,11 +82,6 @@ const Panel = styled(motion.div)`
   display: flex;
   flex-direction: column;
   overflow: hidden;
-
-  @media (max-width: 480px) {
-    right: 0.75rem;
-    width: calc(100vw - 1.5rem);
-  }
 `;
 
 const Header = styled.div`
@@ -70,6 +91,13 @@ const Header = styled.div`
   padding: 0.85rem 1rem;
   border-bottom: 1px solid var(--border-card, #e0e0e0);
   background: var(--bg-secondary, #f7f7f7);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+
+  &:active {
+    cursor: grabbing;
+  }
 `;
 
 const HeaderText = styled.div`
@@ -251,6 +279,22 @@ const Chatbot = () => {
   const replyTimer = useRef(null);
   const nextId = useRef(1);
 
+  // Drag state: the widget container is draggable, but only via explicit
+  // handles (launcher button, panel header) so text selection and message
+  // scrolling inside the panel keep working.
+  const dragControls = useDragControls();
+  const boundsRef = useRef(null);
+  const widgetRef = useRef(null);
+  const wasDragged = useRef(false);
+  const dragX = useMotionValue(0);
+  const dragY = useMotionValue(0);
+
+  const startDrag = (e) => {
+    // Don't hijack presses on buttons inside the drag handle (e.g. Close)
+    if (e.target.closest('button') && e.currentTarget.tagName !== 'BUTTON') return;
+    dragControls.start(e);
+  };
+
   useEffect(() => () => clearTimeout(replyTimer.current), []);
 
   useEffect(() => {
@@ -262,6 +306,22 @@ const Chatbot = () => {
     const el = listRef.current;
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages, isTyping]);
+
+  // If the widget was dragged somewhere the panel can't fit, nudge it back
+  // into the viewport when the panel opens.
+  useLayoutEffect(() => {
+    if (!isOpen) return;
+    const el = widgetRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const margin = 8;
+    if (rect.top < margin) dragY.set(dragY.get() + (margin - rect.top));
+    if (rect.left < margin) dragX.set(dragX.get() + (margin - rect.left));
+    const overRight = rect.right - (window.innerWidth - margin);
+    if (overRight > 0) dragX.set(dragX.get() - overRight);
+    const overBottom = rect.bottom - (window.innerHeight - margin);
+    if (overBottom > 0) dragY.set(dragY.get() - overBottom);
+  }, [isOpen, dragX, dragY]);
 
   const send = (raw) => {
     const question = raw.trim();
@@ -284,92 +344,118 @@ const Chatbot = () => {
 
   return (
     <>
-      <AnimatePresence>
-        {isOpen && (
-          <Panel
-            role="dialog"
-            aria-label={`Chat with ${firstName}'s site assistant`}
-            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.97 }}
-            animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
-            exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.97 }}
-            transition={{ duration: 0.18, ease: 'easeOut' }}
-            onKeyDown={(e) => {
-              if (e.key === 'Escape') setIsOpen(false);
-            }}
-          >
-            <Header>
-              <HeaderText>
-                <HeaderTitle>{firstName}'s site assistant</HeaderTitle>
-                <HeaderSub>rule-based · no AI · answers instantly</HeaderSub>
-              </HeaderText>
-              <CloseButton onClick={() => setIsOpen(false)} aria-label="Close chat">
-                <FaTimes aria-hidden="true" />
-              </CloseButton>
-            </Header>
-
-            <MessageList ref={listRef} aria-live="polite">
-              {messages.map((m) => (
-                <div key={m.id} style={{ display: 'contents' }}>
-                  <Bubble $role={m.role}>{m.text}</Bubble>
-                  {m.links?.length > 0 && (
-                    <LinkRow>
-                      {m.links.map((link) => (
-                        <LinkChip
-                          key={link.href}
-                          href={link.href}
-                          target={link.href.startsWith('http') ? '_blank' : undefined}
-                          rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                        >
-                          {link.label}
-                        </LinkChip>
-                      ))}
-                    </LinkRow>
-                  )}
-                </div>
-              ))}
-              {isTyping && <TypingDots $role="bot">•••</TypingDots>}
-            </MessageList>
-
-            {showSuggestions && (
-              <Suggestions>
-                {suggestedQuestions.map((q) => (
-                  <SuggestionChip key={q} onClick={() => send(q)}>
-                    {q}
-                  </SuggestionChip>
-                ))}
-              </Suggestions>
-            )}
-
-            <InputRow
-              onSubmit={(e) => {
-                e.preventDefault();
-                send(input);
+      <DragBounds ref={boundsRef} aria-hidden="true" />
+      <Widget
+        ref={widgetRef}
+        drag
+        dragListener={false}
+        dragControls={dragControls}
+        dragConstraints={boundsRef}
+        dragElastic={0.08}
+        dragMomentum={false}
+        onDragStart={() => {
+          wasDragged.current = true;
+        }}
+        style={{ x: dragX, y: dragY }}
+      >
+        <AnimatePresence>
+          {isOpen && (
+            <Panel
+              role="dialog"
+              aria-label={`Chat with ${firstName}'s site assistant`}
+              initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.97 }}
+              animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+              exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.97 }}
+              transition={{ duration: 0.18, ease: 'easeOut' }}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') setIsOpen(false);
               }}
             >
-              <TextInput
-                ref={inputRef}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask about skills, projects…"
-                aria-label="Type your question"
-              />
-              <SendButton type="submit" disabled={!input.trim() || isTyping} aria-label="Send question">
-                <FaPaperPlane aria-hidden="true" />
-              </SendButton>
-            </InputRow>
-          </Panel>
-        )}
-      </AnimatePresence>
+              <Header onPointerDown={startDrag}>
+                <HeaderText>
+                  <HeaderTitle>{firstName}'s site assistant</HeaderTitle>
+                  <HeaderSub>rule-based · no AI · answers instantly</HeaderSub>
+                </HeaderText>
+                <CloseButton onClick={() => setIsOpen(false)} aria-label="Close chat">
+                  <FaTimes aria-hidden="true" />
+                </CloseButton>
+              </Header>
 
-      <Launcher
-        onClick={() => setIsOpen((prev) => !prev)}
-        aria-label={isOpen ? 'Close chat assistant' : 'Open chat assistant'}
-        aria-expanded={isOpen}
-        whileHover={reducedMotion ? undefined : { scale: 1.08 }}
-        whileTap={reducedMotion ? undefined : { scale: 0.94 }}
-      >
-        {isOpen ? <FaTimes aria-hidden="true" /> : <FaCommentDots aria-hidden="true" />}
-      </Launcher>
+              <MessageList ref={listRef} aria-live="polite">
+                {messages.map((m) => (
+                  <div key={m.id} style={{ display: 'contents' }}>
+                    <Bubble $role={m.role}>{m.text}</Bubble>
+                    {m.links?.length > 0 && (
+                      <LinkRow>
+                        {m.links.map((link) => (
+                          <LinkChip
+                            key={link.href}
+                            href={link.href}
+                            target={link.href.startsWith('http') ? '_blank' : undefined}
+                            rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                          >
+                            {link.label}
+                          </LinkChip>
+                        ))}
+                      </LinkRow>
+                    )}
+                  </div>
+                ))}
+                {isTyping && <TypingDots $role="bot">•••</TypingDots>}
+              </MessageList>
+
+              {showSuggestions && (
+                <Suggestions>
+                  {suggestedQuestions.map((q) => (
+                    <SuggestionChip key={q} onClick={() => send(q)}>
+                      {q}
+                    </SuggestionChip>
+                  ))}
+                </Suggestions>
+              )}
+
+              <InputRow
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  send(input);
+                }}
+              >
+                <TextInput
+                  ref={inputRef}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Ask about skills, projects…"
+                  aria-label="Type your question"
+                />
+                <SendButton type="submit" disabled={!input.trim() || isTyping} aria-label="Send question">
+                  <FaPaperPlane aria-hidden="true" />
+                </SendButton>
+              </InputRow>
+            </Panel>
+          )}
+        </AnimatePresence>
+
+        <Launcher
+          onPointerDown={(e) => {
+            wasDragged.current = false;
+            startDrag(e);
+          }}
+          onClick={() => {
+            // A drag ends with a click on the same button — don't toggle then
+            if (wasDragged.current) {
+              wasDragged.current = false;
+              return;
+            }
+            setIsOpen((prev) => !prev);
+          }}
+          aria-label={isOpen ? 'Close chat assistant' : 'Open chat assistant'}
+          aria-expanded={isOpen}
+          whileHover={reducedMotion ? undefined : { scale: 1.08 }}
+          whileTap={reducedMotion ? undefined : { scale: 0.94 }}
+        >
+          {isOpen ? <FaTimes aria-hidden="true" /> : <FaCommentDots aria-hidden="true" />}
+        </Launcher>
+      </Widget>
     </>
   );
 };
