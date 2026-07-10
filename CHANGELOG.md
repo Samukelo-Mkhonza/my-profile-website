@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.1](https://github.com/Samukelo-Mkhonza/my-profile-website/compare/v0.7.0...v0.7.1) (2026-07-10)
+
+
+### Refactoring
+
+* update styling for components to align with neo-brutalist d… ([9b3068b](https://github.com/Samukelo-Mkhonza/my-profile-website/commit/9b3068b67dd9db3992e344e76fb8c6f109502d46))
+* update styling for components to align with neo-brutalist design principles ([cfbcebb](https://github.com/Samukelo-Mkhonza/my-profile-website/commit/cfbcebb3c4873f1a9be24df0efc64093c0414a6b))
+
 ## [0.7.0](https://github.com/Samukelo-Mkhonza/my-profile-website/compare/v0.6.0...v0.7.0) (2026-07-07)
 
 
