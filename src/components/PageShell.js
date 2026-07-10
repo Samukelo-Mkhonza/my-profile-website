@@ -33,9 +33,10 @@ const BackButton = styled.button`
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: none;
-  border: 1px solid var(--border-card, #e0e0e0);
-  border-radius: 8px;
+  background: var(--bg-card, transparent);
+  border: 2px solid var(--border-card, #e0e0e0);
+  border-radius: var(--radius-pill, 999px);
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
   padding: 0.6rem 1rem;
   font-family: inherit;
   font-size: 0.8125rem;
@@ -68,7 +69,7 @@ const EscHint = styled.span`
 
 const Title = styled.h1`
   font-size: clamp(1.75rem, 6vw, 2.5rem);
-  font-weight: 600;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.15em;
   color: var(--text-primary, #000);

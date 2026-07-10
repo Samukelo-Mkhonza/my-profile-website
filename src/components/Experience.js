@@ -22,7 +22,7 @@ const Container = styled.div`
 
 const Heading = styled.h2`
   font-size: clamp(1.75rem, 4vw, 2.5rem);
-  font-weight: 600;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.15em;
   text-align: center;
@@ -78,8 +78,9 @@ const Entry = styled(motion.div)`
 
 const ExperienceCard = styled(motion.div)`
   background: var(--bg-card, #ffffff);
-  border: 1px solid var(--border-card, #e0e0e0);
-  border-radius: 8px;
+  border: 2px solid var(--border-card, #e0e0e0);
+  border-radius: var(--radius-card, 14px);
+  box-shadow: var(--shadow-hard, 4px 4px 0 #111);
   padding: clamp(1.5rem, 3vw, 2rem);
   position: relative;
   transition: all 0.3s ease;
@@ -90,15 +91,14 @@ const ExperienceCard = styled(motion.div)`
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 3px;
-    background: linear-gradient(90deg, var(--text-primary, #000), var(--text-secondary, #666));
+    background: var(--accent-orange, #ee5a24);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.3s ease;
   }
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 24px var(--shadow-color, rgba(0,0,0,0.15));
-    border-color: var(--text-primary, #000);
+    box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
     &:before { transform: scaleX(1); }
   }
 `;
@@ -163,11 +163,12 @@ const SkillTags = styled.div`
 
 const SkillTag = styled.span`
   background: var(--tag-bg, #f0f0f0);
-  color: var(--text-secondary, #333);
+  color: var(--text-primary, #333);
+  border: 2px solid var(--border-card, #111);
   padding: 0.25rem 0.75rem;
-  border-radius: 4px;
+  border-radius: var(--radius-pill, 999px);
   font-size: clamp(0.75rem, 2vw, 0.875rem);
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   transition: all 0.3s ease;
@@ -203,8 +204,9 @@ const Overlay = styled(motion.div)`
 
 const Modal = styled(motion.div)`
   background: var(--bg-card, #fff);
-  border: 1px solid var(--border-card, #e0e0e0);
-  border-radius: 16px;
+  border: 2px solid var(--border-card, #e0e0e0);
+  border-radius: var(--radius-card, 14px);
+  box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
   width: 100%;
   max-width: 640px;
   max-height: 90vh;
@@ -274,10 +276,10 @@ const TypeBadge = styled.span`
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  background: var(--text-primary, #000);
+  background: var(--accent, #000);
   color: var(--accent-inverse, #fff);
   padding: 0.2rem 0.6rem;
-  border-radius: 4px;
+  border-radius: var(--radius-pill, 999px);
 `;
 
 const Divider = styled.hr`
@@ -328,7 +330,7 @@ const ResponsibilityIcon = styled(FaCheckCircle)`
 `;
 
 const AchievementIcon = styled(FaTrophy)`
-  color: #b8860b;
+  color: var(--green, #43a047);
 `;
 
 const ToolsRow = styled.div`
@@ -339,11 +341,12 @@ const ToolsRow = styled.div`
 
 const ToolChip = styled.span`
   background: var(--tag-bg, #f0f0f0);
-  color: var(--text-secondary, #444);
+  color: var(--text-primary, #444);
+  border: 2px solid var(--border-card, #111);
   padding: 0.3rem 0.75rem;
-  border-radius: 20px;
+  border-radius: var(--radius-pill, 999px);
   font-size: 0.8rem;
-  font-weight: 500;
+  font-weight: 600;
 `;
 
 /* ─── Data ────────────────────────────────────────────────────────────────── */

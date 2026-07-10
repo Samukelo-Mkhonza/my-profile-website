@@ -29,7 +29,7 @@ const Container = styled.div`
 
 const Heading = styled(motion.h2)`
   font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   text-align: center;
@@ -94,14 +94,15 @@ const BlogGrid = styled.div`
 const BlogCard = styled(motion.article)`
   background: var(--skill-card-bg, #f8f9fa);
   border: 2px solid var(--border-card, #e9ecef);
-  border-radius: 8px;
+  border-radius: var(--radius-card, 14px);
+  box-shadow: var(--shadow-hard, 4px 4px 0 #111);
   padding: clamp(1.5rem, 3vw, 2.5rem);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  
-  /* Add subtle gradient overlay */
+
+  /* Accent strip revealed on hover */
   &:before {
     content: '';
     position: absolute;
@@ -109,18 +110,17 @@ const BlogCard = styled(motion.article)`
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #000 0%, #333 100%);
+    background: var(--accent-orange, #ee5a24);
     transform: translateY(-100%);
     transition: transform 0.3s ease;
   }
- 
+
   @media (hover: hover) {
     &:hover {
       transform: translateY(-6px);
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-      border-color: var(--accent, #000);
+      box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
       background: var(--bg-card, #fff);
-      
+
       &:before {
         transform: translateY(0);
       }
@@ -140,10 +140,10 @@ const ComingSoonBadge = styled.span`
   color: var(--accent-inverse, #fff);
   background: var(--accent, #000);
   padding: clamp(0.375rem, 1vw, 0.5rem) clamp(0.75rem, 1.5vw, 1rem);
-  border-radius: 4px;
+  border-radius: var(--radius-pill, 999px);
   display: inline-block;
   margin-bottom: clamp(0.75rem, 2vw, 1rem);
-  font-weight: 600;
+  font-weight: 700;
   position: relative;
   overflow: hidden;
   
@@ -185,11 +185,6 @@ const BlogTitle = styled.h3`
   margin-bottom: clamp(0.75rem, 2vw, 1.25rem);
   line-height: 1.2;
   color: var(--text-primary, #000);
-  transition: color 0.3s ease;
-
-  ${BlogCard}:hover & {
-    color: #333;
-  }
 
   /* Small mobile */
   @media (max-width: 480px) {
@@ -207,7 +202,7 @@ const BlogTitle = styled.h3`
 const BlogExcerpt = styled.p`
   font-size: clamp(0.875rem, 2vw, 1.0625rem);
   line-height: 1.7;
-  color: #495057;
+  color: var(--text-secondary, #495057);
   margin-bottom: clamp(1rem, 2.5vw, 1.5rem);
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -278,15 +273,16 @@ const ModalOverlay = styled(motion.div)`
 
 const ModalContent = styled(motion.div)`
   background: var(--bg-card, #ffffff);
-  border-radius: 16px;
+  border: 2px solid var(--border-card, #111);
+  border-radius: var(--radius-card, 14px);
   padding: clamp(2rem, 4vw, 3rem);
   max-width: min(90vw, 450px);
   width: 100%;
   text-align: center;
   position: relative;
   margin: auto;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-  
+  box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
+
   /* Small mobile */
   @media (max-width: 480px) {
     padding: clamp(1.5rem, 4vw, 2rem);
@@ -304,22 +300,21 @@ const CloseButton = styled.button`
   top: clamp(1rem, 2vw, 1.25rem);
   right: clamp(1rem, 2vw, 1.25rem);
   background: transparent;
-  border: 2px solid #e9ecef;
+  border: 2px solid var(--border-card, #e9ecef);
   width: 32px;
   height: 32px;
   border-radius: 50%;
   cursor: pointer;
-  color: #6c757d;
+  color: var(--text-secondary, #6c757d);
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1rem;
-  
+
   @media (hover: hover) {
     &:hover {
-      border-color: #000;
-      color: #000;
+      color: var(--text-primary, #000);
       transform: scale(1.1);
     }
   }
@@ -341,11 +336,12 @@ const ModalIcon = styled(motion.div)`
   width: 60px;
   height: 60px;
   margin: 0 auto clamp(1.25rem, 2.5vw, 1.75rem);
-  color: #000;
+  color: var(--text-primary, #000);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f8f9fa;
+  background: var(--tag-bg, #f8f9fa);
+  border: 2px solid var(--border-card, #111);
   border-radius: 50%;
   
   svg {
@@ -395,7 +391,7 @@ const ModalText = styled.p`
 const ModalBlogTitle = styled.h4`
   font-size: clamp(0.875rem, 2vw, 1rem);
   font-weight: 500;
-  color: #6c757d;
+  color: var(--text-muted, #6c757d);
   margin-bottom: clamp(1rem, 2vw, 1.5rem);
   font-style: italic;
 
@@ -408,21 +404,21 @@ const ModalBlogTitle = styled.h4`
 const CTAButton = styled.button`
   background: var(--accent, #000);
   color: var(--accent-inverse, #fff);
-  border: none;
+  border: 2px solid var(--border-card, #111);
   padding: clamp(0.625rem, 1.5vw, 0.75rem) clamp(1.5rem, 3vw, 2rem);
-  border-radius: 6px;
+  border-radius: var(--radius-pill, 999px);
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
   font-size: clamp(0.8125rem, 1.75vw, 0.875rem);
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   cursor: pointer;
   transition: all 0.3s ease;
-  
+
   @media (hover: hover) {
     &:hover {
-      background: #333;
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      box-shadow: var(--shadow-hard, 4px 4px 0 #111);
     }
   }
   

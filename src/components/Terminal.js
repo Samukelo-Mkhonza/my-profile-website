@@ -26,9 +26,9 @@ const Window = styled(motion.div)`
   max-width: 780px;
   height: min(70vh, 560px);
   background: var(--bg-card, #fff);
-  border: 1px solid var(--border-card, #e0e0e0);
-  border-radius: 12px;
-  box-shadow: 0 24px 48px var(--shadow-color, rgba(0, 0, 0, 0.3));
+  border: 2px solid var(--border-card, #e0e0e0);
+  border-radius: var(--radius-card, 14px);
+  box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -45,7 +45,7 @@ const TitleBar = styled.div`
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--border-card, #e0e0e0);
+  border-bottom: 2px solid var(--border-card, #e0e0e0);
   background: var(--bg-secondary, #f7f7f7);
 `;
 
@@ -119,7 +119,7 @@ const InputRow = styled.form`
   align-items: center;
   gap: 0.6rem;
   padding: 0.75rem 1.25rem;
-  border-top: 1px solid var(--border-card, #e0e0e0);
+  border-top: 2px solid var(--border-card, #e0e0e0);
 `;
 
 const Prompt = styled.span`

@@ -12,8 +12,9 @@ const Updated = styled.p`
 
 const ItemCard = styled.article`
   background: var(--bg-card, #fff);
-  border: 1px solid var(--border-card, #e0e0e0);
-  border-radius: 8px;
+  border: 2px solid var(--border-card, #e0e0e0);
+  border-radius: var(--radius-card, 14px);
+  box-shadow: var(--shadow-hard, 4px 4px 0 #111);
   padding: clamp(1.25rem, 3vw, 1.75rem);
   margin-bottom: 1rem;
   position: relative;
@@ -26,7 +27,7 @@ const ItemCard = styled.article`
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, var(--text-primary, #000), var(--text-secondary, #333));
+    background: var(--accent-orange, #ee5a24);
   }
 `;
 
@@ -52,7 +53,8 @@ const TodoBadge = styled.span`
   font-weight: 700;
   letter-spacing: 0.08em;
   padding: 0.15rem 0.5rem;
-  border-radius: 4px;
+  border: 2px solid var(--border-card, #111);
+  border-radius: var(--radius-pill, 999px);
   background: var(--tag-bg, #f0f0f0);
   color: var(--text-muted, #999);
   vertical-align: middle;

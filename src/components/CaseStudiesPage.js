@@ -4,8 +4,9 @@ import { caseStudies } from '../content/caseStudies';
 
 const StudyCard = styled.article`
   background: var(--bg-card, #fff);
-  border: 1px solid var(--border-card, #e0e0e0);
-  border-radius: 8px;
+  border: 2px solid var(--border-card, #e0e0e0);
+  border-radius: var(--radius-card, 14px);
+  box-shadow: var(--shadow-hard, 4px 4px 0 #111);
   padding: clamp(1.5rem, 3vw, 2rem);
   margin-bottom: 1.5rem;
   position: relative;
@@ -18,7 +19,7 @@ const StudyCard = styled.article`
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, var(--text-primary, #000), var(--text-secondary, #333));
+    background: var(--accent-orange, #ee5a24);
   }
 `;
 
@@ -49,11 +50,12 @@ const StackRow = styled.div`
 
 const StackChip = styled.span`
   background: var(--tag-bg, #f0f0f0);
-  color: var(--text-secondary, #444);
+  color: var(--text-primary, #444);
+  border: 2px solid var(--border-card, #111);
   padding: 0.25rem 0.7rem;
-  border-radius: 4px;
+  border-radius: var(--radius-pill, 999px);
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 `;

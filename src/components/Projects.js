@@ -68,7 +68,7 @@ const Container = styled.div`
 
 const Heading = styled(motion.h2)`
   font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   text-align: center;
@@ -110,13 +110,14 @@ const FilterTabs = styled.div`
 `;
 
 const FilterTab = styled(motion.button)`
-  background: ${p => p.$active ? 'var(--accent, #000)' : 'transparent'};
-  color: ${p => p.$active ? 'var(--accent-inverse, #fff)' : 'var(--text-secondary, #666)'};
-  border: 2px solid var(--accent, #000);
+  background: ${p => p.$active ? 'var(--accent, #000)' : 'var(--bg-card, transparent)'};
+  color: ${p => p.$active ? 'var(--accent-inverse, #fff)' : 'var(--text-primary, #666)'};
+  border: 2px solid var(--border-card, #000);
   padding: clamp(0.5rem, 1.5vw, 0.75rem) clamp(0.875rem, 2vw, 1.25rem);
-  border-radius: 8px;
+  border-radius: var(--radius-pill, 999px);
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
   font-size: clamp(0.75rem, 1.5vw, 0.875rem);
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   cursor: pointer;
@@ -158,8 +159,9 @@ const ProjectsGrid = styled(motion.div)`
 
 const ProjectCard = styled(motion.div)`
   background: var(--bg-card, #ffffff);
-  border: 1px solid var(--border-card, #e0e0e0);
-  border-radius: 12px;
+  border: 2px solid var(--border-card, #e0e0e0);
+  border-radius: var(--radius-card, 14px);
+  box-shadow: var(--shadow-hard, 4px 4px 0 #111);
   position: relative;
   overflow: hidden;
   cursor: pointer;
@@ -173,7 +175,7 @@ const ProjectCard = styled(motion.div)`
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 4px;
-    background: linear-gradient(90deg, var(--text-primary, #000), var(--text-secondary, #666));
+    background: var(--accent-orange, #ee5a24);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.3s ease;
@@ -182,8 +184,7 @@ const ProjectCard = styled(motion.div)`
 
   @media (hover: hover) {
     &:hover {
-      box-shadow: 0 20px 40px var(--shadow-color, rgba(0,0,0,0.12));
-      border-color: var(--text-primary, #000);
+      box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
       &:before { transform: scaleX(1); }
     }
   }
@@ -194,7 +195,7 @@ const CardImageWrap = styled.div`
   aspect-ratio: 2 / 1;
   overflow: hidden;
   background: var(--skill-card-bg, #f0f2f5);
-  border-bottom: 1px solid var(--border-card, #e0e0e0);
+  border-bottom: 2px solid var(--border-card, #e0e0e0);
   position: relative;
 
   &:after {
@@ -266,11 +267,12 @@ const TagsRow = styled.div`
 
 const TopicTag = styled.span`
   background: var(--tag-bg, #f0f0f0);
-  color: var(--text-secondary, #444);
+  color: var(--text-primary, #444);
+  border: 2px solid var(--border-card, #111);
   padding: 0.2rem 0.6rem;
-  border-radius: 20px;
+  border-radius: var(--radius-pill, 999px);
   font-size: 0.7rem;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.03em;
 `;
 
@@ -279,7 +281,7 @@ const CardFooter = styled.div`
   align-items: center;
   gap: 1.25rem;
   padding-top: 0.75rem;
-  border-top: 1px solid var(--border-card, #e0e0e0);
+  border-top: 2px solid var(--border-card, #e0e0e0);
   flex-wrap: wrap;
 `;
 
@@ -336,8 +338,9 @@ const Overlay = styled(motion.div)`
 
 const Modal = styled(motion.div)`
   background: var(--bg-card, #fff);
-  border: 1px solid var(--border-card, #e0e0e0);
-  border-radius: 16px;
+  border: 2px solid var(--border-card, #e0e0e0);
+  border-radius: var(--radius-card, 14px);
+  box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
   width: 100%;
   max-width: 620px;
   max-height: 90vh;
@@ -441,10 +444,12 @@ const GitHubButton = styled(motion.a)`
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
-  background: var(--text-primary, #000);
+  background: var(--accent, #000);
   color: var(--accent-inverse, #fff);
+  border: 2px solid var(--border-card, #111);
   padding: 0.875rem 1.75rem;
-  border-radius: 8px;
+  border-radius: var(--radius-pill, 999px);
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
   font-size: 0.9375rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -463,13 +468,14 @@ const ShowMoreWrap = styled.div`
 `;
 
 const ShowMoreButton = styled(motion.button)`
-  background: transparent;
+  background: var(--bg-card, transparent);
   color: var(--text-primary, #000);
-  border: 2px solid var(--accent, #000);
+  border: 2px solid var(--border-card, #000);
   padding: clamp(0.625rem, 2vw, 0.875rem) clamp(1.5rem, 4vw, 2.5rem);
-  border-radius: 8px;
+  border-radius: var(--radius-pill, 999px);
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
   font-size: clamp(0.75rem, 1.75vw, 0.9375rem);
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   cursor: pointer;

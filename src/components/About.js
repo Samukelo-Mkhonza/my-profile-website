@@ -76,7 +76,7 @@ const Container = styled.div`
 
 const Heading = styled.h2`
   font-size: clamp(1.75rem, 6vw, 2.5rem);
-  font-weight: 600;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.15em;
   text-align: center;
@@ -96,13 +96,22 @@ const MainContent = styled.div`
   }
 `;
 
+/* Half the photo height — how far the photo sinks into the card below it */
+const photoOverlap = 'clamp(75px, 11vw, 100px)';
+
 const IntroCard = styled(motion.div)`
   background: var(--bg-card, #ffffff);
-  border: 1px solid var(--border-card, #e0e0e0);
-  border-radius: 8px;
+  border: 2px solid var(--border-card, #e0e0e0);
+  border-radius: var(--radius-card, 14px);
+  box-shadow: var(--shadow-hard, 4px 4px 0 #111);
   padding: clamp(2rem, 4vw, 2.5rem);
+  /* Room for the profile photo overlapping the top edge */
+  padding-top: calc(${photoOverlap} + 1.5rem);
   position: relative;
   overflow: hidden;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 
   &:before {
     content: '';
@@ -111,26 +120,26 @@ const IntroCard = styled(motion.div)`
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, var(--text-primary, #000), var(--text-secondary, #333));
+    background: var(--accent-orange, #ee5a24);
   }
 `;
 
 const ProfileSection = styled(motion.div)`
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
 `;
 
 const ProfileImageWrap = styled(motion.div)`
   width: clamp(150px, 22vw, 200px);
   aspect-ratio: 1;
   border-radius: 50%;
-  margin: 0 auto;
-  padding: 5px;
-  background: linear-gradient(135deg, var(--text-primary, #000), var(--text-secondary, #666));
-  box-shadow: 0 12px 32px var(--shadow-color, rgba(0, 0, 0, 0.2)),
-              0 4px 12px var(--shadow-color, rgba(0, 0, 0, 0.1));
+  margin: 0 auto calc(${photoOverlap} * -1);
+  padding: 4px;
+  background: var(--border-card, #111);
+  box-shadow: var(--shadow-hard, 4px 4px 0 #111);
   cursor: pointer;
+  position: relative;
+  z-index: 2;
 `;
 
 const ProfileImg = styled.img`
@@ -155,7 +164,8 @@ const LocationInfo = styled.div`
   gap: 0.5rem;
   color: var(--text-secondary, #666);
   font-size: clamp(0.875rem, 2vw, 1rem);
-  margin-bottom: 1rem;
+  /* Pin to the card's bottom edge so the card fills the grid row cleanly */
+  margin-top: auto;
 `;
 
 const StatsGrid = styled.div`
@@ -164,16 +174,17 @@ const StatsGrid = styled.div`
   gap: clamp(1.5rem, 3vw, 2rem);
   margin-bottom: clamp(3rem, 5vw, 4rem);
 
-  /* Phones: 2×2 instead of four full-width cards stacked */
+  /* Phones: single column, cards stacked */
   @media (max-width: 640px) {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
   }
 `;
 
 const StatCard = styled(motion.div)`
   background: var(--bg-card, #ffffff);
-  border: 1px solid var(--border-card, #e0e0e0);
-  border-radius: 8px;
+  border: 2px solid var(--border-card, #e0e0e0);
+  border-radius: var(--radius-card, 14px);
+  box-shadow: var(--shadow-hard, 4px 4px 0 #111);
   padding: clamp(1.5rem, 3vw, 2rem);
   text-align: center;
   transition: all 0.3s ease;
@@ -183,8 +194,7 @@ const StatCard = styled(motion.div)`
 
   &:hover {
     transform: translateY(-8px);
-    box-shadow: 0 16px 32px var(--shadow-color, rgba(0, 0, 0, 0.15));
-    border-color: var(--text-primary, #000);
+    box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
   }
 
   &:before {
@@ -194,7 +204,7 @@ const StatCard = styled(motion.div)`
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, var(--text-primary, #000), var(--text-secondary, #333));
+    background: var(--accent-orange, #ee5a24);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.3s ease;
@@ -218,7 +228,7 @@ const StatIcon = styled.div`
 
 const StatNumber = styled.div`
   font-size: clamp(1.5rem, 4vw, 2rem);
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-primary, #000);
   margin-bottom: 0.5rem;
 `;
@@ -228,7 +238,7 @@ const StatLabel = styled.div`
   color: var(--text-secondary, #666);
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  font-weight: 500;
+  font-weight: 700;
 `;
 
 const ValuesSection = styled.div`
@@ -253,12 +263,18 @@ const ValuesGrid = styled.div`
   @media (max-width: 900px) {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  /* Phones: single column, cards stacked */
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const ValueCard = styled(motion.div)`
   background: var(--bg-card, #ffffff);
-  border: 1px solid var(--border-card, #e0e0e0);
-  border-radius: 8px;
+  border: 2px solid var(--border-card, #e0e0e0);
+  border-radius: var(--radius-card, 14px);
+  box-shadow: var(--shadow-hard, 4px 4px 0 #111);
   padding: clamp(1rem, 2vw, 1.25rem);
   text-align: center;
   transition: all 0.3s ease;
@@ -267,8 +283,7 @@ const ValueCard = styled(motion.div)`
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 24px var(--shadow-color, rgba(0, 0, 0, 0.15));
-    border-color: var(--text-primary, #000);
+    box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
   }
 
   &:before {
@@ -278,7 +293,7 @@ const ValueCard = styled(motion.div)`
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, var(--text-primary, #000), var(--text-secondary, #333));
+    background: var(--accent-orange, #ee5a24);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.3s ease;
@@ -310,13 +325,16 @@ const ValueDescription = styled.p`
   color: var(--text-secondary, #666);
 `;
 
-const PersonalSection = styled.div`
+const PersonalSection = styled(motion.div)`
   background: var(--bg-card, #ffffff);
-  border: 1px solid var(--border-card, #e0e0e0);
-  border-radius: 8px;
+  border: 2px solid var(--border-card, #e0e0e0);
+  border-radius: var(--radius-card, 14px);
+  box-shadow: var(--shadow-hard, 4px 4px 0 #111);
   padding: clamp(2rem, 4vw, 2.5rem);
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 
   &:before {
     content: '';
@@ -325,35 +343,63 @@ const PersonalSection = styled.div`
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, var(--text-primary, #000), var(--text-secondary, #333));
+    background: var(--accent-orange, #ee5a24);
   }
 `;
 
-const InterestsList = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 1.5rem;
+const PersonalText = styled.p`
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  line-height: 1.6;
+  color: var(--text-secondary, #666);
 `;
 
-const InterestTag = styled(motion.span)`
+const InterestsGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  /* Split the card's leftover height evenly when it stretches to match the
+     intro column, so the card never shows a dead gap */
+  grid-auto-rows: 1fr;
+  flex: 1;
+  gap: 1rem;
+  margin-top: 1.5rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+  }
+`;
+
+const InterestCard = styled(motion.div)`
   background: var(--tag-bg, #f0f0f0);
-  color: var(--text-secondary, #333);
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: clamp(0.75rem, 2vw, 0.875rem);
-  font-weight: 500;
+  border: 2px solid var(--border-card, #111);
+  border-radius: var(--radius-card, 14px);
+  padding: clamp(1rem, 2vw, 1.25rem);
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  justify-content: center;
   gap: 0.5rem;
   transition: all 0.3s ease;
   cursor: pointer;
 
   &:hover {
-    background: var(--text-primary, #000);
-    color: var(--accent-inverse, #fff);
-    transform: scale(1.05);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hard, 4px 4px 0 #111);
   }
+`;
+
+const InterestLabel = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  font-weight: 700;
+  color: var(--text-primary, #000);
+`;
+
+const InterestNote = styled.p`
+  font-size: clamp(0.8125rem, 2vw, 0.875rem);
+  line-height: 1.5;
+  color: var(--text-secondary, #666);
 `;
 
 const stats = [
@@ -387,10 +433,10 @@ const values = [
 ];
 
 const interests = [
-  { icon: FaCoffee, label: 'Coffee Brewing' },
-  { icon: FaMusic, label: 'Music Production' },
-  { icon: FaGamepad, label: 'Gaming' },
-  { icon: FaCode, label: 'Open Source' }
+  { icon: FaCoffee, label: 'Coffee Brewing', note: 'Dialing in the perfect pour-over, one cup at a time.' },
+  { icon: FaMusic, label: 'Music Production', note: 'Building beats and mixing tracks after hours.' },
+  { icon: FaGamepad, label: 'Gaming', note: 'Story-driven worlds and the occasional ranked grind.' },
+  { icon: FaCode, label: 'Open Source', note: 'Giving back to the tools I use every day.' }
 ];
 
 const About = () => (
@@ -407,31 +453,10 @@ const About = () => (
         </Heading>
 
         <MainContent>
-          <IntroCard
+          <ProfileSection
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            viewport={{ once: true }}
-          >
-            <IntroText>
-              <TypingText
-                text="I'm a passionate software developer specializing in cloud-native infrastructures and high-performance applications. Currently, I architect solutions at CloudZA, leveraging AWS to build scalable, secure systems that drive business growth."
-                speed={20}
-              />
-            </IntroText>
-            <IntroText>
-              My journey in technology spans over 5 years, during which I've had the privilege of working with cutting-edge technologies and contributing to projects that make a real difference. I believe in writing clean, maintainable code and creating solutions that not only work but scale beautifully.
-            </IntroText>
-            <LocationInfo>
-              <FaMapMarkerAlt />
-              <span>Bellville, Western Cape, South Africa</span>
-            </LocationInfo>
-          </IntroCard>
-
-          <ProfileSection
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
             viewport={{ once: true }}
           >
             <ProfileImageWrap
@@ -440,33 +465,51 @@ const About = () => (
             >
               <ProfileImg src={profilePhoto} alt="Samukelo Mkhonza" />
             </ProfileImageWrap>
-            <PersonalSection>
-              <SectionTitle>When I'm Not Coding</SectionTitle>
-              <p style={{
-                fontSize: 'clamp(0.875rem, 2vw, 1rem)',
-                lineHeight: '1.6',
-                color: 'var(--text-secondary, #666)',
-                marginBottom: '1rem'
-              }}>
-                I believe in maintaining a healthy work-life balance. Here are some things that keep me inspired and motivated outside of development.
-              </p>
-              <InterestsList>
-                {interests.map((interest, index) => (
-                  <InterestTag
-                    key={index}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                    viewport={{ once: true }}
-                    whileHover={{ scale: 1.05 }}
-                  >
+            <IntroCard>
+              <IntroText>
+                <TypingText
+                  text="I'm a passionate software developer specializing in cloud-native infrastructures and high-performance applications. Currently, I architect solutions at CloudZA, leveraging AWS to build scalable, secure systems that drive business growth."
+                  speed={20}
+                />
+              </IntroText>
+              <IntroText>
+                My journey in technology spans over 5 years, during which I've had the privilege of working with cutting-edge technologies and contributing to projects that make a real difference. I believe in writing clean, maintainable code and creating solutions that not only work but scale beautifully.
+              </IntroText>
+              <LocationInfo>
+                <FaMapMarkerAlt />
+                <span>Bellville, Western Cape, South Africa</span>
+              </LocationInfo>
+            </IntroCard>
+          </ProfileSection>
+
+          <PersonalSection
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            viewport={{ once: true }}
+          >
+            <SectionTitle>When I'm Not Coding</SectionTitle>
+            <PersonalText>
+              I believe in maintaining a healthy work-life balance. Here are some things that keep me inspired and motivated outside of development.
+            </PersonalText>
+            <InterestsGrid>
+              {interests.map((interest, index) => (
+                <InterestCard
+                  key={index}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                >
+                  <InterestLabel>
                     <interest.icon />
                     {interest.label}
-                  </InterestTag>
-                ))}
-              </InterestsList>
-            </PersonalSection>
-          </ProfileSection>
+                  </InterestLabel>
+                  <InterestNote>{interest.note}</InterestNote>
+                </InterestCard>
+              ))}
+            </InterestsGrid>
+          </PersonalSection>
         </MainContent>
 
         <StatsGrid>

@@ -27,10 +27,11 @@ const NavContent = styled.div`
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: ${props => props.$scrolled ? '0' : '0 0 16px 16px'};
-  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.05));
-  box-shadow: ${props => props.$scrolled 
-    ? '0 4px 20px var(--shadow-color, rgba(0, 0, 0, 0.1))' 
-    : '0 2px 10px var(--shadow-color, rgba(0, 0, 0, 0.05))'};
+  border: none;
+  border-bottom: 2px solid var(--border-card, #111);
+  box-shadow: ${props => props.$scrolled
+    ? '0 4px 0 var(--shadow-color, #111)'
+    : '0 3px 0 var(--shadow-color, #111)'};
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
 
@@ -98,12 +99,12 @@ const LogoIcon = styled(motion.div)`
   height: ${props => props.$scrolled 
     ? 'clamp(2rem, 5vw, 2.5rem)' 
     : 'clamp(2.25rem, 6vw, 3rem)'};
-  background: linear-gradient(135deg, var(--accent, #000) 0%, var(--text-secondary, #333) 100%);
+  background: var(--accent, #000);
   border-radius: clamp(6px, 1.5vw, 10px);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--accent-inverse, #fff);
   font-size: ${props => props.$scrolled 
     ? 'clamp(0.875rem, 2vw, 1.125rem)' 
     : 'clamp(1rem, 2.5vw, 1.375rem)'};
@@ -111,7 +112,7 @@ const LogoIcon = styled(motion.div)`
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
 
   &:before {
     content: '';
@@ -228,12 +229,11 @@ const ProgressBar = styled(motion.div)`
   position: absolute;
   bottom: -1px;
   left: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #000 0%, #666 100%);
+  height: 4px;
+  background: var(--green, #43a047);
   transform-origin: left;
   z-index: 10;
   border-radius: 0 2px 2px 0;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 
   @media (max-width: 480px) {
     height: 2px;
@@ -242,11 +242,11 @@ const ProgressBar = styled(motion.div)`
 
 const MobileMenuButton = styled(motion.button)`
   display: none;
-  background: rgba(0, 0, 0, 0.05);
-  border: 2px solid transparent;
+  background: var(--tag-bg, rgba(0, 0, 0, 0.05));
+  border: 2px solid var(--border-card, #111);
   cursor: pointer;
   padding: clamp(0.625rem, 2vw, 0.875rem);
-  border-radius: 8px;
+  border-radius: var(--radius-sm, 10px);
   color: var(--text-primary, #000);
   font-size: clamp(1.125rem, 3vw, 1.375rem);
   transition: all 0.3s ease;
@@ -297,13 +297,13 @@ const MobileMenu = styled(motion.div)`
   background: var(--glass-bg, rgba(255, 255, 255, 0.98));
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-left: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
+  border-left: 2px solid var(--border-card, #111);
   padding: clamp(1.5rem, 4vw, 2rem);
   display: flex;
   flex-direction: column;
   gap: clamp(0.75rem, 2vw, 1rem);
   z-index: 1001;
-  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
+  box-shadow: -6px 0 0 var(--shadow-color, #111);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 
@@ -482,9 +482,11 @@ const ContactCTA = styled(motion.a)`
   align-items: center;
   gap: clamp(0.625rem, 2vw, 0.875rem);
   padding: clamp(0.875rem, 2.5vw, 1.125rem) clamp(1.5rem, 4vw, 2.25rem);
-  background: #000;
-  color: #fff;
-  border-radius: 10px;
+  background: var(--accent, #000);
+  color: var(--accent-inverse, #fff);
+  border: 2px solid var(--border-card, #111);
+  border-radius: var(--radius-pill, 999px);
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
   font-size: clamp(0.8125rem, 2vw, 0.9375rem);
   font-weight: 700;
   text-transform: uppercase;
@@ -505,7 +507,7 @@ const ContactCTA = styled(motion.a)`
     left: 50%;
     width: 0;
     height: 0;
-    background: #fff;
+    background: var(--accent-inverse, #fff);
     border-radius: 50%;
     transition: all 0.3s ease;
     transform: translate(-50%, -50%);
@@ -514,7 +516,7 @@ const ContactCTA = styled(motion.a)`
   @media (hover: hover) {
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      box-shadow: var(--shadow-hard, 4px 4px 0 #111);
 
       &:before {
         width: 120%;
@@ -543,7 +545,7 @@ const ContactCTA = styled(motion.a)`
   @media (hover: hover) {
     &:hover span,
     &:hover svg {
-      color: #000;
+      color: var(--accent, #000);
     }
   }
 
@@ -581,8 +583,8 @@ const Overlay = styled(motion.div)`
 `;
 
 const ThemeToggleBtn = styled(motion.button)`
-  background: rgba(0, 0, 0, 0.05);
-  border: 2px solid transparent;
+  background: var(--tag-bg, rgba(0, 0, 0, 0.05));
+  border: 2px solid var(--border-card, #111);
   cursor: pointer;
   padding: clamp(0.5rem, 1.5vw, 0.625rem);
   border-radius: 50%;
@@ -630,7 +632,7 @@ const HiddenFactBubble = styled(motion.div)`
   font-weight: 500;
   white-space: nowrap;
   z-index: 1002;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
   pointer-events: none;
 
   &:before {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
+import { motion, useScroll, useTransform, useReducedMotion, animate } from 'framer-motion';
 import emailjs from '@emailjs/browser';
 import {
   FaArrowDown,
@@ -18,7 +18,9 @@ import {
   FaGraduationCap,
   FaBriefcase,
   FaCheckCircle,
-  FaExclamationCircle
+  FaExclamationCircle,
+  FaServer,
+  FaCoins
 } from 'react-icons/fa';
 
 // Floating animation for background elements
@@ -93,6 +95,29 @@ const TypingText = ({ texts, speed = 50, pause = 2000 }) => {
       <Cursor />
     </span>
   );
+};
+
+// Counts a stat up from 0 once its card has animated in; reduced-motion
+// users see the final value immediately.
+const CountUp = ({ value, suffix = '', decimals = 0, delay = 0, duration = 1 }) => {
+  const reducedMotion = useReducedMotion();
+  const [display, setDisplay] = useState(reducedMotion ? value : 0);
+
+  useEffect(() => {
+    if (reducedMotion) {
+      setDisplay(value);
+      return undefined;
+    }
+    const controls = animate(0, value, {
+      delay,
+      duration,
+      ease: 'easeOut',
+      onUpdate: (latest) => setDisplay(latest)
+    });
+    return () => controls.stop();
+  }, [value, delay, duration, reducedMotion]);
+
+  return <>{display.toFixed(decimals)}{suffix}</>;
 };
 
 const Section = styled.section`
@@ -239,7 +264,7 @@ const Greeting = styled(motion.div)`
 
 const Title = styled(motion.h1)`
   font-size: clamp(1.75rem, 6vw, 4.5rem);
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   line-height: 1.1;
@@ -337,9 +362,9 @@ const Button = styled(motion.a)`
   justify-content: center;
   gap: 0.75rem;
   padding: clamp(0.625rem, 1.5vw, 1rem) clamp(1.25rem, 2.5vw, 2rem);
-  border-radius: 4px;
+  border-radius: var(--radius-pill, 999px);
   font-size: clamp(0.8125rem, 1.5vw, 1rem);
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   text-decoration: none;
@@ -406,7 +431,8 @@ const Button = styled(motion.a)`
 const PrimaryButton = styled(Button)`
   background: var(--accent, #000);
   color: var(--accent-inverse, #fff);
-  border: 2px solid var(--accent, #000);
+  border: 2px solid var(--border-card, #000);
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
 
   &:before {
     background: var(--accent-inverse, #fff);
@@ -416,7 +442,7 @@ const PrimaryButton = styled(Button)`
     &:hover {
       color: var(--accent, #000);
       transform: translateY(-2px);
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      box-shadow: var(--shadow-hard, 4px 4px 0 #111);
 
       &:before {
         width: 100%;
@@ -426,9 +452,10 @@ const PrimaryButton = styled(Button)`
 `;
 
 const SecondaryButton = styled(Button)`
-  background: transparent;
+  background: var(--bg-card, transparent);
   color: var(--text-primary, #000);
-  border: 2px solid var(--accent, #000);
+  border: 2px solid var(--border-card, #000);
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
 
   &:before {
     background: var(--accent, #000);
@@ -438,7 +465,7 @@ const SecondaryButton = styled(Button)`
     &:hover {
       color: var(--accent-inverse, #fff);
       transform: translateY(-2px);
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+      box-shadow: var(--shadow-hard, 4px 4px 0 #111);
 
       &:before {
         width: 100%;
@@ -454,9 +481,9 @@ const StatsSection = styled(motion.div)`
   padding: clamp(1.5rem, 3vw, 2.5rem);
   background: var(--glass-bg, rgba(255, 255, 255, 0.8));
   backdrop-filter: blur(10px);
-  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
-  border-radius: 12px;
-  box-shadow: 0 8px 32px var(--shadow-color, rgba(0, 0, 0, 0.1));
+  border: 2px solid var(--border-card, #111);
+  border-radius: var(--radius-card, 14px);
+  box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
 
   @media (max-width: 768px) {
     order: 2;
@@ -469,30 +496,68 @@ const StatsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: clamp(0.75rem, 2vw, 1.5rem);
+
+  /* Phones: keep the 2x2 grid but tighten it so all four stats share a
+     single glance instead of stacking into a tall column */
+  @media (max-width: 640px) {
+    gap: 0.625rem;
+  }
 `;
 
 const StatCard = styled(motion.div)`
   text-align: center;
   padding: clamp(0.75rem, 2vw, 1rem);
   background: var(--skill-card-bg, rgba(255, 255, 255, 0.6));
-  border-radius: 8px;
-  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.05));
+  border-radius: var(--radius-sm, 10px);
+  border: 2px solid var(--border-card, #111);
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
   transition: all 0.3s ease;
 
   @media (hover: hover) {
     &:hover {
       transform: translateY(-4px);
-      box-shadow: 0 8px 16px var(--shadow-color, rgba(0, 0, 0, 0.1));
+      box-shadow: var(--shadow-hard, 4px 4px 0 #111);
       background: var(--bg-card-hover, rgba(255, 255, 255, 0.9));
     }
+  }
+
+  @media (max-width: 640px) {
+    padding: 0.75rem 0.5rem;
+  }
+`;
+
+/* Per-stat icon chip; mobile-only so desktop/tablet cards keep their
+   current look */
+const StatIcon = styled.div`
+  display: none;
+
+  @media (max-width: 640px) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    margin-bottom: 0.375rem;
+    font-size: 0.8125rem;
+    color: var(--on-orange, #fff);
+    background: var(--accent-orange, #ee5a24);
+    border: 2px solid var(--border-card, #111);
+    border-radius: var(--radius-sm, 10px);
+    box-shadow: 2px 2px 0 var(--shadow-color, #111);
   }
 `;
 
 const StatNumber = styled.div`
   font-size: clamp(1.25rem, 3vw, 2rem);
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-primary, #000);
   margin-bottom: 0.25rem;
+  font-variant-numeric: tabular-nums; /* keeps width steady while counting up */
+
+  @media (max-width: 640px) {
+    font-size: 1.375rem;
+    color: var(--accent-orange, #ee5a24);
+  }
 
   @media (max-width: 360px) {
     font-size: 1.125rem;
@@ -504,7 +569,7 @@ const StatLabel = styled.div`
   color: var(--text-secondary, #666);
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  font-weight: 500;
+  font-weight: 700;
 
   @media (max-width: 360px) {
     font-size: 0.625rem;
@@ -519,8 +584,17 @@ const QuickInfo = styled.div`
   padding-top: clamp(0.75rem, 2vw, 1rem);
   border-top: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
 
-  @media (max-width: 360px) {
+  /* Phones: wrap the info items into a row of compact chips instead of a
+     stacked list */
+  @media (max-width: 640px) {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 0.5rem;
+  }
+
+  @media (max-width: 360px) {
+    gap: 0.375rem;
     padding-top: 0.625rem;
   }
 `;
@@ -532,9 +606,20 @@ const InfoItem = styled.div`
   font-size: clamp(0.75rem, 1.75vw, 1rem);
   color: var(--text-secondary, #555);
 
+  @media (max-width: 640px) {
+    gap: 0.375rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--text-primary, #000);
+    background: var(--tag-bg, #f2e9d8);
+    border: 2px solid var(--border-card, #111);
+    border-radius: var(--radius-pill, 999px);
+    padding: 0.25rem 0.625rem;
+  }
+
   @media (max-width: 360px) {
-    gap: 0.5rem;
-    font-size: 0.75rem;
+    font-size: 0.625rem;
+    padding: 0.2rem 0.5rem;
   }
 `;
 
@@ -546,9 +631,10 @@ const InfoIcon = styled.div`
   justify-content: center;
   flex-shrink: 0;
 
-  @media (max-width: 360px) {
+  @media (max-width: 640px) {
+    width: auto;
     font-size: 0.75rem;
-    width: 16px;
+    color: var(--accent-orange, #ee5a24);
   }
 `;
 
@@ -600,7 +686,8 @@ const ModalOverlay = styled(motion.div)`
 
 const ModalContent = styled(motion.div)`
   background: var(--bg-card);
-  border-radius: 12px;
+  border: 2px solid var(--border-card, #111);
+  border-radius: var(--radius-card, 14px);
   padding: clamp(1.5rem, 4vw, 3rem);
   width: 100%;
   max-width: 600px;
@@ -608,7 +695,7 @@ const ModalContent = styled(motion.div)`
   max-height: 90dvh;
   overflow-y: auto;
   position: relative;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
   margin: auto;
 
   /* Smooth scrolling on iOS */
@@ -732,7 +819,7 @@ const Label = styled.label`
 const Input = styled.input`
   padding: clamp(0.75rem, 2vw, 1rem);
   border: 2px solid var(--border-card);
-  border-radius: 8px;
+  border-radius: var(--radius-sm, 10px);
   font-size: clamp(0.875rem, 2vw, 1rem);
   transition: all 0.3s ease;
   background: var(--bg-secondary);
@@ -758,7 +845,7 @@ const Input = styled.input`
 const TextArea = styled.textarea`
   padding: clamp(0.75rem, 2vw, 1rem);
   border: 2px solid var(--border-card);
-  border-radius: 8px;
+  border-radius: var(--radius-sm, 10px);
   font-size: clamp(0.875rem, 2vw, 1rem);
   min-height: clamp(100px, 20vw, 120px);
   resize: vertical;
@@ -793,22 +880,22 @@ const SubmitButton = styled(motion.button)`
   padding: clamp(0.875rem, 2vw, 1rem) clamp(1.5rem, 3vw, 2rem);
   background: var(--accent);
   color: var(--accent-inverse);
-  border: 2px solid var(--accent);
-  border-radius: 8px;
+  border: 2px solid var(--border-card, #111);
+  border-radius: var(--radius-pill, 999px);
   font-size: clamp(0.875rem, 2vw, 1rem);
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: clamp(0.5rem, 2vw, 1rem);
   min-height: 44px;
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
 
   @media (hover: hover) {
     &:hover:not(:disabled) {
-      background: #333;
       transform: translateY(-2px);
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      box-shadow: var(--shadow-hard, 4px 4px 0 #111);
     }
   }
 
@@ -915,14 +1002,17 @@ const CVList = styled.ul`
 const CVListItem = styled.li`
   background: var(--tag-bg);
   padding: clamp(0.375rem, 1.5vw, 0.5rem) clamp(0.75rem, 2vw, 1rem);
-  border-radius: 4px;
+  border: 2px solid var(--border-card, #111);
+  border-radius: var(--radius-pill, 999px);
   font-size: clamp(0.75rem, 1.75vw, 0.875rem);
+  font-weight: 600;
   color: var(--text-primary);
   transition: all 0.3s ease;
 
   @media (hover: hover) {
     &:hover {
-      background: var(--border-card);
+      background: var(--accent);
+      color: var(--accent-inverse);
     }
   }
 
@@ -1010,12 +1100,13 @@ const StatusBanner = styled(motion.div)`
   align-items: center;
   gap: 0.75rem;
   padding: 0.875rem 1rem;
-  border-radius: 8px;
+  border-radius: var(--radius-sm, 10px);
   font-size: 0.9rem;
-  font-weight: 500;
-  background: ${p => p.$type === 'success' ? '#f0fdf4' : '#fef2f2'};
-  color: ${p => p.$type === 'success' ? '#166534' : '#991b1b'};
-  border: 1px solid ${p => p.$type === 'success' ? '#bbf7d0' : '#fecaca'};
+  font-weight: 600;
+  background: var(--bg-card);
+  color: ${p => p.$type === 'success' ? 'var(--green, #43a047)' : '#e05252'};
+  border: 2px solid var(--border-card, #111);
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
   svg { flex-shrink: 0; font-size: 1rem; }
 `;
 
@@ -1444,7 +1535,8 @@ const Hero = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.2 }}
               >
-                <StatNumber>5+</StatNumber>
+                <StatIcon><FaBriefcase /></StatIcon>
+                <StatNumber><CountUp value={5} suffix="+" delay={1.2} /></StatNumber>
                 <StatLabel>Years in Tech</StatLabel>
               </StatCard>
               <StatCard
@@ -1453,7 +1545,8 @@ const Hero = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.4 }}
               >
-                <StatNumber>12</StatNumber>
+                <StatIcon><FaCode /></StatIcon>
+                <StatNumber><CountUp value={12} delay={1.4} /></StatNumber>
                 <StatLabel>Technologies</StatLabel>
               </StatCard>
               <StatCard
@@ -1462,7 +1555,8 @@ const Hero = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.6 }}
               >
-                <StatNumber>99.9%</StatNumber>
+                <StatIcon><FaServer /></StatIcon>
+                <StatNumber><CountUp value={99.9} suffix="%" decimals={1} delay={1.6} /></StatNumber>
                 <StatLabel>Uptime Achieved</StatLabel>
               </StatCard>
               <StatCard
@@ -1471,7 +1565,8 @@ const Hero = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.8 }}
               >
-                <StatNumber>35%</StatNumber>
+                <StatIcon><FaCoins /></StatIcon>
+                <StatNumber><CountUp value={35} suffix="%" delay={1.8} /></StatNumber>
                 <StatLabel>Costs Cut</StatLabel>
               </StatCard>
             </StatsGrid>
