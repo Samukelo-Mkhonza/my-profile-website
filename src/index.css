@@ -10,26 +10,39 @@ html {
   overflow-x: hidden;
 }
 
-/* Theme variables */
+/* Theme variables — neo-brutalist: warm cream surfaces, near-black ink,
+   thick borders and hard offset shadows (no blur). Dark values live in
+   ThemeContext.js and must be kept in sync with these light defaults. */
 :root {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f7f7f7;
-  --bg-primary-glass: rgba(255, 255, 255, 0.86);
-  --bg-secondary-glass: rgba(247, 247, 247, 0.86);
-  --bg-card: #ffffff;
+  --bg-primary: #faf3e8;
+  --bg-secondary: #f2e9d8;
+  --bg-primary-glass: rgba(250, 243, 232, 0.9);
+  --bg-secondary-glass: rgba(242, 233, 216, 0.9);
+  --bg-card: #fffcf5;
   --bg-card-hover: #ffffff;
-  --text-primary: #000000;
-  --text-secondary: #666666;
-  --text-muted: #999999;
-  --border-color: rgba(0, 0, 0, 0.1);
-  --border-card: #e0e0e0;
-  --shadow-color: rgba(0, 0, 0, 0.1);
-  --accent: #000000;
-  --accent-inverse: #ffffff;
-  --glass-bg: rgba(255, 255, 255, 0.95);
-  --tag-bg: #f0f0f0;
-  --progress-bg: #e9ecef;
-  --skill-card-bg: #f8f9fa;
+  --text-primary: #111111;
+  --text-secondary: #44403a;
+  --text-muted: #78716a;
+  --border-color: rgba(17, 17, 17, 0.15);
+  --border-card: #111111;
+  --shadow-color: #111111;
+  --accent: #111111;
+  --accent-inverse: #fffcf5;
+  --glass-bg: rgba(255, 252, 245, 0.95);
+  --tag-bg: #f2e9d8;
+  --progress-bg: #e7e0d0;
+  --skill-card-bg: #fffcf5;
+  /* Neo-brutalist primitives (theme-independent shapes; colors via tokens) */
+  --accent-orange: #ee5a24;
+  --on-orange: #ffffff;
+  --green: #43a047;
+  --shadow-hard-sm: 3px 3px 0 var(--shadow-color);
+  --shadow-hard: 4px 4px 0 var(--shadow-color);
+  --shadow-hard-lg: 6px 6px 0 var(--shadow-color);
+  --radius-card: 14px;
+  --radius-sm: 10px;
+  --radius-pill: 999px;
+  --border-w: 2px;
 }
 
 body {

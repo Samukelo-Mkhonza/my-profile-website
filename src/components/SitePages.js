@@ -39,14 +39,14 @@ const TerminalFab = styled.button`
   width: 3rem;
   height: 3rem;
   border-radius: 50%;
-  border: 1px solid var(--border-card, #e0e0e0);
+  border: 2px solid var(--border-card, #e0e0e0);
   background: var(--glass-bg, rgba(255, 255, 255, 0.95));
   color: var(--text-primary, #000);
   font-family: inherit;
   font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 8px 24px var(--shadow-color, rgba(0, 0, 0, 0.15));
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
   transition: transform 0.2s, background 0.2s, color 0.2s;
 
   &:hover,

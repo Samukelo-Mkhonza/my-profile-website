@@ -65,10 +65,11 @@ const RunButton = styled.button`
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: var(--text-primary, #000);
+  background: var(--accent, #000);
   color: var(--accent-inverse, #fff);
-  border: none;
-  border-radius: 8px;
+  border: 2px solid var(--border-card, #111);
+  border-radius: var(--radius-pill, 999px);
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
   padding: 0.6rem 1.25rem;
   font-family: inherit;
   font-size: 0.8125rem;
@@ -92,8 +93,8 @@ const RunButton = styled.button`
 const ExampleSelect = styled.select`
   background: var(--bg-card, #fff);
   color: var(--text-primary, #000);
-  border: 1px solid var(--border-card, #e0e0e0);
-  border-radius: 8px;
+  border: 2px solid var(--border-card, #e0e0e0);
+  border-radius: var(--radius-sm, 10px);
   padding: 0.6rem 0.75rem;
   font-family: inherit;
   font-size: 0.8125rem;
@@ -118,8 +119,8 @@ const Editor = styled.textarea`
   min-height: 260px;
   background: var(--bg-card, #fff);
   color: var(--text-primary, #000);
-  border: 1px solid var(--border-card, #e0e0e0);
-  border-radius: 8px;
+  border: 2px solid var(--border-card, #e0e0e0);
+  border-radius: var(--radius-sm, 10px);
   padding: 1rem 1.25rem;
   font-family: inherit;
   font-size: max(0.8125rem, 16px);
@@ -140,8 +141,8 @@ const Editor = styled.textarea`
 const OutputPanel = styled.div`
   margin-top: 1rem;
   background: var(--bg-secondary, #f7f7f7);
-  border: 1px solid var(--border-card, #e0e0e0);
-  border-radius: 8px;
+  border: 2px solid var(--border-card, #e0e0e0);
+  border-radius: var(--radius-sm, 10px);
   padding: 1rem 1.25rem;
   min-height: 120px;
   max-height: 320px;

@@ -22,12 +22,18 @@ const ItemList = styled.ul`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 0.75rem;
+
+  /* Phones: single column, items stacked */
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const Item = styled.li`
   background: var(--bg-card, #fff);
-  border: 1px solid var(--border-card, #e0e0e0);
-  border-radius: 8px;
+  border: 2px solid var(--border-card, #e0e0e0);
+  border-radius: var(--radius-sm, 10px);
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
   padding: 1rem 1.25rem;
   opacity: ${(p) => (p.$todo ? 0.6 : 1)};
 `;

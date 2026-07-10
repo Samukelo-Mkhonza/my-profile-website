@@ -13,8 +13,9 @@ import {
 } from 'react-icons/fa';
 
 const FooterContainer = styled.footer`
-  background: linear-gradient(135deg, #000 0%, #1a1a1a 50%, #000 100%);
-  color: #fff;
+  background: #111111;
+  color: #fffcf5;
+  border-top: 2px solid var(--border-card, #111);
   position: relative;
   overflow: hidden;
   margin-top: clamp(3rem, 8vw, 6rem);
@@ -35,7 +36,6 @@ const FooterContainer = styled.footer`
     100% { transform: translateX(100%); }
   }
 
-  /* Small mobile */
   @media (max-width: 480px) {
     margin-top: clamp(2rem, 6vw, 3rem);
   }
@@ -44,268 +44,230 @@ const FooterContainer = styled.footer`
 const FooterContent = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: clamp(2.5rem, 6vw, 5rem) clamp(1rem, 4vw, 2rem) clamp(1.5rem, 4vw, 3rem);
+  padding: clamp(2.5rem, 5vw, 3.5rem) clamp(1rem, 4vw, 2rem) clamp(1.25rem, 3vw, 1.75rem);
 
-  /* Small mobile */
   @media (max-width: 480px) {
-    padding: clamp(2rem, 5vw, 3rem) clamp(0.75rem, 3vw, 1.5rem) clamp(1.25rem, 3vw, 2rem);
-  }
-
-  /* Very small screens */
-  @media (max-width: 360px) {
-    padding: 1.5rem 0.75rem 1rem;
+    padding: 2rem 1rem 1.25rem;
   }
 `;
 
 const FooterGrid = styled.div`
   display: grid;
-  grid-template-columns: 2fr 1fr 1.5fr;
-  gap: clamp(2rem, 4vw, 4rem);
-  margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  grid-template-columns: 1.3fr 1.2fr 1.1fr;
+  gap: clamp(2rem, 4vw, 3.5rem);
+  margin-bottom: clamp(1.75rem, 3vw, 2.5rem);
 
-  /* Tablets */
-  @media (max-width: 1024px) {
-    grid-template-columns: 1.5fr 1fr 1.5fr;
-    gap: clamp(1.5rem, 3vw, 3rem);
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr 1fr;
   }
 
-  /* Mobile */
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     grid-template-columns: 1fr;
-    gap: clamp(2rem, 5vw, 3rem);
-    margin-bottom: clamp(2rem, 4vw, 3rem);
-  }
-
-  /* Small mobile */
-  @media (max-width: 480px) {
-    gap: clamp(1.5rem, 4vw, 2.5rem);
-  }
-
-  /* Very small screens */
-  @media (max-width: 360px) {
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
+    gap: 2rem;
   }
 `;
 
-const ContactSection = styled(motion.div)`
+const BrandSection = styled(motion.div)`
   display: flex;
   flex-direction: column;
-  gap: clamp(1rem, 2vw, 1.5rem);
+  gap: 0.875rem;
 
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     align-items: center;
     text-align: center;
   }
 `;
 
+const Wordmark = styled.a`
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #fff;
+  text-decoration: none;
+  line-height: 1.2;
+
+  span {
+    color: var(--accent-orange, #ee5a24);
+  }
+`;
+
+const Tagline = styled.p`
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  max-width: 32ch;
+`;
+
+const ContactList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+`;
+
+const ContactItem = styled(motion.a)`
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 0.8125rem;
+  padding: 0.3rem 0;
+  transition: color 0.3s ease;
+  word-break: break-word;
+
+  @media (hover: hover) {
+    &:hover {
+      color: #fff;
+    }
+  }
+
+  @media (max-width: 768px) {
+    min-height: 44px;
+  }
+
+  @media (max-width: 640px) {
+    justify-content: center;
+  }
+`;
+
+const ContactIcon = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9375rem;
+  color: var(--accent-orange, #ee5a24);
+  flex-shrink: 0;
+`;
+
+const SocialRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+
+  @media (max-width: 640px) {
+    justify-content: center;
+  }
+`;
+
+const SocialLink = styled(motion.a)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 1.125rem;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.02);
+  transition: all 0.3s ease;
+
+  @media (hover: hover) {
+    &:hover {
+      background: #fffcf5;
+      border-color: #fffcf5;
+      color: #111;
+      transform: translateY(-3px);
+      box-shadow: 3px 3px 0 rgba(255, 255, 255, 0.25);
+    }
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+`;
+
 const SectionTitle = styled.h3`
-  font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+  font-size: 0.9375rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: clamp(0.75rem, 2vw, 1.25rem);
+  letter-spacing: 0.12em;
+  margin-bottom: 1rem;
   color: #fff;
   position: relative;
-  padding-bottom: 0.75rem;
+  padding-bottom: 0.625rem;
 
   &:after {
     content: '';
     position: absolute;
     bottom: 0;
     left: 0;
-    width: clamp(3rem, 8vw, 4rem);
+    width: 2.5rem;
     height: 3px;
-    background: linear-gradient(90deg, #fff, transparent);
+    background: var(--accent-orange, #ee5a24);
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     display: flex;
     flex-direction: column;
     align-items: center;
-    
+
     &:after {
       left: 50%;
       transform: translateX(-50%);
     }
   }
-
-  /* Small mobile */
-  @media (max-width: 480px) {
-    font-size: clamp(1rem, 4vw, 1.25rem);
-    letter-spacing: 0.05em;
-    margin-bottom: 0.75rem;
-  }
-
-  /* Very small screens */
-  @media (max-width: 360px) {
-    font-size: 0.9375rem;
-    
-    &:after {
-      width: 2.5rem;
-      height: 2px;
-    }
-  }
 `;
 
-const ContactInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: clamp(0.5rem, 1.5vw, 0.875rem);
-
-  @media (max-width: 768px) {
-    align-items: center;
-    width: 100%;
-    max-width: 400px;
-  }
-`;
-
-const ContactItem = styled(motion.a)`
-  display: flex;
-  align-items: center;
-  gap: clamp(0.75rem, 2vw, 1rem);
-  color: rgba(255, 255, 255, 0.7);
-  text-decoration: none;
-  font-size: clamp(0.8125rem, 2vw, 1rem);
-  transition: all 0.3s ease;
-  padding: clamp(0.625rem, 1.5vw, 0.875rem) clamp(0.75rem, 2vw, 1rem);
-  border-radius: 8px;
-  border: 1px solid transparent;
-  background: rgba(255, 255, 255, 0.02);
-  min-height: 44px;
-  word-break: break-word;
-
-  @media (hover: hover) {
-    &:hover {
-      color: #fff;
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.2);
-      transform: translateX(8px);
-    }
-  }
-
-  &:active {
-    transform: scale(0.98);
-  }
-
-  @media (max-width: 768px) {
-    justify-content: center;
-    width: 100%;
-    
-    @media (hover: hover) {
-      &:hover {
-        transform: translateX(0) scale(1.02);
-      }
-    }
-  }
-
-  /* Small mobile */
-  @media (max-width: 480px) {
-    font-size: clamp(0.75rem, 3vw, 0.875rem);
-    padding: 0.625rem 0.75rem;
-  }
-
-  /* Very small screens */
-  @media (max-width: 360px) {
-    font-size: 0.75rem;
-    gap: 0.625rem;
-    padding: 0.5rem 0.625rem;
-  }
-`;
-
-const ContactIcon = styled.div`
-  font-size: clamp(1.125rem, 2.5vw, 1.375rem);
-  width: clamp(20px, 5vw, 28px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-shrink: 0;
-  color: #fff;
-
-  @media (max-width: 360px) {
-    font-size: 1rem;
-    width: 18px;
-  }
-`;
-
-const QuickLinks = styled(motion.div)`
+const LinksSection = styled(motion.div)`
   display: flex;
   flex-direction: column;
 
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     align-items: center;
     text-align: center;
   }
 `;
 
-const QuickLinksGrid = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: clamp(0.5rem, 1.5vw, 0.875rem);
+const LinksGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.125rem 1.5rem;
 
-  @media (max-width: 768px) {
-    align-items: center;
+  @media (max-width: 640px) {
     width: 100%;
-    max-width: 300px;
-  }
-
-  @media (max-width: 360px) {
-    gap: 0.5rem;
+    max-width: 320px;
+    text-align: left;
   }
 `;
 
-const QuickLink = styled(motion.a)`
-  color: rgba(255, 255, 255, 0.7);
+const FooterLink = styled(motion.a)`
+  display: flex;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.65);
   text-decoration: none;
-  font-size: clamp(0.875rem, 2vw, 1rem);
+  font-size: 0.8125rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  transition: all 0.3s ease;
-  padding: clamp(0.5rem, 1.5vw, 0.75rem) clamp(0.75rem, 2vw, 1rem);
-  border-radius: 6px;
-  border: 1px solid transparent;
-  display: inline-block;
-  min-height: 44px;
-  display: flex;
-  align-items: center;
+  letter-spacing: 0.06em;
+  padding: 0.3rem 0;
+  min-height: 28px;
+  transition: color 0.3s ease;
+
+  &:before {
+    content: '/';
+    color: var(--accent-orange, #ee5a24);
+    opacity: 0.4;
+    margin-right: 0.5em;
+    transition: opacity 0.3s ease;
+  }
 
   @media (hover: hover) {
     &:hover {
       color: #fff;
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.2);
-      transform: translateX(4px);
-    }
-  }
 
-  &:active {
-    transform: scale(0.98);
-  }
-
-  @media (max-width: 768px) {
-    justify-content: center;
-    width: 100%;
-    text-align: center;
-    
-    @media (hover: hover) {
-      &:hover {
-        transform: translateX(0) scale(1.02);
+      &:before {
+        opacity: 1;
       }
     }
   }
 
-  /* Small mobile */
-  @media (max-width: 480px) {
-    font-size: clamp(0.75rem, 3vw, 0.875rem);
-    padding: 0.625rem 0.875rem;
-    letter-spacing: 0.03em;
-  }
-
-  /* Very small screens */
-  @media (max-width: 360px) {
-    font-size: 0.75rem;
-    padding: 0.5rem 0.75rem;
+  @media (max-width: 768px) {
+    min-height: 44px;
   }
 `;
 
@@ -313,66 +275,49 @@ const NewsletterSection = styled(motion.div)`
   display: flex;
   flex-direction: column;
 
-  @media (max-width: 768px) {
+  @media (max-width: 900px) {
+    grid-column: 1 / -1;
+    max-width: 480px;
+  }
+
+  @media (max-width: 640px) {
     align-items: center;
     text-align: center;
-    max-width: 500px;
-    margin: 0 auto;
+    max-width: none;
+    width: 100%;
   }
 `;
 
 const NewsletterDescription = styled.p`
-  color: rgba(255, 255, 255, 0.7);
-  font-size: clamp(0.8125rem, 2vw, 0.9375rem);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8125rem;
   line-height: 1.6;
-  margin-bottom: clamp(0.75rem, 2vw, 1rem);
-
-  @media (max-width: 480px) {
-    font-size: clamp(0.75rem, 2.5vw, 0.875rem);
-  }
-
-  @media (max-width: 360px) {
-    font-size: 0.75rem;
-    line-height: 1.5;
-  }
+  margin-bottom: 1rem;
 `;
 
 const NewsletterForm = styled.form`
   display: flex;
   flex-direction: column;
-  gap: clamp(0.75rem, 2vw, 1rem);
-  margin-top: clamp(0.75rem, 2vw, 1rem);
+  gap: 0.75rem;
   width: 100%;
+  max-width: 400px;
 
   @media (min-width: 481px) {
     flex-direction: row;
-    max-width: 400px;
-  }
-
-  @media (max-width: 768px) {
-    align-items: center;
-  }
-
-  @media (max-width: 480px) {
-    gap: 0.75rem;
   }
 `;
 
 const NewsletterInput = styled.input`
-  background: rgba(255, 255, 255, 0.08);
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  border-radius: 8px;
-  padding: clamp(0.75rem, 2vw, 1rem) clamp(1rem, 2.5vw, 1.25rem);
+  background: rgba(255, 255, 255, 0.06);
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-radius: var(--radius-pill, 999px);
+  padding: 0.7rem 1.1rem;
   color: #fff;
-  font-size: clamp(0.875rem, 2vw, 1rem);
+  font-size: 0.875rem;
   transition: all 0.3s ease;
   flex: 1;
+  min-width: 0;
   min-height: 44px;
-  text-align: center;
-
-  @media (min-width: 769px) {
-    text-align: left;
-  }
 
   &::placeholder {
     color: rgba(255, 255, 255, 0.5);
@@ -380,36 +325,24 @@ const NewsletterInput = styled.input`
 
   &:focus {
     outline: none;
-    border-color: rgba(255, 255, 255, 0.5);
-    background: rgba(255, 255, 255, 0.12);
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-orange, #ee5a24);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 3px rgba(238, 90, 36, 0.25);
   }
 
-  @media (max-width: 768px) {
-    width: 100%;
-    max-width: 350px;
-  }
-
-  /* Small mobile */
-  @media (max-width: 480px) {
-    font-size: clamp(0.8125rem, 3vw, 0.9375rem);
-    padding: 0.75rem 1rem;
-  }
-
-  /* Very small screens */
-  @media (max-width: 360px) {
-    font-size: 0.8125rem;
-    padding: 0.625rem 0.875rem;
+  @media (max-width: 640px) {
+    text-align: center;
   }
 `;
 
 const NewsletterButton = styled(motion.button)`
-  background: #fff;
-  color: #000;
-  border: 2px solid #fff;
-  border-radius: 8px;
-  padding: clamp(0.75rem, 2vw, 1rem) clamp(1.5rem, 3vw, 2rem);
-  font-size: clamp(0.875rem, 2vw, 1rem);
+  background: #fffcf5;
+  color: #111;
+  border: 2px solid #fffcf5;
+  border-radius: var(--radius-pill, 999px);
+  box-shadow: 3px 3px 0 rgba(255, 255, 255, 0.3);
+  padding: 0.7rem 1.5rem;
+  font-size: 0.875rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -424,145 +357,16 @@ const NewsletterButton = styled(motion.button)`
 
   @media (hover: hover) {
     &:hover {
-      background: transparent;
-      color: #fff;
+      background: var(--accent-orange, #ee5a24);
+      border-color: var(--accent-orange, #ee5a24);
+      color: var(--on-orange, #fff);
       transform: translateY(-2px);
-      box-shadow: 0 8px 16px rgba(255, 255, 255, 0.1);
+      box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.3);
     }
   }
 
   &:active {
     transform: scale(0.98);
-  }
-
-  @media (max-width: 768px) {
-    width: 100%;
-    max-width: 350px;
-  }
-
-  /* Small mobile */
-  @media (max-width: 480px) {
-    font-size: clamp(0.8125rem, 3vw, 0.9375rem);
-    padding: 0.75rem 1.5rem;
-    width: 100%;
-  }
-
-  /* Very small screens */
-  @media (max-width: 360px) {
-    font-size: 0.75rem;
-    padding: 0.625rem 1.25rem;
-    letter-spacing: 0.03em;
-  }
-`;
-
-const SocialSection = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: clamp(1rem, 3vw, 2rem);
-  margin-bottom: clamp(2rem, 4vw, 3rem);
-  padding: clamp(1.5rem, 3vw, 2.5rem) 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  position: relative;
-
-  /* Background pattern */
-  &:before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: 
-      radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
-      radial-gradient(circle at 80% 50%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
-    pointer-events: none;
-  }
-
-  /* Small mobile */
-  @media (max-width: 480px) {
-    gap: clamp(0.75rem, 3vw, 1.25rem);
-    padding: clamp(1.25rem, 3vw, 2rem) 0;
-    margin-bottom: clamp(1.5rem, 3vw, 2rem);
-  }
-
-  /* Very small screens */
-  @media (max-width: 360px) {
-    gap: 0.75rem;
-    padding: 1rem 0;
-    margin-bottom: 1.25rem;
-  }
-`;
-
-const SocialLink = styled(motion.a)`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: clamp(2.75rem, 6vw, 3.5rem);
-  height: clamp(2.75rem, 6vw, 3.5rem);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: clamp(1.125rem, 2.5vw, 1.5rem);
-  text-decoration: none;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-  backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.02);
-
-  &:before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    background: #fff;
-    border-radius: 50%;
-    transition: all 0.3s ease;
-    transform: translate(-50%, -50%);
-    z-index: 0;
-  }
-
-  @media (hover: hover) {
-    &:hover {
-      border-color: #fff;
-      color: #000;
-      transform: translateY(-4px) scale(1.1);
-      box-shadow: 0 8px 16px rgba(255, 255, 255, 0.2);
-
-      &:before {
-        width: 100%;
-        height: 100%;
-      }
-    }
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
-
-  svg {
-    position: relative;
-    z-index: 1;
-  }
-
-  /* Small mobile */
-  @media (max-width: 480px) {
-    width: clamp(2.5rem, 8vw, 3rem);
-    height: clamp(2.5rem, 8vw, 3rem);
-    font-size: clamp(1rem, 3vw, 1.25rem);
-  }
-
-  /* Very small screens */
-  @media (max-width: 360px) {
-    width: 2.25rem;
-    height: 2.25rem;
-    font-size: 0.9375rem;
-    border-width: 1.5px;
   }
 `;
 
@@ -571,20 +375,14 @@ const FooterBottom = styled.div`
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: clamp(1rem, 3vw, 1.5rem);
-  padding-top: clamp(1.5rem, 3vw, 2.5rem);
+  gap: 1rem;
+  padding-top: 1.25rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 
   @media (max-width: 640px) {
     flex-direction: column;
     text-align: center;
-    gap: clamp(0.75rem, 2vw, 1rem);
-    padding-top: clamp(1.25rem, 3vw, 2rem);
-  }
-
-  @media (max-width: 360px) {
     gap: 0.75rem;
-    padding-top: 1rem;
   }
 `;
 
@@ -593,17 +391,8 @@ const Copyright = styled.div`
   align-items: center;
   gap: 0.5rem;
   color: rgba(255, 255, 255, 0.6);
-  font-size: clamp(0.75rem, 1.75vw, 0.875rem);
+  font-size: 0.75rem;
   line-height: 1.5;
-
-  @media (max-width: 640px) {
-    justify-content: center;
-  }
-
-  @media (max-width: 360px) {
-    font-size: 0.6875rem;
-    gap: 0.375rem;
-  }
 `;
 
 const MadeWith = styled.div`
@@ -611,12 +400,8 @@ const MadeWith = styled.div`
   align-items: center;
   gap: 0.5rem;
   color: rgba(255, 255, 255, 0.6);
-  font-size: clamp(0.75rem, 1.75vw, 0.875rem);
+  font-size: 0.75rem;
   line-height: 1.5;
-
-  @media (max-width: 640px) {
-    justify-content: center;
-  }
 
   svg {
     color: #e74c3c;
@@ -627,11 +412,15 @@ const MadeWith = styled.div`
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.2); }
   }
+`;
 
-  @media (max-width: 360px) {
-    font-size: 0.6875rem;
-    gap: 0.375rem;
-  }
+const EasterEggHint = styled.span`
+  font-size: 0.625rem;
+  color: rgba(255, 255, 255, 0.2);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: default;
+  user-select: none;
 `;
 
 const ScrollToTop = styled(motion.button)`
@@ -640,24 +429,23 @@ const ScrollToTop = styled(motion.button)`
   right: clamp(1.5rem, 4vw, 2.5rem);
   width: clamp(2.75rem, 6vw, 3.5rem);
   height: clamp(2.75rem, 6vw, 3.5rem);
-  background: #fff;
-  color: #000;
-  border: none;
+  background: var(--accent-orange, #ee5a24);
+  color: var(--on-orange, #fff);
+  border: 2px solid var(--border-card, #111);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: clamp(1rem, 2.5vw, 1.375rem);
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
   z-index: 1000;
   transition: all 0.3s ease;
 
   @media (hover: hover) {
     &:hover {
-      background: #f0f0f0;
       transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      box-shadow: var(--shadow-hard, 4px 4px 0 #111);
     }
   }
 
@@ -681,7 +469,7 @@ const ScrollToTop = styled(motion.button)`
     width: 2.25rem;
     height: 2.25rem;
     font-size: 0.875rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
   }
 
   /* Landscape mobile */
@@ -757,58 +545,72 @@ const Footer = () => {
       <FooterContainer id="contact">
         <FooterContent>
           <FooterGrid>
-            <ContactSection
+            <BrandSection
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               viewport={{ once: true, margin: "-50px" }}
             >
-              <SectionTitle>Get In Touch</SectionTitle>
-              <ContactInfo>
-                <ContactItem 
+              <Wordmark href="#hero">
+                Samukelo Mkhonza<span>.</span>
+              </Wordmark>
+              <Tagline>
+                Software developer building clean, playful things for the web
+                from the Western Cape.
+              </Tagline>
+              <ContactList>
+                <ContactItem
                   href="mailto:samukelo.mkhonza@outlook.com"
-                  whileHover={{ x: 8 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   <ContactIcon><FaEnvelope /></ContactIcon>
                   samukelo.mkhonza@outlook.com
                 </ContactItem>
-                <ContactItem
-                  as={motion.div}
-                  whileHover={{ x: 8 }}
-                  whileTap={{ scale: 0.98 }}
-                >
+                <ContactItem as="div">
                   <ContactIcon><FaMapMarkerAlt /></ContactIcon>
                   Bellville, Western Cape, ZA
                 </ContactItem>
-              </ContactInfo>
-            </ContactSection>
+              </ContactList>
+              <SocialRow>
+                {socialLinks.map((social) => (
+                  <SocialLink
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={social.label}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <social.icon />
+                  </SocialLink>
+                ))}
+              </SocialRow>
+            </BrandSection>
 
-            <QuickLinks
+            <LinksSection
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              transition={{ duration: 0.6, delay: 0.15 }}
               viewport={{ once: true, margin: "-50px" }}
             >
-              <SectionTitle>Quick Links</SectionTitle>
-              <QuickLinksGrid>
-                {quickLinks.map((link, index) => (
-                  <QuickLink
+              <SectionTitle>Explore</SectionTitle>
+              <LinksGrid>
+                {quickLinks.map((link) => (
+                  <FooterLink
                     key={link.href}
                     href={link.href}
-                    whileHover={{ x: 4 }}
                     whileTap={{ scale: 0.98 }}
                   >
                     {link.label}
-                  </QuickLink>
+                  </FooterLink>
                 ))}
-              </QuickLinksGrid>
-            </QuickLinks>
+              </LinksGrid>
+            </LinksSection>
 
             <NewsletterSection
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
               viewport={{ once: true, margin: "-50px" }}
             >
               <SectionTitle>Stay Updated</SectionTitle>
@@ -826,7 +628,6 @@ const Footer = () => {
                 />
                 <NewsletterButton
                   type="submit"
-                  whileHover={{ y: -2 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   Subscribe
@@ -836,31 +637,6 @@ const Footer = () => {
             </NewsletterSection>
           </FooterGrid>
 
-          <SocialSection>
-            {socialLinks.map((social, index) => (
-              <SocialLink
-                key={index}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={social.label}
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ 
-                  duration: 0.4, 
-                  delay: index * 0.1,
-                  type: "spring",
-                  damping: 15
-                }}
-                viewport={{ once: true }}
-                whileHover={{ y: -4, scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <social.icon />
-              </SocialLink>
-            ))}
-          </SocialSection>
-
           <FooterBottom>
             <Copyright>
               &copy; {new Date().getFullYear()} Samukelo Mkhonza. All rights reserved.
@@ -868,16 +644,7 @@ const Footer = () => {
             <MadeWith>
               Made with <FaHeart /> and <FaCode /> in South Africa
             </MadeWith>
-            <span style={{ 
-              fontSize: '0.625rem', 
-              color: 'rgba(255,255,255,0.2)', 
-              letterSpacing: '0.15em',
-              textTransform: 'uppercase',
-              cursor: 'default',
-              userSelect: 'none'
-            }}>
-              ↑↑↓↓←→←→BA
-            </span>
+            <EasterEggHint>↑↑↓↓←→←→BA</EasterEggHint>
           </FooterBottom>
         </FooterContent>
       </FooterContainer>

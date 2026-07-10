@@ -90,13 +90,13 @@ const SecretOverlay = styled(motion.div)`
 const SecretCard = styled(motion.div)`
   background: var(--bg-card, #fff);
   border: 2px solid var(--border-card, #e0e0e0);
-  border-radius: 16px;
+  border-radius: var(--radius-card, 14px);
   padding: clamp(2rem, 4vw, 3rem);
   max-width: 500px;
   width: 100%;
   position: relative;
   text-align: center;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
 `;
 
 const SecretClose = styled.button`
@@ -138,7 +138,8 @@ const SecretFact = styled.div`
   gap: 0.75rem;
   padding: 1rem;
   background: var(--tag-bg, #f0f0f0);
-  border-radius: 8px;
+  border: 2px solid var(--border-card, #111);
+  border-radius: var(--radius-sm, 10px);
   margin-bottom: 0.75rem;
   font-size: clamp(0.875rem, 2vw, 1rem);
   color: var(--text-secondary, #555);
@@ -171,12 +172,13 @@ const Toast = styled(motion.div)`
   background: var(--accent, #000);
   color: var(--accent-inverse, #fff);
   padding: 1rem 2rem;
-  border-radius: 12px;
+  border: 2px solid var(--border-card, #111);
+  border-radius: var(--radius-pill, 999px);
   font-weight: 600;
   font-size: 1rem;
   z-index: 10000;
   text-align: center;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
   white-space: nowrap;
 `;
 

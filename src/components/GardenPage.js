@@ -11,14 +11,14 @@ const TagRow = styled.div`
 `;
 
 const TagButton = styled.button`
-  background: ${(p) => (p.$active ? 'var(--text-primary, #000)' : 'var(--tag-bg, #f0f0f0)')};
-  color: ${(p) => (p.$active ? 'var(--accent-inverse, #fff)' : 'var(--text-secondary, #333)')};
-  border: none;
-  border-radius: 4px;
+  background: ${(p) => (p.$active ? 'var(--accent, #000)' : 'var(--bg-card, #f0f0f0)')};
+  color: ${(p) => (p.$active ? 'var(--accent-inverse, #fff)' : 'var(--text-primary, #333)')};
+  border: 2px solid var(--border-card, #111);
+  border-radius: var(--radius-pill, 999px);
   padding: 0.35rem 0.75rem;
   font-family: inherit;
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   cursor: pointer;
@@ -27,15 +27,16 @@ const TagButton = styled.button`
 
   &:hover,
   &:focus-visible {
-    background: var(--text-primary, #000);
+    background: var(--accent, #000);
     color: var(--accent-inverse, #fff);
   }
 `;
 
 const NoteCard = styled.article`
   background: var(--bg-card, #fff);
-  border: 1px solid var(--border-card, #e0e0e0);
-  border-radius: 8px;
+  border: 2px solid var(--border-card, #e0e0e0);
+  border-radius: var(--radius-card, 14px);
+  box-shadow: var(--shadow-hard, 4px 4px 0 #111);
   padding: clamp(1.25rem, 3vw, 1.75rem);
   margin-bottom: 1rem;
 `;
@@ -72,11 +73,12 @@ const NoteTags = styled.div`
 
 const NoteTag = styled.span`
   background: var(--tag-bg, #f0f0f0);
-  color: var(--text-secondary, #666);
+  color: var(--text-primary, #666);
+  border: 2px solid var(--border-card, #111);
   padding: 0.2rem 0.6rem;
-  border-radius: 4px;
+  border-radius: var(--radius-pill, 999px);
   font-size: 0.7rem;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.05em;
 `;
 

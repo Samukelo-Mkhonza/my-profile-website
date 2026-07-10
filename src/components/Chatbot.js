@@ -51,7 +51,7 @@ const Launcher = styled(motion.button)`
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  border: none;
+  border: 2px solid var(--border-card, #111);
   background: var(--accent, #000);
   color: var(--accent-inverse, #fff);
   display: flex;
@@ -60,7 +60,7 @@ const Launcher = styled(motion.button)`
   font-size: 1.3rem;
   cursor: grab;
   touch-action: none;
-  box-shadow: 0 8px 24px var(--shadow-color, rgba(0, 0, 0, 0.25));
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
 
   &:active {
     cursor: grabbing;
@@ -76,9 +76,9 @@ const Panel = styled(motion.div)`
   width: min(360px, calc(100vw - 1.5rem));
   height: min(520px, calc(100vh - 8rem));
   background: var(--bg-card, #fff);
-  border: 1px solid var(--border-card, #e0e0e0);
-  border-radius: 16px;
-  box-shadow: 0 24px 48px var(--shadow-color, rgba(0, 0, 0, 0.3));
+  border: 2px solid var(--border-card, #e0e0e0);
+  border-radius: var(--radius-card, 14px);
+  box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -89,7 +89,7 @@ const Header = styled.div`
   align-items: center;
   gap: 0.75rem;
   padding: 0.85rem 1rem;
-  border-bottom: 1px solid var(--border-card, #e0e0e0);
+  border-bottom: 2px solid var(--border-card, #e0e0e0);
   background: var(--bg-secondary, #f7f7f7);
   cursor: grab;
   touch-action: none;
@@ -174,14 +174,15 @@ const LinkChip = styled.a`
   font-weight: 600;
   padding: 0.35rem 0.75rem;
   border-radius: 999px;
-  border: 1px solid var(--border-card, #e0e0e0);
+  border: 2px solid var(--border-card, #e0e0e0);
   background: var(--bg-card, #fff);
   color: var(--text-primary, #000);
   text-decoration: none;
 
   &:hover,
   &:focus-visible {
-    border-color: var(--accent, #000);
+    background: var(--accent, #000);
+    color: var(--accent-inverse, #fff);
   }
 `;
 
@@ -197,15 +198,15 @@ const SuggestionChip = styled.button`
   font-size: 0.75rem;
   padding: 0.4rem 0.8rem;
   border-radius: 999px;
-  border: 1px solid var(--border-card, #e0e0e0);
+  border: 2px solid var(--border-card, #e0e0e0);
   background: var(--bg-card, #fff);
   color: var(--text-secondary, #666);
   cursor: pointer;
 
   &:hover,
   &:focus-visible {
-    color: var(--text-primary, #000);
-    border-color: var(--accent, #000);
+    background: var(--accent, #000);
+    color: var(--accent-inverse, #fff);
   }
 `;
 
@@ -214,7 +215,7 @@ const InputRow = styled.form`
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem;
-  border-top: 1px solid var(--border-card, #e0e0e0);
+  border-top: 2px solid var(--border-card, #e0e0e0);
 `;
 
 const TextInput = styled.input`
@@ -224,7 +225,7 @@ const TextInput = styled.input`
   font-size: 0.85rem;
   padding: 0.6rem 0.9rem;
   border-radius: 999px;
-  border: 1px solid var(--border-card, #e0e0e0);
+  border: 2px solid var(--border-card, #e0e0e0);
   background: var(--bg-secondary, #f7f7f7);
   color: var(--text-primary, #000);
 
@@ -243,7 +244,7 @@ const SendButton = styled.button`
   height: 44px;
   flex-shrink: 0;
   border-radius: 50%;
-  border: none;
+  border: 2px solid var(--border-card, #111);
   background: var(--accent, #000);
   color: var(--accent-inverse, #fff);
   display: flex;

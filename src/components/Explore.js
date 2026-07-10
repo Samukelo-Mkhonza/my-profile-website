@@ -19,7 +19,7 @@ import { caseStudies } from '../content/caseStudies';
 // card is a plain anchor to a #/route hash, which SitePages resolves.
 
 const Section = styled.section`
-  padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 5vw, 2rem);
+  padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 4vw, 2rem);
   background: var(--bg-secondary-glass, rgba(247, 247, 247, 0.86));
   position: relative;
 
@@ -33,6 +33,14 @@ const Section = styled.section`
     height: 3px;
     background: var(--text-primary, #000);
   }
+
+  @media (max-width: 480px) {
+    padding: clamp(2rem, 6vw, 3rem) clamp(0.75rem, 3vw, 1.5rem);
+  }
+
+  @media (max-height: 600px) and (orientation: landscape) {
+    padding: 2rem;
+  }
 `;
 
 const Container = styled.div`
@@ -42,29 +50,47 @@ const Container = styled.div`
   padding: 0 1rem;
 `;
 
-const Heading = styled.h2`
-  font-size: clamp(1.75rem, 6vw, 2.5rem);
-  font-weight: 600;
+const Heading = styled(motion.h2)`
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.1em;
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: clamp(1rem, 2vw, 1.5rem);
   color: var(--text-primary, #000);
+  position: relative;
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: -0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: clamp(60px, 10vw, 100px);
+    height: 3px;
+    background: var(--text-primary, #000);
+  }
+  @media (max-width: 480px) { font-size: clamp(1.5rem, 6vw, 2rem); }
 `;
 
-const Subtitle = styled.p`
+const Subtitle = styled(motion.p)`
   text-align: center;
-  font-size: clamp(0.875rem, 2vw, 1rem);
   color: var(--text-secondary, #666);
-  max-width: 560px;
-  margin: 0 auto clamp(2rem, 4vw, 3rem);
-  line-height: 1.7;
+  font-size: clamp(0.875rem, 2vw, 1.0625rem);
+  line-height: 1.6;
+  max-width: 600px;
+  margin: clamp(1.5rem, 3vw, 2rem) auto clamp(2.5rem, 5vw, 3.5rem);
+  @media (max-width: 480px) { font-size: clamp(0.8125rem, 2.5vw, 0.9375rem); }
 `;
 
 const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: clamp(1.25rem, 3vw, 2rem);
+
+  /* Phones: single column, cards stacked */
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const Card = styled(motion.a)`
@@ -72,8 +98,9 @@ const Card = styled(motion.a)`
   flex-direction: column;
   gap: 0.75rem;
   background: var(--bg-card, #ffffff);
-  border: 1px solid var(--border-card, #e0e0e0);
-  border-radius: 8px;
+  border: 2px solid var(--border-card, #e0e0e0);
+  border-radius: var(--radius-card, 14px);
+  box-shadow: var(--shadow-hard, 4px 4px 0 #111);
   padding: clamp(1.5rem, 3vw, 2rem);
   cursor: pointer;
   position: relative;
@@ -87,7 +114,7 @@ const Card = styled(motion.a)`
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, var(--text-primary, #000), var(--text-secondary, #333));
+    background: var(--accent-orange, #ee5a24);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.3s ease;
@@ -96,8 +123,7 @@ const Card = styled(motion.a)`
   &:hover,
   &:focus-visible {
     transform: translateY(-6px);
-    box-shadow: 0 16px 32px var(--shadow-color, rgba(0, 0, 0, 0.15));
-    border-color: var(--text-primary, #000);
+    box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
 
     &:before {
       transform: scaleX(1);
@@ -202,17 +228,22 @@ const cards = [
 const Explore = () => (
   <Section id="explore">
     <Container>
-      <motion.div
+      <Heading
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         viewport={{ once: true }}
       >
-        <Heading>Explore</Heading>
-        <Subtitle>
-          The interactive side of this site — living pages and tools, not just a portfolio to scroll past.
-        </Subtitle>
-      </motion.div>
+        Explore
+      </Heading>
+      <Subtitle
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.1 }}
+        viewport={{ once: true }}
+      >
+        The interactive side of this site — living pages and tools, not just a portfolio to scroll past.
+      </Subtitle>
       <Grid>
         {cards.map((card, index) => (
           <Card

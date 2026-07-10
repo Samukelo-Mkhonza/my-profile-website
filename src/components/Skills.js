@@ -25,7 +25,7 @@ const Container = styled.div`
 
 const Heading = styled(motion.h2)`
   font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   text-align: center;
@@ -70,13 +70,14 @@ const FilterTabs = styled.div`
 `;
 
 const FilterTab = styled(motion.button)`
-  background: ${p => p.$active ? 'var(--accent, #000)' : 'transparent'};
-  color: ${p => p.$active ? 'var(--accent-inverse, #fff)' : 'var(--text-secondary, #666)'};
-  border: 2px solid var(--accent, #000);
+  background: ${p => p.$active ? 'var(--accent, #000)' : 'var(--bg-card, transparent)'};
+  color: ${p => p.$active ? 'var(--accent-inverse, #fff)' : 'var(--text-primary, #666)'};
+  border: 2px solid var(--border-card, #000);
   padding: clamp(0.625rem, 2vw, 0.875rem) clamp(1rem, 3vw, 1.5rem);
-  border-radius: 8px;
+  border-radius: var(--radius-pill, 999px);
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
   font-size: clamp(0.75rem, 1.75vw, 0.9375rem);
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   cursor: pointer;
@@ -116,13 +117,14 @@ const ShowMoreWrap = styled.div`
 `;
 
 const ShowMoreButton = styled(motion.button)`
-  background: transparent;
+  background: var(--bg-card, transparent);
   color: var(--text-primary, #000);
-  border: 2px solid var(--accent, #000);
+  border: 2px solid var(--border-card, #000);
   padding: clamp(0.625rem, 2vw, 0.875rem) clamp(1.5rem, 4vw, 2.5rem);
-  border-radius: 8px;
+  border-radius: var(--radius-pill, 999px);
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
   font-size: clamp(0.75rem, 1.75vw, 0.9375rem);
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   cursor: pointer;
@@ -148,7 +150,8 @@ const SkillsGrid = styled(motion.div)`
 const SkillCard = styled(motion.div)`
   background: var(--skill-card-bg, #f8f9fa);
   border: 2px solid var(--border-card, #e9ecef);
-  border-radius: 12px;
+  border-radius: var(--radius-card, 14px);
+  box-shadow: var(--shadow-hard, 4px 4px 0 #111);
   padding: clamp(1.25rem, 3vw, 2rem);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
@@ -157,8 +160,7 @@ const SkillCard = styled(motion.div)`
   height: 100%;
   @media (hover: hover) {
     &:hover {
-      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-      border-color: var(--accent, #000);
+      box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
       background: var(--bg-card, #fff);
     }
   }
@@ -168,7 +170,7 @@ const SkillCard = styled(motion.div)`
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 4px;
-    background: linear-gradient(90deg, var(--accent, #000) 0%, var(--text-secondary, #666) 100%);
+    background: var(--accent-orange, #ee5a24);
     transform: translateY(-100%);
     transition: transform 0.3s ease;
   }
@@ -225,8 +227,9 @@ const SkillLevel = styled.span`
   font-weight: 600;
   display: inline-block;
   background: var(--tag-bg, #e9ecef);
+  border: 2px solid var(--border-card, #111);
   padding: 0.125rem 0.5rem;
-  border-radius: 4px;
+  border-radius: var(--radius-pill, 999px);
   @media (max-width: 360px) { font-size: 0.625rem; letter-spacing: 0.05em; padding: 0.125rem 0.375rem; }
 `;
 
@@ -287,8 +290,9 @@ const Overlay = styled(motion.div)`
 
 const Modal = styled(motion.div)`
   background: var(--bg-card, #fff);
-  border: 1px solid var(--border-card, #e0e0e0);
-  border-radius: 16px;
+  border: 2px solid var(--border-card, #e0e0e0);
+  border-radius: var(--radius-card, 14px);
+  box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
   width: 100%;
   max-width: 580px;
   max-height: 90vh;
@@ -365,8 +369,9 @@ const LevelBadge = styled.span`
   letter-spacing: 0.1em;
   font-weight: 600;
   background: var(--tag-bg, #e9ecef);
+  border: 2px solid var(--border-card, #111);
   padding: 0.2rem 0.6rem;
-  border-radius: 4px;
+  border-radius: var(--radius-pill, 999px);
 `;
 
 const YearsBadge = styled.span`
@@ -434,11 +439,12 @@ const ToolsRow = styled.div`
 
 const ToolChip = styled.span`
   background: var(--tag-bg, #f0f0f0);
-  color: var(--text-secondary, #444);
+  color: var(--text-primary, #444);
+  border: 2px solid var(--border-card, #111);
   padding: 0.3rem 0.75rem;
-  border-radius: 20px;
+  border-radius: var(--radius-pill, 999px);
   font-size: 0.8rem;
-  font-weight: 500;
+  font-weight: 600;
 `;
 
 const ProofLink = styled.a`
