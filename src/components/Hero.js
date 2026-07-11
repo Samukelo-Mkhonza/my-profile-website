@@ -42,6 +42,12 @@ const gradientShift = keyframes`
   100% { background-position: 0% 50%; }
 `;
 
+// Availability pill dot pulse
+const pulse = keyframes`
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.75); }
+`;
+
 // Styled cursor element
 const Cursor = styled.span`
   display: inline-block;
@@ -137,10 +143,11 @@ const Section = styled.section`
   overflow: hidden;
   @media (prefers-reduced-motion: reduce) { animation: none; }
 
-  /* Small mobile devices */
+  /* Small mobile devices: tighter vertical rhythm so name, role and the
+     primary CTA share the first screen */
   @media (max-width: 480px) {
-    padding-top: clamp(5rem, 20vw, 7rem);
-    padding-bottom: clamp(3rem, 10vw, 5rem);
+    padding-top: clamp(5rem, 16vw, 6rem);
+    padding-bottom: clamp(2.5rem, 8vw, 4rem);
   }
 
   /* Tablets and small laptops */
@@ -202,7 +209,8 @@ const Container = styled(motion.div)`
   max-width: 1200px;
   width: 100%;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* Asymmetric: the headline column leads, the stats column supports */
+  grid-template-columns: 1.15fr 0.85fr;
   gap: clamp(1.5rem, 4vw, 4rem);
   align-items: center;
   z-index: 1;
@@ -216,7 +224,7 @@ const Container = styled(motion.div)`
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
     text-align: center;
-    gap: clamp(1.5rem, 4vw, 2.5rem);
+    gap: clamp(1.25rem, 3.5vw, 2rem);
   }
 
   /* Landscape mobile */
@@ -262,6 +270,38 @@ const Greeting = styled(motion.div)`
   }
 `;
 
+/* Status pill above the headline: the "hire me" signal, first thing read */
+const AvailabilityPill = styled(motion.div)`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  align-self: flex-start;
+  padding: 0.375rem 0.875rem;
+  background: var(--bg-card, #fffcf5);
+  border: 2px solid var(--border-card, #111);
+  border-radius: var(--radius-pill, 999px);
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
+  font-size: clamp(0.625rem, 1.5vw, 0.75rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-primary, #000);
+
+  @media (max-width: 768px) {
+    align-self: center;
+  }
+`;
+
+const PulseDot = styled.span`
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--green, #43a047);
+  flex-shrink: 0;
+  animation: ${pulse} 2s ease-in-out infinite;
+  @media (prefers-reduced-motion: reduce) { animation: none; }
+`;
+
 const Title = styled(motion.h1)`
   font-size: clamp(1.75rem, 6vw, 4.5rem);
   font-weight: 800;
@@ -294,35 +334,67 @@ const Title = styled(motion.h1)`
   }
 `;
 
+/* Marker-highlight block on the surname: the poster focal point.
+   Fixed ink text — 5.5:1 on the orange in both themes. */
+const TitleHighlight = styled.span`
+  display: inline-block;
+  background: var(--accent-orange, #ee5a24);
+  color: #111111;
+  padding: 0 0.15em;
+  margin-top: 0.08em;
+  transform: rotate(-1.5deg);
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
+`;
+
+/* Terminal-style chip framing the typing text so it reads as a deliberate
+   element; role is now subordinate to the name, not competing with it */
 const DynamicRole = styled(motion.div)`
-  font-size: clamp(1rem, 3.5vw, 2rem);
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  align-self: flex-start;
+  min-width: min(26ch, 100%);
+  min-height: 2.75rem;
+  padding: 0.5rem 1rem;
+  margin: clamp(0.25rem, 1.5vw, 0.75rem) 0;
+  background: var(--bg-card, #fffcf5);
+  border: 2px solid var(--border-card, #111);
+  border-radius: var(--radius-sm, 10px);
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
+  font-size: clamp(0.875rem, 2vw, 1.25rem);
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--text-secondary, #333);
-  margin: clamp(0.25rem, 1.5vw, 1rem) 0;
-  min-height: clamp(1.25rem, 3.5vw, 2.5rem);
+  letter-spacing: 0.08em;
+  color: var(--text-primary, #333);
+  text-align: left;
+
+  @media (max-width: 768px) {
+    align-self: center;
+  }
 
   @media (max-width: 480px) {
-    font-size: clamp(0.875rem, 4vw, 1.25rem);
-    letter-spacing: 0.05em;
-    min-height: 1.5rem;
-  }
-
-  @media (max-width: 360px) {
     font-size: 0.875rem;
+    letter-spacing: 0.05em;
+    min-height: 2.5rem;
+    padding: 0.375rem 0.875rem;
   }
+`;
+
+const RolePrompt = styled.span`
+  color: var(--accent-orange, #ee5a24);
+  font-weight: 800;
+  flex-shrink: 0;
 `;
 
 const Description = styled(motion.p)`
   font-size: clamp(0.875rem, 2vw, 1.125rem);
   line-height: 1.6;
   color: var(--text-secondary, #555);
-  margin: clamp(0.75rem, 2vw, 1.5rem) 0;
+  margin: clamp(0.5rem, 1.5vw, 1rem) 0;
   max-width: 500px;
 
   @media (max-width: 768px) {
-    margin: 1rem auto;
+    margin: 0.5rem auto;
     max-width: 90%;
   }
 
@@ -343,11 +415,12 @@ const ButtonGroup = styled(motion.div)`
     justify-content: center;
   }
 
+  /* Phones: keep both CTAs on one row (flex-wrap stacks them again on very
+     narrow screens) so the fold stays short */
   @media (max-width: 480px) {
-    flex-direction: column;
-    align-items: stretch;
     width: 100%;
-    max-width: 300px;
+    max-width: 400px;
+    gap: 0.625rem;
   }
 
   /* Landscape mobile */
@@ -382,15 +455,17 @@ const Button = styled(motion.a)`
   }
 
   @media (max-width: 480px) {
-    width: 100%;
-    padding: 0.875rem 1.5rem;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 48px;
+    padding: 0.875rem 1rem;
   }
 
   @media (max-width: 360px) {
     font-size: 0.75rem;
     letter-spacing: 0.05em;
     gap: 0.5rem;
-    padding: 0.75rem 1.25rem;
+    padding: 0.75rem 1rem;
   }
 
   &:before {
@@ -474,28 +549,25 @@ const SecondaryButton = styled(Button)`
   }
 `;
 
+/* Bare column — the old glass wrapper card made a box-in-box-in-box stack
+   that competed with the headline; the tiles now stand on their own */
 const StatsSection = styled(motion.div)`
   display: flex;
   flex-direction: column;
-  gap: clamp(1rem, 2vw, 1.5rem);
-  padding: clamp(1.5rem, 3vw, 2.5rem);
-  background: var(--glass-bg, rgba(255, 255, 255, 0.8));
-  backdrop-filter: blur(10px);
-  border: 2px solid var(--border-card, #111);
-  border-radius: var(--radius-card, 14px);
-  box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
+  gap: clamp(1rem, 2vw, 1.25rem);
 
   @media (max-width: 768px) {
     order: 2;
     width: 100%;
-    max-width: 500px;
+    max-width: 480px;
+    margin: 0 auto;
   }
 `;
 
 const StatsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: clamp(0.75rem, 2vw, 1.5rem);
+  gap: clamp(0.875rem, 2vw, 1.25rem);
 
   /* Phones: keep the 2x2 grid but tighten it so all four stats share a
      single glance instead of stacking into a tall column */
@@ -506,18 +578,25 @@ const StatsGrid = styled.div`
 
 const StatCard = styled(motion.div)`
   text-align: center;
-  padding: clamp(0.75rem, 2vw, 1rem);
-  background: var(--skill-card-bg, rgba(255, 255, 255, 0.6));
+  padding: clamp(0.875rem, 2vw, 1.25rem) clamp(0.75rem, 1.5vw, 1rem);
+  background: var(--bg-card, #fffcf5);
   border-radius: var(--radius-sm, 10px);
   border: 2px solid var(--border-card, #111);
-  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
+  box-shadow: var(--shadow-hard, 4px 4px 0 #111);
   transition: all 0.3s ease;
+
+  /* Anchor tile: fixed ink text on the orange (5.5:1 in both themes) */
+  ${props => props.$accent && `
+    background: var(--accent-orange, #ee5a24);
+    --stat-number-color: #111111;
+    --stat-label-color: rgba(17, 17, 17, 0.85);
+    --stat-icon-bg: #111111;
+    --stat-icon-color: #fffcf5;
+  `}
 
   @media (hover: hover) {
     &:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-hard, 4px 4px 0 #111);
-      background: var(--bg-card-hover, rgba(255, 255, 255, 0.9));
+      box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
     }
   }
 
@@ -526,37 +605,38 @@ const StatCard = styled(motion.div)`
   }
 `;
 
-/* Per-stat icon chip; mobile-only so desktop/tablet cards keep their
-   current look */
 const StatIcon = styled.div`
-  display: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--stat-icon-color, var(--on-orange, #fff));
+  background: var(--stat-icon-bg, var(--accent-orange, #ee5a24));
+  border: 2px solid var(--border-card, #111);
+  border-radius: var(--radius-sm, 10px);
+  box-shadow: 2px 2px 0 var(--shadow-color, #111);
 
   @media (max-width: 640px) {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
     width: 1.75rem;
     height: 1.75rem;
     margin-bottom: 0.375rem;
     font-size: 0.8125rem;
-    color: var(--on-orange, #fff);
-    background: var(--accent-orange, #ee5a24);
-    border: 2px solid var(--border-card, #111);
-    border-radius: var(--radius-sm, 10px);
-    box-shadow: 2px 2px 0 var(--shadow-color, #111);
   }
 `;
 
 const StatNumber = styled.div`
-  font-size: clamp(1.25rem, 3vw, 2rem);
+  font-size: clamp(1.375rem, 3vw, 2.125rem);
   font-weight: 800;
-  color: var(--text-primary, #000);
+  line-height: 1.1;
+  color: var(--stat-number-color, var(--text-primary, #000));
   margin-bottom: 0.25rem;
   font-variant-numeric: tabular-nums; /* keeps width steady while counting up */
 
   @media (max-width: 640px) {
     font-size: 1.375rem;
-    color: var(--accent-orange, #ee5a24);
   }
 
   @media (max-width: 360px) {
@@ -565,8 +645,8 @@ const StatNumber = styled.div`
 `;
 
 const StatLabel = styled.div`
-  font-size: clamp(0.625rem, 1.5vw, 0.875rem);
-  color: var(--text-secondary, #666);
+  font-size: clamp(0.625rem, 1.5vw, 0.8125rem);
+  color: var(--stat-label-color, var(--text-secondary, #666));
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-weight: 700;
@@ -579,63 +659,44 @@ const StatLabel = styled.div`
 
 const QuickInfo = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   gap: clamp(0.5rem, 1.5vw, 0.75rem);
-  padding-top: clamp(0.75rem, 2vw, 1rem);
-  border-top: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
 
-  /* Phones: wrap the info items into a row of compact chips instead of a
-     stacked list */
-  @media (max-width: 640px) {
-    flex-direction: row;
-    flex-wrap: wrap;
+  @media (max-width: 768px) {
     justify-content: center;
-    gap: 0.5rem;
   }
 
   @media (max-width: 360px) {
     gap: 0.375rem;
-    padding-top: 0.625rem;
   }
 `;
 
+/* Sticker-style chips at every width (was mobile-only) */
 const InfoItem = styled.div`
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-  font-size: clamp(0.75rem, 1.75vw, 1rem);
-  color: var(--text-secondary, #555);
-
-  @media (max-width: 640px) {
-    gap: 0.375rem;
-    font-size: 0.6875rem;
-    font-weight: 700;
-    color: var(--text-primary, #000);
-    background: var(--tag-bg, #f2e9d8);
-    border: 2px solid var(--border-card, #111);
-    border-radius: var(--radius-pill, 999px);
-    padding: 0.25rem 0.625rem;
-  }
+  gap: 0.5rem;
+  font-size: clamp(0.6875rem, 1.5vw, 0.8125rem);
+  font-weight: 700;
+  color: var(--text-primary, #000);
+  background: var(--tag-bg, #f2e9d8);
+  border: 2px solid var(--border-card, #111);
+  border-radius: var(--radius-pill, 999px);
+  padding: 0.375rem 0.875rem;
+  box-shadow: 2px 2px 0 var(--shadow-color, #111);
 
   @media (max-width: 360px) {
     font-size: 0.625rem;
-    padding: 0.2rem 0.5rem;
+    padding: 0.25rem 0.625rem;
   }
 `;
 
 const InfoIcon = styled.div`
-  font-size: clamp(0.875rem, 2vw, 1rem);
-  color: var(--text-primary, #000);
-  width: 20px;
   display: flex;
   justify-content: center;
   flex-shrink: 0;
-
-  @media (max-width: 640px) {
-    width: auto;
-    font-size: 0.75rem;
-    color: var(--accent-orange, #ee5a24);
-  }
+  font-size: 0.8125rem;
+  color: var(--accent-orange, #ee5a24);
 `;
 
 const ScrollIndicator = styled(motion.div)`
@@ -1319,6 +1380,15 @@ const Hero = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
           >
+            <AvailabilityPill
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
+              <PulseDot />
+              Available for Projects
+            </AvailabilityPill>
+
             <Greeting
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -1332,7 +1402,9 @@ const Hero = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              SAMUKELO MKHONZA
+              Samukelo
+              <br />
+              <TitleHighlight>Mkhonza</TitleHighlight>
             </Title>
 
             <DynamicRole
@@ -1340,6 +1412,7 @@ const Hero = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
             >
+              <RolePrompt>&gt;_</RolePrompt>
               <TypingText texts={roles} speed={100} pause={2000} />
             </DynamicRole>
 
@@ -1384,6 +1457,7 @@ const Hero = () => {
           >
             <StatsGrid>
               <StatCard
+                $accent
                 whileHover={{ y: -4 }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -1429,10 +1503,6 @@ const Hero = () => {
               <InfoItem>
                 <InfoIcon><FaMapMarkerAlt /></InfoIcon>
                 <span>Bellville, Western Cape</span>
-              </InfoItem>
-              <InfoItem>
-                <InfoIcon><FaRocket /></InfoIcon>
-                <span>Available for Projects</span>
               </InfoItem>
               <InfoItem>
                 <InfoIcon><FaCloud /></InfoIcon>

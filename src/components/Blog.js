@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { motion } from 'framer-motion';
 import { FaRocket, FaArrowRight } from 'react-icons/fa';
 import { blogPosts } from '../content/blogPosts';
@@ -10,12 +10,10 @@ const Section = styled.section`
   background: var(--bg-primary-glass, rgba(255, 255, 255, 0.86));
   position: relative;
 
-  /* Small mobile */
   @media (max-width: 480px) {
     padding: clamp(2rem, 6vw, 3rem) clamp(0.75rem, 3vw, 1.5rem);
   }
 
-  /* Landscape mobile */
   @media (max-height: 600px) and (orientation: landscape) {
     padding: 2rem 2rem;
   }
@@ -37,8 +35,7 @@ const Heading = styled(motion.h2)`
   margin-bottom: clamp(3rem, 6vw, 4rem);
   color: var(--text-primary, #000);
   position: relative;
-  
-  /* Add underline decoration */
+
   &:after {
     content: '';
     position: absolute;
@@ -50,17 +47,15 @@ const Heading = styled(motion.h2)`
     background: var(--text-primary, #000);
   }
 
-  /* Small mobile */
   @media (max-width: 480px) {
     font-size: clamp(1.5rem, 6vw, 2rem);
     letter-spacing: 0.05em;
     margin-bottom: clamp(2rem, 5vw, 3rem);
   }
 
-  /* Very small screens */
   @media (max-width: 360px) {
     font-size: 1.375rem;
-    
+
     &:after {
       width: 50px;
       height: 2px;
@@ -69,209 +64,266 @@ const Heading = styled(motion.h2)`
   }
 `;
 
+const BlogSubtitle = styled(motion.p)`
+  text-align: center;
+  color: var(--text-secondary, #666);
+  font-size: clamp(0.875rem, 2vw, 1.0625rem);
+  line-height: 1.6;
+  max-width: 600px;
+  margin: -1rem auto clamp(2.5rem, 5vw, 3.5rem);
+
+  @media (max-width: 480px) {
+    font-size: clamp(0.8125rem, 2.5vw, 0.9375rem);
+    margin-top: -0.5rem;
+  }
+`;
+
+/* Featured-first layout: the first post anchors the left column at double
+   height, the rest stack beside it. The nth-last-child guard only lets the
+   first card span when there are at least three posts, so the grid degrades
+   to a plain column if blogPosts shrinks. */
 const BlogGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 350px), 1fr));
-  gap: clamp(1.5rem, 3vw, 2.5rem);
-  
-  /* Tablets */
-  @media (max-width: 900px) {
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
-    gap: clamp(1.25rem, 3vw, 2rem);
-  }
- 
-  /* Small mobile */
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
-    gap: clamp(1rem, 3vw, 1.5rem);
+  grid-template-columns: 1.15fr 1fr;
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+
+  & > article:first-child:nth-last-child(n + 3) {
+    grid-row: span 2;
   }
 
-  /* Very small screens */
-  @media (max-width: 360px) {
-    gap: 1rem;
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr 1fr;
+
+    & > article:first-child:nth-last-child(n + 3) {
+      grid-row: auto;
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+    gap: clamp(1rem, 3vw, 1.25rem);
+
+    & > article:first-child:nth-last-child(n + 3) {
+      grid-column: auto;
+    }
   }
 `;
 
 const BlogCard = styled(motion.article)`
   background: var(--skill-card-bg, #f8f9fa);
-  border: 2px solid var(--border-card, #e9ecef);
+  border: var(--border-w, 2px) solid var(--border-card, #111);
   border-radius: var(--radius-card, 14px);
-  box-shadow: var(--shadow-hard, 4px 4px 0 #111);
-  padding: clamp(1.5rem, 3vw, 2.5rem);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: ${p => (p.$featured
+    ? 'var(--shadow-hard-lg, 6px 6px 0 #111)'
+    : 'var(--shadow-hard, 4px 4px 0 #111)')};
+  padding: ${p => (p.$featured
+    ? 'clamp(1.5rem, 3.5vw, 2.75rem)'
+    : 'clamp(1.25rem, 3vw, 2rem)')};
   cursor: pointer;
   position: relative;
   overflow: hidden;
-
-  /* Accent strip revealed on hover */
-  &:before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: var(--accent-orange, #ee5a24);
-    transform: translateY(-100%);
-    transition: transform 0.3s ease;
-  }
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.75rem, 1.5vw, 1rem);
 
   @media (hover: hover) {
     &:hover {
-      transform: translateY(-6px);
-      box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
-      background: var(--bg-card, #fff);
-
-      &:before {
-        transform: translateY(0);
-      }
+      background: var(--bg-card-hover, #fff);
+      box-shadow: 8px 8px 0 var(--shadow-color, #111);
     }
   }
 
-  /* Touch feedback */
-  &:active {
-    transform: scale(0.98);
+  &:focus-visible {
+    outline: 3px solid var(--accent-orange, #ee5a24);
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 640px) {
+    gap: 0.625rem;
+    ${p => !p.$featured && css`
+      padding: 1rem 1.125rem;
+    `}
   }
 `;
 
-const ComingSoonBadge = styled.span`
-  font-size: clamp(0.6875rem, 1.5vw, 0.8125rem);
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: var(--accent-inverse, #fff);
-  background: var(--accent, #000);
-  padding: clamp(0.375rem, 1vw, 0.5rem) clamp(0.75rem, 1.5vw, 1rem);
-  border-radius: var(--radius-pill, 999px);
-  display: inline-block;
-  margin-bottom: clamp(0.75rem, 2vw, 1rem);
-  font-weight: 700;
+/* Oversized issue number in the top-right corner; the header stamp is
+   layered above it (z-index) so the two overlap like a zine masthead. */
+const GhostNumber = styled.span`
+  position: absolute;
+  top: 0.25rem;
+  right: 0.75rem;
+  z-index: 0;
+  font-size: ${p => (p.$featured
+    ? 'clamp(4rem, 7vw, 6rem)'
+    : 'clamp(3rem, 5vw, 4rem)')};
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text-primary, #000);
+  opacity: 0.06;
+  pointer-events: none;
+  user-select: none;
+`;
+
+const CardHeader = styled.div`
   position: relative;
-  overflow: hidden;
-  
-  /* Add shimmer effect */
-  &:after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.3),
-      transparent
-    );
-    animation: shimmer 2s infinite;
-  }
-  
-  @keyframes shimmer {
-    to {
-      left: 100%;
-    }
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+`;
+
+const IconPlate = styled.div`
+  width: ${p => (p.$featured ? '56px' : '44px')};
+  height: ${p => (p.$featured ? '56px' : '44px')};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: ${p => (p.$featured ? 'var(--accent-orange, #ee5a24)' : 'var(--tag-bg, #f0f0f0)')};
+  color: ${p => (p.$featured ? 'var(--on-orange, #fff)' : 'var(--text-primary, #000)')};
+  border: var(--border-w, 2px) solid var(--border-card, #111);
+  border-radius: var(--radius-sm, 10px);
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
+  font-size: ${p => (p.$featured ? '1.5rem' : '1.125rem')};
+  flex-shrink: 0;
+
+  ${BlogCard}:hover & {
+    ${p => !p.$featured && css`
+      background: var(--accent-orange, #ee5a24);
+      color: var(--on-orange, #fff);
+    `}
   }
 
   @media (max-width: 360px) {
-    font-size: 0.625rem;
-    padding: 0.25rem 0.625rem;
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+`;
+
+const SoonStamp = styled.span`
+  font-size: clamp(0.625rem, 1.5vw, 0.75rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-primary, #000);
+  background: var(--bg-card, #fff);
+  border: 2px dashed var(--accent-orange, #ee5a24);
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+  transform: rotate(2.5deg);
+  white-space: nowrap;
+
+  @media (max-width: 360px) {
+    font-size: 0.5625rem;
     letter-spacing: 0.1em;
+    padding: 0.25rem 0.5rem;
   }
 `;
 
 const BlogTitle = styled.h3`
-  font-size: clamp(1.125rem, 2.5vw, 1.75rem);
-  font-weight: 700;
+  font-size: ${p => (p.$featured
+    ? 'clamp(1.375rem, 3vw, 2rem)'
+    : 'clamp(1.0625rem, 2vw, 1.375rem)')};
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: clamp(0.75rem, 2vw, 1.25rem);
-  line-height: 1.2;
+  letter-spacing: 0.04em;
+  line-height: 1.25;
   color: var(--text-primary, #000);
+  margin: 0;
 
-  /* Small mobile */
-  @media (max-width: 480px) {
-    font-size: clamp(1rem, 4vw, 1.375rem);
-  }
-
-  /* Very small screens */
   @media (max-width: 360px) {
-    font-size: 0.9375rem;
-    letter-spacing: 0.02em;
-    margin-bottom: 0.625rem;
+    font-size: ${p => (p.$featured ? '1.125rem' : '0.9375rem')};
   }
 `;
 
 const BlogExcerpt = styled.p`
-  font-size: clamp(0.875rem, 2vw, 1.0625rem);
+  font-size: ${p => (p.$featured
+    ? 'clamp(0.9375rem, 2vw, 1.0625rem)'
+    : 'clamp(0.875rem, 2vw, 0.9375rem)')};
   line-height: 1.7;
   color: var(--text-secondary, #495057);
-  margin-bottom: clamp(1rem, 2.5vw, 1.5rem);
+  margin: 0;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: ${p => (p.$featured ? 4 : 3)};
   -webkit-box-orient: vertical;
   overflow: hidden;
 
-  /* Small mobile */
-  @media (max-width: 480px) {
-    font-size: clamp(0.8125rem, 2.5vw, 0.9375rem);
+  @media (max-width: 640px) {
+    -webkit-line-clamp: ${p => (p.$featured ? 3 : 2)};
     line-height: 1.6;
-  }
-
-  /* Very small screens */
-  @media (max-width: 360px) {
-    font-size: 0.8125rem;
-    -webkit-line-clamp: 4;
-    margin-bottom: 0.875rem;
   }
 `;
 
-const ReadMore = styled.span`
-  font-size: clamp(0.75rem, 1.75vw, 0.9375rem);
-  font-weight: 600;
+const CardFooter = styled.div`
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding-top: clamp(0.75rem, 2vw, 1rem);
+  border-top: 2px dashed var(--border-color, rgba(17, 17, 17, 0.15));
+`;
+
+const BlogTags = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+`;
+
+const BlogTag = styled.span`
+  background: var(--tag-bg, #f0f0f0);
+  color: var(--text-primary, #444);
+  border: 1px solid var(--border-card, #111);
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-size: clamp(0.625rem, 1.25vw, 0.6875rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+`;
+
+const DetailsHint = styled.span`
+  font-size: clamp(0.6875rem, 1.5vw, 0.8125rem);
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  transition: all 0.3s ease;
   color: var(--text-primary, #000);
-  
+  white-space: nowrap;
+
   svg {
-    font-size: clamp(0.75rem, 1.5vw, 0.875rem);
-    transition: transform 0.3s ease;
-  }
- 
-  ${BlogCard}:hover & {
-    gap: 0.75rem;
-    
-    svg {
-      transform: translateX(4px);
-    }
+    font-size: 0.75em;
+    transition: transform 0.25s ease;
   }
 
-  @media (max-width: 360px) {
-    font-size: 0.6875rem;
-    letter-spacing: 0.05em;
-    gap: 0.375rem;
+  ${BlogCard}:hover & svg {
+    transform: translateX(4px);
   }
 `;
 
-// Modal content (frame and behaviour come from the shared Modal component;
-// spacing between blocks comes from the shared panel's column gap)
+/* Modal content (frame and behaviour come from the shared Modal component;
+   spacing between blocks comes from the shared panel's column gap) */
 const ModalIcon = styled(motion.div)`
-  width: 60px;
-  height: 60px;
-  color: var(--text-primary, #000);
+  width: 64px;
+  height: 64px;
+  color: var(--on-orange, #fff);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--tag-bg, #f8f9fa);
-  border: 2px solid var(--border-card, #111);
-  border-radius: 50%;
+  background: var(--accent-orange, #ee5a24);
+  border: var(--border-w, 2px) solid var(--border-card, #111);
+  border-radius: var(--radius-sm, 10px);
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
   flex-shrink: 0;
 
   svg {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
   }
 
   @media (max-width: 360px) {
@@ -279,8 +331,8 @@ const ModalIcon = styled(motion.div)`
     height: 52px;
 
     svg {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
     }
   }
 `;
@@ -328,7 +380,7 @@ const CTAButton = styled.button`
       box-shadow: var(--shadow-hard, 4px 4px 0 #111);
     }
   }
-  
+
   &:active {
     transform: translateY(0);
   }
@@ -338,71 +390,6 @@ const CTAButton = styled.button`
     padding: 0.5rem 1.25rem;
     letter-spacing: 0.05em;
   }
-`;
-
-const BlogSubtitle = styled(motion.p)`
-  text-align: center;
-  color: var(--text-secondary, #666);
-  font-size: clamp(0.875rem, 2vw, 1.0625rem);
-  line-height: 1.6;
-  max-width: 600px;
-  margin: -1rem auto clamp(2.5rem, 5vw, 3.5rem);
-
-  @media (max-width: 480px) {
-    font-size: clamp(0.8125rem, 2.5vw, 0.9375rem);
-    margin-top: -0.5rem;
-  }
-`;
-
-const BlogCardHeader = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: clamp(0.75rem, 2vw, 1rem);
-`;
-
-const BlogIconWrapper = styled.div`
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--tag-bg, #f0f0f0);
-  border-radius: 8px;
-  color: var(--text-primary, #000);
-  font-size: 1.125rem;
-  transition: all 0.3s ease;
-
-  ${BlogCard}:hover & {
-    background: var(--accent, #000);
-    color: var(--accent-inverse, #fff);
-  }
-`;
-
-const BlogTags = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.375rem;
-  margin-bottom: clamp(0.75rem, 2vw, 1rem);
-`;
-
-const BlogTag = styled.span`
-  background: var(--tag-bg, #f0f0f0);
-  color: var(--text-secondary, #666);
-  padding: 0.1875rem 0.5rem;
-  border-radius: 4px;
-  font-size: clamp(0.625rem, 1.25vw, 0.75rem);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-`;
-
-const BlogFooter = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding-top: clamp(0.75rem, 2vw, 1rem);
-  border-top: 1px solid var(--border-card, #e0e0e0);
 `;
 
 const Blog = () => {
@@ -436,44 +423,52 @@ const Blog = () => {
         </BlogSubtitle>
 
         <BlogGrid>
-          {blogPosts.map((post, index) => (
-            <BlogCard
-              key={post.id}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ 
-                duration: 0.5, 
-                delay: index * 0.1,
-                ease: [0.4, 0, 0.2, 1]
-              }}
-              viewport={{ once: true, margin: "-50px" }}
-              onClick={() => handleCardClick(post)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(post); } }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <BlogCardHeader>
-                <BlogIconWrapper>
-                  <post.icon />
-                </BlogIconWrapper>
-                <ComingSoonBadge>Coming Soon</ComingSoonBadge>
-              </BlogCardHeader>
-              <BlogTitle>{post.title}</BlogTitle>
-              <BlogExcerpt>{post.excerpt}</BlogExcerpt>
-              <BlogTags>
-                {post.tags.map((tag, idx) => (
-                  <BlogTag key={idx}>{tag}</BlogTag>
-                ))}
-              </BlogTags>
-              <BlogFooter>
-                <ReadMore>
-                  Read More <FaArrowRight />
-                </ReadMore>
-              </BlogFooter>
-            </BlogCard>
-          ))}
+          {blogPosts.map((post, index) => {
+            const featured = index === 0;
+            return (
+              <BlogCard
+                key={post.id}
+                $featured={featured}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.5,
+                  delay: index * 0.08,
+                  ease: [0.4, 0, 0.2, 1]
+                }}
+                viewport={{ once: true, margin: "-50px" }}
+                onClick={() => handleCardClick(post)}
+                role="button"
+                tabIndex={0}
+                aria-haspopup="dialog"
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(post); } }}
+                whileHover={{ x: -3, y: -3 }}
+                whileTap={{ x: 1, y: 1 }}
+              >
+                <GhostNumber $featured={featured} aria-hidden="true">
+                  {String(index + 1).padStart(2, '0')}
+                </GhostNumber>
+                <CardHeader>
+                  <IconPlate $featured={featured}>
+                    <post.icon />
+                  </IconPlate>
+                  <SoonStamp>Coming soon</SoonStamp>
+                </CardHeader>
+                <BlogTitle $featured={featured}>{post.title}</BlogTitle>
+                <BlogExcerpt $featured={featured}>{post.excerpt}</BlogExcerpt>
+                <CardFooter>
+                  <BlogTags>
+                    {post.tags.map((tag) => (
+                      <BlogTag key={tag}>{tag}</BlogTag>
+                    ))}
+                  </BlogTags>
+                  <DetailsHint>
+                    Details <FaArrowRight />
+                  </DetailsHint>
+                </CardFooter>
+              </BlogCard>
+            );
+          })}
         </BlogGrid>
       </Container>
 
@@ -489,7 +484,7 @@ const Blog = () => {
           <>
             <ModalIcon
               initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
+              animate={{ scale: 1, opacity: 1, rotate: -4 }}
               transition={{
                 delay: 0.1,
                 type: "spring",

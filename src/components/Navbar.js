@@ -1,155 +1,91 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import styled from 'styled-components';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { FaBars, FaTimes, FaCode, FaHome, FaUser, FaCog, FaBriefcase, FaBlog, FaEnvelope, FaSun, FaMoon, FaCompass } from 'react-icons/fa';
 import { useTheme } from '../context/ThemeContext';
 
 const NavContainer = styled(motion.nav)`
   position: fixed;
   top: 0;
-  width: 100%;
+  left: 0;
+  right: 0;
   z-index: 1000;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--bg-card, #fffcf5);
+  border-bottom: 3px solid var(--border-card, #111);
+  box-shadow: ${props => props.$scrolled
+    ? '0 6px 0 var(--shadow-color, #111)'
+    : '0 4px 0 var(--shadow-color, #111)'};
+  transition: box-shadow 0.25s ease;
 `;
 
-const NavContent = styled.div`
+const NavInner = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: ${props => props.$scrolled 
-    ? 'clamp(0.625rem, 2vw, 1rem)' 
-    : 'clamp(0.875rem, 2.5vw, 1.25rem)'} clamp(1rem, 4vw, 2rem);
+  padding: ${props => props.$scrolled ? '0.625rem' : '1rem'} clamp(1rem, 4vw, 2rem);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: ${props => props.$scrolled 
-    ? 'var(--glass-bg, rgba(255, 255, 255, 0.98))' 
-    : 'var(--glass-bg, rgba(255, 255, 255, 0.95))'};
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: ${props => props.$scrolled ? '0' : '0 0 16px 16px'};
-  border: none;
-  border-bottom: 2px solid var(--border-card, #111);
-  box-shadow: ${props => props.$scrolled
-    ? '0 4px 0 var(--shadow-color, #111)'
-    : '0 3px 0 var(--shadow-color, #111)'};
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
+  gap: clamp(0.5rem, 2vw, 1rem);
+  transition: padding 0.25s ease;
 
-  /* Small mobile */
   @media (max-width: 480px) {
-    padding: ${props => props.$scrolled 
-      ? 'clamp(0.5rem, 2vw, 0.75rem)' 
-      : 'clamp(0.625rem, 3vw, 1rem)'} clamp(0.75rem, 3vw, 1.25rem);
-    border-radius: 0;
+    padding: ${props => props.$scrolled ? '0.5rem' : '0.75rem'} clamp(0.75rem, 3vw, 1.25rem);
   }
 
-  /* Very small screens */
-  @media (max-width: 360px) {
-    padding: ${props => props.$scrolled ? '0.5rem' : '0.625rem'} 0.625rem;
-  }
-
-  /* Landscape mobile */
   @media (max-height: 500px) and (orientation: landscape) {
     padding: 0.5rem clamp(1rem, 3vw, 2rem);
   }
 `;
 
-const Logo = styled(motion.a)`
+const Logo = styled.a`
   display: flex;
   align-items: center;
-  gap: clamp(0.5rem, 2vw, 0.875rem);
-  font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+  gap: clamp(0.5rem, 2vw, 0.75rem);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--text-primary, #000);
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.3s ease;
   flex-shrink: 0;
+  position: relative;
   -webkit-tap-highlight-color: transparent;
 
-  @media (hover: hover) {
-    &:hover {
-      transform: scale(1.05);
-    }
-  }
-
   &:active {
-    transform: scale(0.95);
+    transform: scale(0.96);
   }
 
-  /* Small mobile */
-  @media (max-width: 480px) {
-    font-size: clamp(1rem, 4vw, 1.25rem);
-    gap: 0.625rem;
-    letter-spacing: 0.05em;
-  }
-
-  /* Very small screens */
-  @media (max-width: 360px) {
-    font-size: 0.9375rem;
+  &:focus-visible {
+    outline: 3px solid var(--green, #43a047);
+    outline-offset: 3px;
   }
 `;
 
 const LogoIcon = styled(motion.div)`
-  width: ${props => props.$scrolled 
-    ? 'clamp(2rem, 5vw, 2.5rem)' 
-    : 'clamp(2.25rem, 6vw, 3rem)'};
-  height: ${props => props.$scrolled 
-    ? 'clamp(2rem, 5vw, 2.5rem)' 
-    : 'clamp(2.25rem, 6vw, 3rem)'};
-  background: var(--accent, #000);
-  border-radius: clamp(6px, 1.5vw, 10px);
+  width: ${props => props.$scrolled ? '2.25rem' : '2.5rem'};
+  height: ${props => props.$scrolled ? '2.25rem' : '2.5rem'};
+  background: var(--accent, #111);
+  border: 2px solid var(--border-card, #111);
+  border-radius: var(--radius-sm, 10px);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--accent-inverse, #fff);
-  font-size: ${props => props.$scrolled 
-    ? 'clamp(0.875rem, 2vw, 1.125rem)' 
-    : 'clamp(1rem, 2.5vw, 1.375rem)'};
-  font-weight: 700;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
+  font-size: ${props => props.$scrolled ? '1rem' : '1.125rem'};
   box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
+  transition: width 0.25s ease, height 0.25s ease, font-size 0.25s ease;
+  flex-shrink: 0;
 
-  &:before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-    transition: left 0.5s ease;
-  }
-
-  @media (hover: hover) {
-    &:hover:before {
-      left: 100%;
-    }
-  }
-
-  /* Small mobile */
-  @media (max-width: 480px) {
-    width: ${props => props.$scrolled ? '2rem' : '2.25rem'};
-    height: ${props => props.$scrolled ? '2rem' : '2.25rem'};
-    font-size: ${props => props.$scrolled ? '0.875rem' : '1rem'};
-  }
-
-  /* Very small screens */
   @media (max-width: 360px) {
-    width: ${props => props.$scrolled ? '1.875rem' : '2rem'};
-    height: ${props => props.$scrolled ? '1.875rem' : '2rem'};
+    width: 2rem;
+    height: 2rem;
     font-size: 0.875rem;
-    border-radius: 6px;
   }
 `;
 
 const LogoText = styled.span`
   font-size: clamp(1rem, 2.5vw, 1.25rem);
-  
+
   @media (max-width: 480px) {
     display: none;
   }
@@ -158,7 +94,7 @@ const LogoText = styled.span`
 const Menu = styled.div`
   display: flex;
   align-items: center;
-  gap: clamp(0.125rem, 0.5vw, 0.5rem);
+  gap: clamp(0.125rem, 0.4vw, 0.375rem);
   min-width: 0;
 
   @media (max-width: 968px) {
@@ -166,124 +102,113 @@ const Menu = styled.div`
   }
 `;
 
-const MenuItem = styled(motion.a)`
-  position: relative;
-  padding: clamp(0.5rem, 1vw, 0.75rem) clamp(0.5rem, 1.2vw, 0.875rem);
-  font-size: clamp(0.6875rem, 1.1vw, 0.875rem);
-  font-weight: 600;
+const MenuItem = styled.a`
+  padding: clamp(0.4rem, 0.8vw, 0.55rem) clamp(0.5rem, 1vw, 0.8rem);
+  font-size: clamp(0.6875rem, 0.95vw, 0.8125rem);
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: ${props => props.$active ? 'var(--text-primary, #000)' : 'var(--text-secondary, #666)'};
-  text-decoration: none;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: clamp(0.375rem, 1vw, 0.5rem);
+  letter-spacing: 0.04em;
   white-space: nowrap;
-
-  &:before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    width: ${props => props.$active ? '80%' : '0'};
-    height: 3px;
-    background: var(--text-primary, #000);
-    transform: translateX(-50%);
-    transition: width 0.3s ease;
-    border-radius: 2px;
-  }
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: var(--radius-sm, 10px);
+  border: 2px solid ${props => props.$active ? 'var(--border-card, #111)' : 'transparent'};
+  background: ${props => props.$active ? 'var(--accent, #111)' : 'transparent'};
+  color: ${props => props.$active ? 'var(--accent-inverse, #fff)' : 'var(--text-secondary, #666)'};
+  box-shadow: ${props => props.$active ? 'var(--shadow-hard-sm, 3px 3px 0 #111)' : 'none'};
+  transition: all 0.15s ease;
 
   @media (hover: hover) {
     &:hover {
-      color: var(--text-primary, #000);
-      background: rgba(128, 128, 128, 0.1);
-      transform: translateY(-2px);
-
-      &:before {
-        width: 80%;
-      }
+      color: ${props => props.$active ? 'var(--accent-inverse, #fff)' : 'var(--text-primary, #000)'};
+      background: ${props => props.$active ? 'var(--accent, #111)' : 'var(--tag-bg, #f2e9d8)'};
+      border-color: var(--border-card, #111);
+      box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
+      transform: translate(-2px, -2px);
     }
   }
 
   &:active {
-    transform: scale(0.98);
+    transform: translate(0, 0);
+    box-shadow: none;
   }
 
-  svg {
-    font-size: clamp(0.6875rem, 1.1vw, 0.875rem);
-    opacity: 0.7;
+  &:focus-visible {
+    outline: 3px solid var(--green, #43a047);
+    outline-offset: 2px;
   }
 
-  /* Hide link icons when horizontal space gets tight */
-  @media (max-width: 1280px) {
-    svg {
-      display: none;
+  /* Tight range between hamburger collapse and full width: shave tracking */
+  @media (max-width: 1100px) {
+    letter-spacing: 0;
+  }
+`;
+
+const NavActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: clamp(0.5rem, 1.5vw, 0.75rem);
+  flex-shrink: 0;
+`;
+
+const IconButton = styled(motion.button)`
+  background: var(--tag-bg, #f2e9d8);
+  border: 2px solid var(--border-card, #111);
+  cursor: pointer;
+  border-radius: var(--radius-sm, 10px);
+  color: var(--text-primary, #000);
+  font-size: 1.125rem;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+
+  @media (hover: hover) {
+    &:hover {
+      box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
+      transform: translate(-2px, -2px);
     }
+  }
+
+  &:active {
+    transform: translate(0, 0);
+    box-shadow: none;
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--green, #43a047);
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 360px) {
+    min-width: 40px;
+    min-height: 40px;
+    font-size: 1rem;
+  }
+`;
+
+const MobileMenuButton = styled(IconButton)`
+  display: none;
+
+  @media (max-width: 968px) {
+    display: flex;
   }
 `;
 
 const ProgressBar = styled(motion.div)`
   position: absolute;
-  bottom: -1px;
+  bottom: 0;
   left: 0;
+  width: 100%;
   height: 4px;
   background: var(--green, #43a047);
   transform-origin: left;
-  z-index: 10;
-  border-radius: 0 2px 2px 0;
 
   @media (max-width: 480px) {
-    height: 2px;
-  }
-`;
-
-const MobileMenuButton = styled(motion.button)`
-  display: none;
-  background: var(--tag-bg, rgba(0, 0, 0, 0.05));
-  border: 2px solid var(--border-card, #111);
-  cursor: pointer;
-  padding: clamp(0.625rem, 2vw, 0.875rem);
-  border-radius: var(--radius-sm, 10px);
-  color: var(--text-primary, #000);
-  font-size: clamp(1.125rem, 3vw, 1.375rem);
-  transition: all 0.3s ease;
-  min-width: 44px;
-  min-height: 44px;
-  align-items: center;
-  justify-content: center;
-  -webkit-tap-highlight-color: transparent;
-
-  @media (hover: hover) {
-    &:hover {
-      background: rgba(128, 128, 128, 0.15);
-      border-color: rgba(0, 0, 0, 0.1);
-      transform: scale(1.05);
-    }
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
-
-  @media (max-width: 968px) {
-    display: flex;
-  }
-
-  /* Small mobile */
-  @media (max-width: 480px) {
-    padding: 0.625rem;
-    font-size: 1.125rem;
-  }
-
-  /* Very small screens */
-  @media (max-width: 360px) {
-    padding: 0.5rem;
-    font-size: 1rem;
-    min-width: 40px;
-    min-height: 40px;
+    height: 3px;
   }
 `;
 
@@ -291,37 +216,30 @@ const MobileMenu = styled(motion.div)`
   position: fixed;
   top: 0;
   right: 0;
-  width: min(100%, 400px);
+  width: min(100%, 380px);
   height: 100vh;
   height: 100dvh;
-  background: var(--glass-bg, rgba(255, 255, 255, 0.98));
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-left: 2px solid var(--border-card, #111);
-  padding: clamp(1.5rem, 4vw, 2rem);
+  background: var(--bg-card, #fffcf5);
+  border-left: 3px solid var(--border-card, #111);
+  box-shadow: -6px 0 0 var(--shadow-color, #111);
+  padding: clamp(1.25rem, 4vw, 1.75rem);
   display: flex;
   flex-direction: column;
-  gap: clamp(0.75rem, 2vw, 1rem);
+  gap: 0.625rem;
   z-index: 1001;
-  box-shadow: -6px 0 0 var(--shadow-color, #111);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 
-  /* Small mobile */
-  @media (max-width: 480px) {
-    width: min(100%, 320px);
-    padding: clamp(1.25rem, 4vw, 1.75rem);
-  }
-
-  /* Very small screens */
   @media (max-width: 360px) {
     width: 100%;
+    border-left: none;
+    box-shadow: none;
     padding: 1rem;
   }
 
-  /* Landscape mobile */
   @media (max-height: 500px) and (orientation: landscape) {
     padding: 1rem;
+    gap: 0.375rem;
   }
 `;
 
@@ -329,101 +247,45 @@ const MobileMenuHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: clamp(0.75rem, 2vw, 1rem);
-  border-bottom: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
-  margin-bottom: clamp(0.75rem, 2vw, 1rem);
+  padding-bottom: 1rem;
+  border-bottom: 3px solid var(--border-card, #111);
+  margin-bottom: 1rem;
 `;
 
 const MobileMenuLogo = styled.div`
-  font-size: clamp(1.125rem, 3vw, 1.375rem);
+  font-size: 1.25rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.15em;
   color: var(--text-primary, #000);
-
-  @media (max-width: 360px) {
-    font-size: 1rem;
-    letter-spacing: 0.05em;
-  }
-`;
-
-const CloseButton = styled(motion.button)`
-  background: rgba(128, 128, 128, 0.1);
-  border: none;
-  cursor: pointer;
-  padding: clamp(0.5rem, 1.5vw, 0.625rem);
-  border-radius: 8px;
-  color: var(--text-primary, #000);
-  font-size: clamp(1.25rem, 3vw, 1.5rem);
-  transition: all 0.3s ease;
-  min-width: 44px;
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  -webkit-tap-highlight-color: transparent;
-
-  @media (hover: hover) {
-    &:hover {
-      background: rgba(0, 0, 0, 0.1);
-      transform: rotate(90deg);
-    }
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
-
-  @media (max-width: 360px) {
-    font-size: 1.125rem;
-    padding: 0.5rem;
-    min-width: 40px;
-    min-height: 40px;
-  }
 `;
 
 const MobileMenuItem = styled(motion.a)`
   display: flex;
   align-items: center;
-  gap: clamp(0.875rem, 2.5vw, 1.25rem);
-  padding: clamp(0.875rem, 2.5vw, 1.125rem) clamp(1.25rem, 3vw, 1.75rem);
-  font-size: clamp(0.875rem, 2.5vw, 1.0625rem);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: ${props => props.$active ? 'var(--text-primary, #000)' : 'var(--text-secondary, #666)'};
-  text-decoration: none;
-  border-radius: 12px;
-  border: 2px solid ${props => props.$active ? 'var(--border-color, rgba(0, 0, 0, 0.1))' : 'transparent'};
-  transition: all 0.3s ease;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  background: ${props => props.$active ? 'rgba(128, 128, 128, 0.1)' : 'transparent'};
+  gap: 0.875rem;
+  padding: 0.875rem 1rem;
   min-height: 52px;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: var(--radius-sm, 10px);
+  border: 2px solid ${props => props.$active ? 'var(--border-card, #111)' : 'var(--border-color, rgba(0, 0, 0, 0.15))'};
+  background: ${props => props.$active ? 'var(--accent, #111)' : 'transparent'};
+  color: ${props => props.$active ? 'var(--accent-inverse, #fff)' : 'var(--text-secondary, #666)'};
+  box-shadow: ${props => props.$active ? 'var(--shadow-hard-sm, 3px 3px 0 #111)' : 'none'};
+  transition: all 0.15s ease;
   -webkit-tap-highlight-color: transparent;
-
-  &:before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(0,0,0,0.05), transparent);
-    transition: left 0.3s ease;
-  }
 
   @media (hover: hover) {
     &:hover {
-      color: var(--text-primary, #000);
-      background: rgba(128, 128, 128, 0.1);
-      border-color: var(--border-color, rgba(0, 0, 0, 0.1));
-      transform: translateX(8px);
-
-      &:before {
-        left: 100%;
-      }
+      color: ${props => props.$active ? 'var(--accent-inverse, #fff)' : 'var(--text-primary, #000)'};
+      background: ${props => props.$active ? 'var(--accent, #111)' : 'var(--tag-bg, #f2e9d8)'};
+      border-color: var(--border-card, #111);
+      transform: translateX(4px);
     }
   }
 
@@ -431,203 +293,97 @@ const MobileMenuItem = styled(motion.a)`
     transform: scale(0.98);
   }
 
+  &:focus-visible {
+    outline: 3px solid var(--green, #43a047);
+    outline-offset: 2px;
+  }
+
   svg {
-    font-size: clamp(1rem, 2.5vw, 1.25rem);
-    width: clamp(18px, 4vw, 24px);
+    font-size: 1.125rem;
     flex-shrink: 0;
+    opacity: ${props => props.$active ? 1 : 0.6};
   }
 
-  /* Small mobile */
-  @media (max-width: 480px) {
-    padding: 0.875rem 1.25rem;
-    font-size: 0.875rem;
-    gap: 0.875rem;
-    min-height: 48px;
-  }
-
-  /* Very small screens */
   @media (max-width: 360px) {
-    padding: 0.75rem 1rem;
-    font-size: 0.8125rem;
-    gap: 0.75rem;
-    letter-spacing: 0.03em;
-    border-radius: 8px;
-    min-height: 44px;
-    
-    svg {
-      font-size: 0.9375rem;
-      width: 16px;
-    }
+    min-height: 48px;
+    padding: 0.75rem 0.875rem;
+    font-size: 0.875rem;
   }
+
+  @media (max-height: 500px) and (orientation: landscape) {
+    min-height: 44px;
+    padding: 0.5rem 0.875rem;
+  }
+`;
+
+const ItemIndex = styled.span`
+  font-size: 0.6875rem;
+  min-width: 1.375rem;
+  opacity: 0.5;
 `;
 
 const MobileMenuFooter = styled.div`
   margin-top: auto;
-  padding-top: clamp(1.5rem, 4vw, 2rem);
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-  text-align: center;
-
-  @media (max-width: 360px) {
-    padding-top: 1rem;
-  }
-
-  /* Landscape mobile */
-  @media (max-height: 500px) and (orientation: landscape) {
-    padding-top: 1rem;
-  }
+  padding-top: 1.25rem;
+  border-top: 3px solid var(--border-card, #111);
 `;
 
-const ContactCTA = styled(motion.a)`
-  display: inline-flex;
+const ContactCTA = styled.a`
+  display: flex;
   align-items: center;
-  gap: clamp(0.625rem, 2vw, 0.875rem);
-  padding: clamp(0.875rem, 2.5vw, 1.125rem) clamp(1.5rem, 4vw, 2.25rem);
-  background: var(--accent, #000);
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 52px;
+  padding: 0.875rem 1.5rem;
+  background: var(--accent, #111);
   color: var(--accent-inverse, #fff);
   border: 2px solid var(--border-card, #111);
-  border-radius: var(--radius-pill, 999px);
+  border-radius: var(--radius-sm, 10px);
   box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
-  font-size: clamp(0.8125rem, 2vw, 0.9375rem);
+  font-size: 0.875rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   text-decoration: none;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  justify-content: center;
-  min-height: 48px;
+  cursor: pointer;
+  transition: all 0.15s ease;
   -webkit-tap-highlight-color: transparent;
-
-  &:before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    background: var(--accent-inverse, #fff);
-    border-radius: 50%;
-    transition: all 0.3s ease;
-    transform: translate(-50%, -50%);
-  }
 
   @media (hover: hover) {
     &:hover {
-      transform: translateY(-2px);
       box-shadow: var(--shadow-hard, 4px 4px 0 #111);
-
-      &:before {
-        width: 120%;
-        height: 120%;
-      }
+      transform: translate(-2px, -2px);
     }
   }
 
   &:active {
-    transform: scale(0.98);
+    transform: translate(0, 0);
+    box-shadow: none;
   }
 
-  span {
-    position: relative;
-    z-index: 1;
-    transition: color 0.3s ease;
-  }
-
-  svg {
-    position: relative;
-    z-index: 1;
-    transition: color 0.3s ease;
-    font-size: clamp(0.875rem, 2vw, 1rem);
-  }
-
-  @media (hover: hover) {
-    &:hover span,
-    &:hover svg {
-      color: var(--accent, #000);
-    }
-  }
-
-  /* Small mobile */
-  @media (max-width: 480px) {
-    padding: 0.875rem 1.5rem;
-    font-size: 0.8125rem;
-  }
-
-  /* Very small screens */
-  @media (max-width: 360px) {
-    padding: 0.75rem 1.25rem;
-    font-size: 0.75rem;
-    gap: 0.5rem;
-    letter-spacing: 0.03em;
-    border-radius: 8px;
-    min-height: 44px;
-    
-    svg {
-      font-size: 0.8125rem;
-    }
+  &:focus-visible {
+    outline: 3px solid var(--green, #43a047);
+    outline-offset: 2px;
   }
 `;
 
 const Overlay = styled(motion.div)`
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
   z-index: 999;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-`;
-
-const ThemeToggleBtn = styled(motion.button)`
-  background: var(--tag-bg, rgba(0, 0, 0, 0.05));
-  border: 2px solid var(--border-card, #111);
-  cursor: pointer;
-  padding: clamp(0.5rem, 1.5vw, 0.625rem);
-  border-radius: 50%;
-  color: var(--text-primary, #000);
-  font-size: clamp(1rem, 2.5vw, 1.25rem);
-  transition: all 0.3s ease;
-  min-width: 40px;
-  min-height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  flex-shrink: 0;
-
-  @media (hover: hover) {
-    &:hover {
-      background: rgba(0, 0, 0, 0.1);
-      border-color: rgba(0, 0, 0, 0.1);
-      transform: scale(1.1);
-    }
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
-
-  /* When the menu collapses to the hamburger, keep the toggle grouped
-     with it on the right instead of floating mid-bar via space-between */
-  @media (max-width: 968px) {
-    margin-left: auto;
-    margin-right: 0.75rem;
-  }
 `;
 
 const HiddenFactBubble = styled(motion.div)`
   position: absolute;
-  top: calc(100% + 12px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--accent, #000);
+  top: calc(100% + 14px);
+  left: 0;
+  background: var(--accent, #111);
   color: var(--accent-inverse, #fff);
+  border: 2px solid var(--border-card, #111);
   padding: 0.75rem 1.25rem;
-  border-radius: 10px;
+  border-radius: var(--radius-sm, 10px);
   font-size: 0.8125rem;
   font-weight: 500;
   white-space: nowrap;
@@ -635,26 +391,9 @@ const HiddenFactBubble = styled(motion.div)`
   box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
   pointer-events: none;
 
-  &:before {
-    content: '';
-    position: absolute;
-    top: -6px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    border-bottom: 6px solid var(--accent, #000);
-  }
-
   @media (max-width: 480px) {
     font-size: 0.75rem;
     padding: 0.5rem 1rem;
-    left: 0;
-    transform: none;
-
-    &:before {
-      left: 20px;
-    }
   }
 `;
 
@@ -669,6 +408,14 @@ const links = [
   { href: '#contact', label: 'Contact', icon: FaEnvelope },
 ];
 
+const hiddenFacts = [
+  "🎮 I once debugged code in my dreams!",
+  "☕ My first program was a calculator in Java",
+  "🌍 I want to visit every continent",
+  "🎵 I can code for 8 hours with the right playlist",
+  "🚀 I deployed my first app at 3 AM",
+];
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -677,13 +424,16 @@ const Navbar = () => {
   const { isDark, toggleTheme } = useTheme();
   const [logoClicks, setLogoClicks] = useState(0);
   const [showFact, setShowFact] = useState(false);
+  const reduceMotion = useReducedMotion();
+  const drawerRef = useRef(null);
+  const menuButtonRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       const progress = Math.min((scrollTop / docHeight) * 100, 100);
-      
+
       setScrolled(scrollTop > 50);
       setScrollProgress(progress);
 
@@ -721,15 +471,47 @@ const Navbar = () => {
     };
   }, [isOpen]);
 
-  // Logo click easter egg: 7 clicks reveals a hidden fact
-  const hiddenFacts = [
-    "🎮 I once debugged code in my dreams!",
-    "☕ My first program was a calculator in Java",
-    "🌍 I want to visit every continent",
-    "🎵 I can code for 8 hours with the right playlist",
-    "🚀 I deployed my first app at 3 AM",
-  ];
+  // While the drawer is open: Escape closes it and Tab cycles within it.
+  // On close, focus returns to the hamburger via the effect cleanup.
+  useEffect(() => {
+    if (!isOpen) return undefined;
 
+    const getFocusable = () =>
+      drawerRef.current
+        ? Array.from(drawerRef.current.querySelectorAll('a[href], button:not([disabled])'))
+        : [];
+
+    getFocusable()[0]?.focus();
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setIsOpen(false);
+        return;
+      }
+      if (e.key !== 'Tab') return;
+
+      const focusable = getFocusable();
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      menuButtonRef.current?.focus();
+    };
+  }, [isOpen]);
+
+  // Logo click easter egg: 7 clicks reveals a hidden fact
   const handleLogoEasterEgg = useCallback(() => {
     const newCount = logoClicks + 1;
     setLogoClicks(newCount);
@@ -747,18 +529,18 @@ const Navbar = () => {
   const handleLinkClick = (href, e) => {
     e.preventDefault();
     setIsOpen(false);
-    
+
     const targetId = href.slice(1);
     const element = document.getElementById(targetId);
-    
+
     if (element) {
       const navHeight = 80; // Approximate navbar height
       const elementPosition = element.getBoundingClientRect().top + window.scrollY;
       const offsetPosition = elementPosition - navHeight;
-      
+
       window.scrollTo({
         top: offsetPosition,
-        behavior: 'smooth'
+        behavior: reduceMotion ? 'auto' : 'smooth'
       });
     }
   };
@@ -770,22 +552,20 @@ const Navbar = () => {
   return (
     <>
       <NavContainer
-        initial={{ y: -100, opacity: 0 }}
+        $scrolled={scrolled}
+        initial={reduceMotion ? false : { y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
       >
-        <NavContent $scrolled={scrolled}>
+        <NavInner $scrolled={scrolled}>
           <Logo
             href="#hero"
             onClick={(e) => { handleLinkClick('#hero', e); handleLogoEasterEgg(); }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
             aria-label="Go to home"
-            style={{ position: 'relative' }}
           >
-            <LogoIcon 
+            <LogoIcon
               $scrolled={scrolled}
-              whileHover={{ rotate: 360 }}
+              whileHover={reduceMotion ? undefined : { rotate: 360 }}
               transition={{ duration: 0.5 }}
             >
               <FaCode />
@@ -810,87 +590,90 @@ const Navbar = () => {
                 key={link.href}
                 href={link.href}
                 $active={activeSection === link.href.slice(1)}
+                aria-current={activeSection === link.href.slice(1) ? 'true' : undefined}
                 onClick={(e) => handleLinkClick(link.href, e)}
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                aria-label={link.label}
               >
-                <link.icon />
-                <span>{link.label}</span>
+                {link.label}
               </MenuItem>
             ))}
           </Menu>
 
-          <ThemeToggleBtn
-            onClick={toggleTheme}
-            whileHover={{ scale: 1.1, rotate: 15 }}
-            whileTap={{ scale: 0.9 }}
-            aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-            title={isDark ? 'Light mode' : 'Dark mode'}
-          >
-            <AnimatePresence mode="wait">
-              {isDark ? (
-                <motion.div
-                  key="sun"
-                  initial={{ rotate: -90, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  exit={{ rotate: 90, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <FaSun />
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="moon"
-                  initial={{ rotate: 90, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  exit={{ rotate: -90, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <FaMoon />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </ThemeToggleBtn>
+          <NavActions>
+            <IconButton
+              onClick={toggleTheme}
+              whileTap={{ scale: 0.92 }}
+              aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+              title={isDark ? 'Light mode' : 'Dark mode'}
+            >
+              <AnimatePresence mode="wait">
+                {isDark ? (
+                  <motion.div
+                    key="sun"
+                    initial={reduceMotion ? false : { rotate: -90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={reduceMotion ? undefined : { rotate: 90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    style={{ display: 'flex' }}
+                  >
+                    <FaSun />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="moon"
+                    initial={reduceMotion ? false : { rotate: 90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={reduceMotion ? undefined : { rotate: -90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    style={{ display: 'flex' }}
+                  >
+                    <FaMoon />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </IconButton>
 
-          <MobileMenuButton
-            onClick={toggleMenu}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            aria-label={isOpen ? "Close menu" : "Open menu"}
-          >
-            <AnimatePresence mode="wait">
-              {isOpen ? (
-                <motion.div
-                  key="close"
-                  initial={{ rotate: -90, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  exit={{ rotate: 90, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <FaTimes />
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="open"
-                  initial={{ rotate: 90, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  exit={{ rotate: -90, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <FaBars />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </MobileMenuButton>
+            <MobileMenuButton
+              ref={menuButtonRef}
+              onClick={toggleMenu}
+              whileTap={{ scale: 0.92 }}
+              aria-label={isOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={isOpen}
+              aria-controls="mobile-nav-drawer"
+            >
+              <AnimatePresence mode="wait">
+                {isOpen ? (
+                  <motion.div
+                    key="close"
+                    initial={reduceMotion ? false : { rotate: -90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={reduceMotion ? undefined : { rotate: 90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    style={{ display: 'flex' }}
+                  >
+                    <FaTimes />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="open"
+                    initial={reduceMotion ? false : { rotate: 90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={reduceMotion ? undefined : { rotate: -90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    style={{ display: 'flex' }}
+                  >
+                    <FaBars />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </MobileMenuButton>
+          </NavActions>
+        </NavInner>
 
-          <ProgressBar
-            style={{ width: `${scrollProgress}%` }}
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: scrollProgress / 100 }}
-            transition={{ duration: 0.1 }}
-          />
-        </NavContent>
+        <ProgressBar
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: scrollProgress / 100 }}
+          transition={{ duration: reduceMotion ? 0 : 0.1 }}
+        />
       </NavContainer>
 
       <AnimatePresence>
@@ -900,24 +683,32 @@ const Navbar = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: reduceMotion ? 0 : 0.2 }}
               onClick={() => setIsOpen(false)}
+              aria-hidden="true"
             />
             <MobileMenu
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              ref={drawerRef}
+              id="mobile-nav-drawer"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Site navigation"
+              initial={reduceMotion ? { x: 0, opacity: 0 } : { x: '100%' }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={reduceMotion ? { opacity: 0 } : { x: '100%' }}
+              transition={reduceMotion
+                ? { duration: 0.05 }
+                : { type: 'spring', stiffness: 300, damping: 30 }}
             >
               <MobileMenuHeader>
                 <MobileMenuLogo>Menu</MobileMenuLogo>
-                <CloseButton
+                <IconButton
                   onClick={toggleMenu}
-                  whileHover={{ rotate: 90 }}
-                  whileTap={{ scale: 0.9 }}
+                  whileTap={{ scale: 0.92 }}
                   aria-label="Close menu"
                 >
                   <FaTimes />
-                </CloseButton>
+                </IconButton>
               </MobileMenuHeader>
 
               {links.map((link, index) => (
@@ -925,13 +716,13 @@ const Navbar = () => {
                   key={link.href}
                   href={link.href}
                   $active={activeSection === link.href.slice(1)}
+                  aria-current={activeSection === link.href.slice(1) ? 'true' : undefined}
                   onClick={(e) => handleLinkClick(link.href, e)}
-                  initial={{ opacity: 0, x: 30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.1 }}
-                  whileHover={{ x: 8 }}
-                  whileTap={{ scale: 0.98 }}
+                  initial={reduceMotion ? false : { opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.25, delay: reduceMotion ? 0 : index * 0.05 }}
                 >
+                  <ItemIndex aria-hidden="true">{String(index + 1).padStart(2, '0')}</ItemIndex>
                   <link.icon />
                   {link.label}
                 </MobileMenuItem>
@@ -941,8 +732,6 @@ const Navbar = () => {
                 <ContactCTA
                   href="#contact"
                   onClick={(e) => handleLinkClick('#contact', e)}
-                  whileHover={{ y: -2 }}
-                  whileTap={{ scale: 0.98 }}
                 >
                   <span>Let's Work Together</span>
                   <FaEnvelope />
