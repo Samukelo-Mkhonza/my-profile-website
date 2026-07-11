@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.8.0](https://github.com/Samukelo-Mkhonza/my-profile-website/compare/v0.7.1...v0.8.0) (2026-07-11)
+
+
+### Features
+
+* enhance Projects and Skills components with improved mobile res… ([eb05bd0](https://github.com/Samukelo-Mkhonza/my-profile-website/commit/eb05bd0804ae4f91baba1c47ffcbf8bec269e97c))
+* enhance Projects and Skills components with improved mobile responsiveness and animations ([ac46e5f](https://github.com/Samukelo-Mkhonza/my-profile-website/commit/ac46e5f0542045a9fd0f18a85632c82df4950a92))
+
+
+### Bug Fixes
+
+* copy menuButtonRef.current to a local var before effect cleanup ([30dde49](https://github.com/Samukelo-Mkhonza/my-profile-website/commit/30dde49b2fa7742777fe501d4cad4406adcc87bb))
+* resolve eslint warning failing CI in Navbar ([ddab8d9](https://github.com/Samukelo-Mkhonza/my-profile-website/commit/ddab8d9e81d3743627cb7028f6e398afcc840302))
+
 ## [0.7.1](https://github.com/Samukelo-Mkhonza/my-profile-website/compare/v0.7.0...v0.7.1) (2026-07-10)
 
 
