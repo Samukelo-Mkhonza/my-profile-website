@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import styled, { keyframes } from 'styled-components';
-import { motion } from 'framer-motion';
+import styled, { css, keyframes } from 'styled-components';
+import { motion, useReducedMotion } from 'framer-motion';
 import {
   FaCode,
   FaCloud,
@@ -15,6 +15,8 @@ import {
 } from 'react-icons/fa';
 import profilePhoto from '../assets/profile-photo-placeholder.svg';
 
+/* ─── Typing accent (heading only) ────────────────────────────────────────── */
+
 const blink = keyframes`
   0%, 100% { opacity: 1; }
   50%      { opacity: 0; }
@@ -25,30 +27,45 @@ const Cursor = styled.span`
   margin-left: 2px;
   width: 1ch;
   background-color: currentColor;
-  animation: ${blink} 1s step-start infinite;
+  animation: ${p => (p.$done ? 'none' : css`${blink} 1s step-start infinite`)};
+  opacity: ${p => (p.$done ? 0 : 1)};
+  transition: opacity 0.6s ease;
 `;
 
-const TypingText = ({ text, speed = 40 }) => {
-  const [displayed, setDisplayed] = useState('');
+/* Types once when `start` flips true; renders instantly under reduced motion.
+   Screen readers get the full text via aria-label rather than char-by-char. */
+const TypingText = ({ text, speed = 40, start = true }) => {
+  const reducedMotion = useReducedMotion();
+  const instant = reducedMotion || !window.matchMedia;
+  const [displayed, setDisplayed] = useState(instant ? text : '');
+  const [done, setDone] = useState(instant);
 
   useEffect(() => {
+    if (instant) { setDisplayed(text); setDone(true); return undefined; }
+    if (!start) return undefined;
     let index = 0;
     setDisplayed('');
+    setDone(false);
     const interval = setInterval(() => {
-      setDisplayed(text.slice(0, index + 1));
       index++;
-      if (index > text.length) clearInterval(interval);
+      setDisplayed(text.slice(0, index));
+      if (index >= text.length) {
+        clearInterval(interval);
+        setDone(true);
+      }
     }, speed);
     return () => clearInterval(interval);
-  }, [text, speed]);
+  }, [text, speed, start, instant]);
 
   return (
-    <span>
-      {displayed}
-      <Cursor />
+    <span aria-label={text}>
+      <span aria-hidden="true">{displayed}</span>
+      <Cursor $done={done} aria-hidden="true" />
     </span>
   );
 };
+
+/* ─── Layout ──────────────────────────────────────────────────────────────── */
 
 const Section = styled.section`
   padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 5vw, 2rem);
@@ -65,53 +82,60 @@ const Section = styled.section`
     height: 3px;
     background: var(--text-primary, #000);
   }
+
+  @media (max-width: 480px) {
+    padding: clamp(2rem, 6vw, 3rem) clamp(0.75rem, 3vw, 1.5rem);
+  }
 `;
 
 const Container = styled.div`
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 clamp(0.5rem, 2vw, 1rem);
 `;
 
-const Heading = styled.h2`
-  font-size: clamp(1.75rem, 6vw, 2.5rem);
+const Heading = styled(motion.h2)`
+  font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.1em;
   text-align: center;
-  margin-bottom: clamp(2rem, 4vw, 3rem);
+  margin-bottom: clamp(1rem, 2vw, 1.5rem);
   color: var(--text-primary, #000);
-`;
-
-const MainContent = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(2rem, 4vw, 3rem);
-  margin-bottom: clamp(3rem, 5vw, 4rem);
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    gap: 2rem;
+  position: relative;
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: -0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: clamp(60px, 10vw, 100px);
+    height: 3px;
+    background: var(--text-primary, #000);
   }
+  @media (max-width: 480px) { font-size: clamp(1.5rem, 6vw, 2rem); }
 `;
 
-/* Half the photo height — how far the photo sinks into the card below it */
-const photoOverlap = 'clamp(75px, 11vw, 100px)';
+const Subtitle = styled(motion.p)`
+  text-align: center;
+  color: var(--text-secondary, #666);
+  font-size: clamp(0.875rem, 2vw, 1.0625rem);
+  line-height: 1.6;
+  max-width: 600px;
+  margin: clamp(1.5rem, 3vw, 2rem) auto clamp(2rem, 4vw, 3rem);
+`;
 
-const IntroCard = styled(motion.div)`
+/* ─── Feature card (focal point: photo + bio + stats) ─────────────────────── */
+
+const FeatureCard = styled(motion.div)`
   background: var(--bg-card, #ffffff);
-  border: 2px solid var(--border-card, #e0e0e0);
+  border: var(--border-w, 2px) solid var(--border-card, #111);
   border-radius: var(--radius-card, 14px);
-  box-shadow: var(--shadow-hard, 4px 4px 0 #111);
-  padding: clamp(2rem, 4vw, 2.5rem);
-  /* Room for the profile photo overlapping the top edge */
-  padding-top: calc(${photoOverlap} + 1.5rem);
+  box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
+  padding: clamp(1.25rem, 4vw, 2.5rem);
   position: relative;
   overflow: hidden;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
 
   &:before {
     content: '';
@@ -119,43 +143,123 @@ const IntroCard = styled(motion.div)`
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
+    height: 6px;
     background: var(--accent-orange, #ee5a24);
   }
 `;
 
-const ProfileSection = styled(motion.div)`
-  display: flex;
-  flex-direction: column;
+const FeatureGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(1.5rem, 3vw, 2rem);
+  align-items: start;
+
+  @media (min-width: 769px) {
+    grid-template-columns: minmax(220px, 280px) 1fr;
+    gap: clamp(2rem, 4vw, 3rem);
+  }
 `;
 
-const ProfileImageWrap = styled(motion.div)`
-  width: clamp(150px, 22vw, 200px);
+const PhotoColumn = styled.div`
+  display: flex;
+  justify-content: center;
+  padding-top: 0.5rem;
+
+  @media (min-width: 769px) {
+    position: sticky;
+    top: 1rem;
+  }
+`;
+
+const PhotoFrame = styled(motion.div)`
+  width: clamp(180px, 45vw, 240px);
   aspect-ratio: 1;
-  border-radius: 50%;
-  margin: 0 auto calc(${photoOverlap} * -1);
-  padding: 4px;
-  background: var(--border-card, #111);
+  border: var(--border-w, 2px) solid var(--border-card, #111);
+  border-radius: var(--radius-sm, 10px);
   box-shadow: var(--shadow-hard, 4px 4px 0 #111);
-  cursor: pointer;
+  background: var(--tag-bg, #f0f0f0);
   position: relative;
-  z-index: 2;
+
+  @media (min-width: 769px) {
+    width: 100%;
+    max-width: 260px;
+  }
 `;
 
 const ProfileImg = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 50%;
+  border-radius: calc(var(--radius-sm, 10px) - 2px);
   display: block;
-  background: var(--bg-card, #fff);
+`;
+
+const PhotoBadge = styled.span`
+  position: absolute;
+  bottom: -0.875rem;
+  left: 50%;
+  transform: translateX(-50%) rotate(-3deg);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  background: var(--accent-orange, #ee5a24);
+  color: var(--on-orange, #fff);
+  border: var(--border-w, 2px) solid var(--border-card, #111);
+  border-radius: var(--radius-pill, 999px);
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+`;
+
+const BioColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+
+  @media (max-width: 768px) {
+    text-align: center;
+  }
+`;
+
+const Overline = styled.span`
+  color: var(--accent-orange, #ee5a24);
+  font-size: clamp(0.8125rem, 2vw, 0.9375rem);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.375rem;
+`;
+
+const Name = styled.h3`
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-primary, #000);
+  margin-bottom: 0.25rem;
+`;
+
+const RoleLine = styled.p`
+  font-size: clamp(0.8125rem, 2vw, 0.9375rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted, #888);
+  margin-bottom: clamp(1rem, 2.5vw, 1.5rem);
 `;
 
 const IntroText = styled.p`
-  font-size: clamp(1rem, 2.5vw, 1.125rem);
+  font-size: clamp(0.9375rem, 2.5vw, 1.0625rem);
   line-height: 1.7;
   color: var(--text-secondary, #333);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+
+  @media (max-width: 768px) {
+    text-align: left;
+  }
 `;
 
 const LocationInfo = styled.div`
@@ -164,173 +268,85 @@ const LocationInfo = styled.div`
   gap: 0.5rem;
   color: var(--text-secondary, #666);
   font-size: clamp(0.875rem, 2vw, 1rem);
-  /* Pin to the card's bottom edge so the card fills the grid row cleanly */
   margin-top: auto;
+
+  svg { color: var(--accent-orange, #ee5a24); flex-shrink: 0; }
+
+  @media (max-width: 768px) {
+    justify-content: center;
+  }
 `;
 
-const StatsGrid = styled.div`
+/* Divider-line trick: the strip's background shows through the gaps between
+   cells, drawing crisp 2px separators for any row/column count. */
+const StatsStrip = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: clamp(1.5rem, 3vw, 2rem);
-  margin-bottom: clamp(3rem, 5vw, 4rem);
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--border-w, 2px);
+  background: var(--border-card, #111);
+  border: var(--border-w, 2px) solid var(--border-card, #111);
+  border-radius: var(--radius-sm, 10px);
+  overflow: hidden;
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
 
-  /* Phones: single column, cards stacked */
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
+  @media (min-width: 720px) {
+    grid-template-columns: repeat(4, 1fr);
   }
 `;
 
-const StatCard = styled(motion.div)`
-  background: var(--bg-card, #ffffff);
-  border: 2px solid var(--border-card, #e0e0e0);
-  border-radius: var(--radius-card, 14px);
-  box-shadow: var(--shadow-hard, 4px 4px 0 #111);
-  padding: clamp(1.5rem, 3vw, 2rem);
+const StatCell = styled.div`
+  background: var(--bg-card, #fff);
+  padding: clamp(1rem, 2.5vw, 1.5rem) clamp(0.5rem, 1.5vw, 1rem);
   text-align: center;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
+  transition: background-color 0.3s ease;
 
-  &:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
-  }
-
-  &:before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: var(--accent-orange, #ee5a24);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.3s ease;
-  }
-
-  &:hover:before {
-    transform: scaleX(1);
+  @media (hover: hover) {
+    &:hover { background: var(--tag-bg, #f0f0f0); }
   }
 `;
 
 const StatIcon = styled.div`
-  font-size: clamp(2rem, 4vw, 2.5rem);
-  color: var(--text-primary, #000);
-  margin-bottom: 1rem;
-  transition: transform 0.3s ease;
-
-  ${StatCard}:hover & {
-    transform: scale(1.1);
-  }
+  font-size: clamp(1.125rem, 2.5vw, 1.375rem);
+  color: var(--accent-orange, #ee5a24);
+  margin-bottom: 0.375rem;
 `;
 
 const StatNumber = styled.div`
-  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-size: clamp(1.375rem, 3.5vw, 2rem);
   font-weight: 800;
   color: var(--text-primary, #000);
-  margin-bottom: 0.5rem;
+  line-height: 1.2;
 `;
 
 const StatLabel = styled.div`
-  font-size: clamp(0.875rem, 2vw, 1rem);
-  color: var(--text-secondary, #666);
+  font-size: clamp(0.6875rem, 1.75vw, 0.8125rem);
+  color: var(--text-muted, #666);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   font-weight: 700;
+  margin-top: 0.25rem;
 `;
 
-const ValuesSection = styled.div`
-  margin-bottom: 0;
-`;
+/* ─── Detail cards (values + interests as compact lists) ──────────────────── */
 
-const SectionTitle = styled.h3`
-  font-size: clamp(1.25rem, 3vw, 1.5rem);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  text-align: center;
-  margin-bottom: clamp(1.5rem, 3vw, 2rem);
-  color: var(--text-primary, #000);
-`;
-
-const ValuesGrid = styled.div`
+const DetailsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: clamp(1rem, 2vw, 1.5rem);
+  grid-template-columns: 1fr;
+  gap: clamp(1.5rem, 3vw, 2rem);
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
 
-  @media (max-width: 900px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  /* Phones: single column, cards stacked */
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
+  @media (min-width: 900px) {
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
   }
 `;
 
-const ValueCard = styled(motion.div)`
+const ListCard = styled(motion.div)`
   background: var(--bg-card, #ffffff);
-  border: 2px solid var(--border-card, #e0e0e0);
+  border: var(--border-w, 2px) solid var(--border-card, #111);
   border-radius: var(--radius-card, 14px);
   box-shadow: var(--shadow-hard, 4px 4px 0 #111);
-  padding: clamp(1rem, 2vw, 1.25rem);
-  text-align: center;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
-  }
-
-  &:before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: var(--accent-orange, #ee5a24);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.3s ease;
-  }
-
-  &:hover:before {
-    transform: scaleX(1);
-  }
-`;
-
-const ValueIcon = styled.div`
-  font-size: clamp(1.25rem, 2.5vw, 1.5rem);
-  color: var(--text-primary, #000);
-  margin-bottom: 0.5rem;
-`;
-
-const ValueTitle = styled.h4`
-  font-size: clamp(0.9375rem, 2vw, 1rem);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: 0.5rem;
-  color: var(--text-primary, #000);
-`;
-
-const ValueDescription = styled.p`
-  font-size: clamp(0.875rem, 2vw, 0.95rem);
-  line-height: 1.6;
-  color: var(--text-secondary, #666);
-`;
-
-const PersonalSection = styled(motion.div)`
-  background: var(--bg-card, #ffffff);
-  border: 2px solid var(--border-card, #e0e0e0);
-  border-radius: var(--radius-card, 14px);
-  box-shadow: var(--shadow-hard, 4px 4px 0 #111);
-  padding: clamp(2rem, 4vw, 2.5rem);
+  padding: clamp(1.25rem, 3vw, 2rem);
   position: relative;
   overflow: hidden;
   display: flex;
@@ -347,60 +363,103 @@ const PersonalSection = styled(motion.div)`
   }
 `;
 
-const PersonalText = styled.p`
-  font-size: clamp(0.875rem, 2vw, 1rem);
-  line-height: 1.6;
-  color: var(--text-secondary, #666);
-`;
-
-const InterestsGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  /* Split the card's leftover height evenly when it stretches to match the
-     intro column, so the card never shows a dead gap */
-  grid-auto-rows: 1fr;
-  flex: 1;
-  gap: 1rem;
-  margin-top: 1.5rem;
-
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
-    grid-auto-rows: auto;
-  }
-`;
-
-const InterestCard = styled(motion.div)`
-  background: var(--tag-bg, #f0f0f0);
-  border: 2px solid var(--border-card, #111);
-  border-radius: var(--radius-card, 14px);
-  padding: clamp(1rem, 2vw, 1.25rem);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 0.5rem;
-  transition: all 0.3s ease;
-  cursor: pointer;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-hard, 4px 4px 0 #111);
-  }
-`;
-
-const InterestLabel = styled.div`
+const CardTitle = styled.h3`
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: clamp(0.875rem, 2vw, 1rem);
+  gap: 0.625rem;
+  font-size: clamp(1.0625rem, 2.5vw, 1.25rem);
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
   color: var(--text-primary, #000);
+  margin-bottom: 0.75rem;
+
+  &:before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+    background: var(--accent-orange, #ee5a24);
+    border: var(--border-w, 2px) solid var(--border-card, #111);
+  }
 `;
 
-const InterestNote = styled.p`
+const CardLede = styled.p`
+  font-size: clamp(0.875rem, 2vw, 0.9375rem);
+  line-height: 1.6;
+  color: var(--text-secondary, #666);
+  margin-bottom: 0.5rem;
+`;
+
+const RowList = styled.ul`
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.5rem;
+`;
+
+/* Rows animate opacity only (via framer) so the CSS hover transform below
+   is never fought by a leftover inline transform. */
+const Row = styled(motion.li)`
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  padding: clamp(0.75rem, 2vw, 0.875rem) 0.5rem;
+  border-radius: var(--radius-sm, 10px);
+  transition: background-color 0.3s ease, transform 0.3s ease;
+
+  & + & {
+    border-top: 2px dashed var(--border-color, rgba(17, 17, 17, 0.15));
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background: var(--tag-bg, #f0f0f0);
+      transform: translateX(4px);
+    }
+  }
+`;
+
+const RowIcon = styled.span`
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  background: var(--tag-bg, #f0f0f0);
+  color: var(--text-primary, #000);
+  border: var(--border-w, 2px) solid var(--border-card, #111);
+  border-radius: var(--radius-sm, 10px);
+  font-size: 1.125rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+
+  @media (hover: hover) {
+    ${Row}:hover & {
+      background: var(--accent-orange, #ee5a24);
+      color: var(--on-orange, #fff);
+    }
+  }
+`;
+
+const RowBody = styled.div`
+  min-width: 0;
+`;
+
+const RowTitle = styled.h4`
+  font-size: clamp(0.875rem, 2vw, 0.9375rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-primary, #000);
+  margin-bottom: 0.25rem;
+`;
+
+const RowNote = styled.p`
   font-size: clamp(0.8125rem, 2vw, 0.875rem);
-  line-height: 1.5;
+  line-height: 1.55;
   color: var(--text-secondary, #666);
 `;
+
+/* ─── Data ────────────────────────────────────────────────────────────────── */
 
 const stats = [
   { icon: FaCode, number: '25+', label: 'Projects Completed' },
@@ -439,122 +498,129 @@ const interests = [
   { icon: FaCode, label: 'Open Source', note: 'Giving back to the tools I use every day.' }
 ];
 
-const About = () => (
-  <Section id="about">
-    <Container>
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        viewport={{ once: true }}
-      >
-        <Heading>
-          <TypingText text="About Me" speed={100} />
-        </Heading>
+/* ─── Component ───────────────────────────────────────────────────────────── */
 
-        <MainContent>
-          <ProfileSection
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            viewport={{ once: true }}
-          >
-            <ProfileImageWrap
-              whileHover={{ scale: 1.06, rotate: 2 }}
-              transition={{ type: 'spring', stiffness: 260, damping: 18 }}
-            >
-              <ProfileImg src={profilePhoto} alt="Samukelo Mkhonza" />
-            </ProfileImageWrap>
-            <IntroCard>
+const About = () => {
+  const reducedMotion = useReducedMotion();
+  const [headingSeen, setHeadingSeen] = useState(false);
+
+  const fadeUp = (delay = 0) => ({
+    initial: { opacity: 0, y: reducedMotion ? 0 : 24 },
+    whileInView: { opacity: 1, y: 0 },
+    transition: { duration: 0.5, delay },
+    viewport: { once: true, margin: '-40px' },
+  });
+
+  const rowFade = (index) => ({
+    initial: { opacity: 0 },
+    whileInView: { opacity: 1 },
+    transition: { duration: 0.35, delay: index * 0.06 },
+    viewport: { once: true },
+  });
+
+  return (
+    <Section id="about">
+      <Container>
+        <Heading
+          {...fadeUp()}
+          onViewportEnter={() => setHeadingSeen(true)}
+        >
+          <TypingText text="About Me" speed={90} start={headingSeen} />
+        </Heading>
+        <Subtitle {...fadeUp(0.1)}>
+          Cloud technologist by day, coffee and beats enthusiast by night.
+        </Subtitle>
+
+        <FeatureCard {...fadeUp(0.15)}>
+          <FeatureGrid>
+            <PhotoColumn>
+              <PhotoFrame
+                style={{ rotate: reducedMotion ? 0 : -2 }}
+                whileHover={reducedMotion ? undefined : { rotate: 0, scale: 1.03 }}
+                transition={{ type: 'spring', stiffness: 260, damping: 18 }}
+              >
+                <ProfileImg src={profilePhoto} alt="Samukelo Mkhonza" />
+                <PhotoBadge>
+                  <FaCloud aria-hidden="true" />
+                  Cloud Native
+                </PhotoBadge>
+              </PhotoFrame>
+            </PhotoColumn>
+
+            <BioColumn>
+              <Overline>{'// hello, I\'m'}</Overline>
+              <Name>Samukelo Mkhonza</Name>
+              <RoleLine>Software Developer · Cloud Technologist</RoleLine>
               <IntroText>
-                <TypingText
-                  text="I'm a passionate software developer specializing in cloud-native infrastructures and high-performance applications. Currently, I architect solutions at CloudZA, leveraging AWS to build scalable, secure systems that drive business growth."
-                  speed={20}
-                />
+                I'm a passionate software developer specializing in cloud-native infrastructures and high-performance applications. Currently, I architect solutions at CloudZA, leveraging AWS to build scalable, secure systems that drive business growth.
               </IntroText>
               <IntroText>
                 My journey in technology spans over 5 years, during which I've had the privilege of working with cutting-edge technologies and contributing to projects that make a real difference. I believe in writing clean, maintainable code and creating solutions that not only work but scale beautifully.
               </IntroText>
               <LocationInfo>
-                <FaMapMarkerAlt />
+                <FaMapMarkerAlt aria-hidden="true" />
                 <span>Bellville, Western Cape, South Africa</span>
               </LocationInfo>
-            </IntroCard>
-          </ProfileSection>
+            </BioColumn>
+          </FeatureGrid>
 
-          <PersonalSection
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            viewport={{ once: true }}
-          >
-            <SectionTitle>When I'm Not Coding</SectionTitle>
-            <PersonalText>
-              I believe in maintaining a healthy work-life balance. Here are some things that keep me inspired and motivated outside of development.
-            </PersonalText>
-            <InterestsGrid>
-              {interests.map((interest, index) => (
-                <InterestCard
-                  key={index}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                >
-                  <InterestLabel>
-                    <interest.icon />
-                    {interest.label}
-                  </InterestLabel>
-                  <InterestNote>{interest.note}</InterestNote>
-                </InterestCard>
-              ))}
-            </InterestsGrid>
-          </PersonalSection>
-        </MainContent>
-
-        <StatsGrid>
-          {stats.map((stat, index) => (
-            <StatCard
-              key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              whileHover={{ scale: 1.02 }}
-            >
-              <StatIcon>
-                <stat.icon />
-              </StatIcon>
-              <StatNumber>{stat.number}</StatNumber>
-              <StatLabel>{stat.label}</StatLabel>
-            </StatCard>
-          ))}
-        </StatsGrid>
-
-        <ValuesSection>
-          <SectionTitle>My Approach</SectionTitle>
-          <ValuesGrid>
-            {values.map((value, index) => (
-              <ValueCard
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ scale: 1.02 }}
-              >
-                <ValueIcon>
-                  <value.icon />
-                </ValueIcon>
-                <ValueTitle>{value.title}</ValueTitle>
-                <ValueDescription>{value.description}</ValueDescription>
-              </ValueCard>
+          <StatsStrip>
+            {stats.map((stat) => (
+              <StatCell key={stat.label}>
+                <StatIcon aria-hidden="true">
+                  <stat.icon />
+                </StatIcon>
+                <StatNumber>{stat.number}</StatNumber>
+                <StatLabel>{stat.label}</StatLabel>
+              </StatCell>
             ))}
-          </ValuesGrid>
-        </ValuesSection>
-      </motion.div>
-    </Container>
-  </Section>
-);
+          </StatsStrip>
+        </FeatureCard>
+
+        <DetailsGrid>
+          <ListCard {...fadeUp(0.1)}>
+            <CardTitle>My Approach</CardTitle>
+            <CardLede>
+              The principles that shape how I build software and work with people.
+            </CardLede>
+            <RowList>
+              {values.map((value, index) => (
+                <Row key={value.title} {...rowFade(index)}>
+                  <RowIcon aria-hidden="true">
+                    <value.icon />
+                  </RowIcon>
+                  <RowBody>
+                    <RowTitle>{value.title}</RowTitle>
+                    <RowNote>{value.description}</RowNote>
+                  </RowBody>
+                </Row>
+              ))}
+            </RowList>
+          </ListCard>
+
+          <ListCard {...fadeUp(0.2)}>
+            <CardTitle>When I'm Not Coding</CardTitle>
+            <CardLede>
+              I believe in maintaining a healthy work-life balance. Here's what keeps me inspired outside of development.
+            </CardLede>
+            <RowList>
+              {interests.map((interest, index) => (
+                <Row key={interest.label} {...rowFade(index)}>
+                  <RowIcon aria-hidden="true">
+                    <interest.icon />
+                  </RowIcon>
+                  <RowBody>
+                    <RowTitle>{interest.label}</RowTitle>
+                    <RowNote>{interest.note}</RowNote>
+                  </RowBody>
+                </Row>
+              ))}
+            </RowList>
+          </ListCard>
+        </DetailsGrid>
+      </Container>
+    </Section>
+  );
+};
 
 export default About;

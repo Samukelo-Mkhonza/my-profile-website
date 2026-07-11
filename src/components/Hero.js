@@ -9,7 +9,6 @@ import {
   FaCloud,
   FaRocket,
   FaMapMarkerAlt,
-  FaTimes,
   FaPaperPlane,
   FaEye,
   FaPhone,
@@ -22,6 +21,7 @@ import {
   FaServer,
   FaCoins
 } from 'react-icons/fa';
+import Modal, { ModalHeader, ModalTitle } from './ui/Modal';
 
 // Floating animation for background elements
 const float = keyframes`
@@ -667,124 +667,16 @@ const ScrollText = styled.span`
   font-weight: 500;
 `;
 
-// Modal Styles
-const ModalOverlay = styled(motion.div)`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: clamp(1rem, 3vw, 2rem);
-  overflow-y: auto;
-`;
-
-const ModalContent = styled(motion.div)`
-  background: var(--bg-card);
-  border: 2px solid var(--border-card, #111);
-  border-radius: var(--radius-card, 14px);
-  padding: clamp(1.5rem, 4vw, 3rem);
-  width: 100%;
-  max-width: 600px;
-  max-height: 90vh;
-  max-height: 90dvh;
-  overflow-y: auto;
-  position: relative;
-  box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
-  margin: auto;
-
-  /* Smooth scrolling on iOS */
-  -webkit-overflow-scrolling: touch;
-
-  @media (max-width: 480px) {
-    padding: clamp(1.25rem, 4vw, 2rem);
-    max-height: 85vh;
-    max-height: 85dvh;
-  }
-
-  @media (max-width: 360px) {
-    padding: 1rem;
-    border-radius: 8px;
-  }
-
-  /* Landscape mobile */
-  @media (max-height: 500px) and (orientation: landscape) {
-    max-height: 95vh;
-    max-height: 95dvh;
-    padding: 1.5rem;
-  }
-`;
-
-const CloseButton = styled.button`
-  position: absolute;
-  top: clamp(0.75rem, 2vw, 1rem);
-  right: clamp(0.75rem, 2vw, 1rem);
-  background: none;
-  border: none;
-  font-size: clamp(1.25rem, 3vw, 1.5rem);
-  color: var(--text-secondary);
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 50%;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 44px;
-  min-height: 44px;
-
-  @media (hover: hover) {
-    &:hover {
-      background: var(--border-color);
-      color: var(--text-primary);
-    }
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
-
-  @media (max-width: 360px) {
-    top: 0.5rem;
-    right: 0.5rem;
-    font-size: 1.125rem;
-  }
-`;
-
-const ModalTitle = styled.h2`
-  font-size: clamp(1.25rem, 3.5vw, 2rem);
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 0 0 clamp(0.75rem, 2vw, 1rem) 0;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding-right: 2rem;
-
-  @media (max-width: 480px) {
-    font-size: clamp(1.125rem, 4vw, 1.5rem);
-  }
-
-  @media (max-width: 360px) {
-    font-size: 1.125rem;
-    letter-spacing: 0.02em;
-  }
-`;
-
+// Modal content (frame and behaviour come from the shared Modal component)
 const ModalSubtitle = styled.p`
   color: var(--text-secondary);
-  margin-bottom: clamp(1.5rem, 3vw, 2rem);
+  margin: 0;
   line-height: 1.6;
   font-size: clamp(0.875rem, 2vw, 1rem);
 
   @media (max-width: 360px) {
     font-size: 0.8125rem;
     line-height: 1.5;
-    margin-bottom: 1.25rem;
   }
 `;
 
@@ -930,7 +822,7 @@ const SubmitButton = styled(motion.button)`
 
 // CV Modal Styles
 const CVContent = styled.div`
-  margin-top: clamp(1.5rem, 3vw, 2rem);
+  width: 100%;
 `;
 
 const CVSection = styled.div`
@@ -1130,13 +1022,6 @@ const ContactModal = ({ isOpen, onClose }) => {
     onClose();
   }, [onClose]);
 
-  useEffect(() => {
-    if (!isOpen) return;
-    const onKey = (e) => { if (e.key === 'Escape') handleClose(); };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [isOpen, handleClose]);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -1179,227 +1064,196 @@ const ContactModal = ({ isOpen, onClose }) => {
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <ModalOverlay
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onClick={handleClose}
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      labelledBy="contact-modal-title"
     >
-      <ModalContent
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <CloseButton onClick={handleClose}>
-          <FaTimes />
-        </CloseButton>
+      <ModalHeader>
+        <ModalTitle id="contact-modal-title">Get In Touch</ModalTitle>
+      </ModalHeader>
+      <ModalSubtitle>
+        Have a project in mind or want to collaborate? I'd love to hear from you.
+        Send me a message and let's create something amazing together!
+      </ModalSubtitle>
 
-        <ModalTitle>Get In Touch</ModalTitle>
-        <ModalSubtitle>
-          Have a project in mind or want to collaborate? I'd love to hear from you.
-          Send me a message and let's create something amazing together!
-        </ModalSubtitle>
+      {status === 'success' && (
+        <StatusBanner
+          $type="success"
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <FaCheckCircle />
+          Message sent! I'll get back to you soon.
+        </StatusBanner>
+      )}
 
-        {status === 'success' && (
-          <StatusBanner
-            $type="success"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <FaCheckCircle />
-            Message sent! I'll get back to you soon.
-          </StatusBanner>
-        )}
+      {status === 'error' && (
+        <StatusBanner
+          $type="error"
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <FaExclamationCircle />
+          Something went wrong. Please try again or email me directly.
+        </StatusBanner>
+      )}
 
-        {status === 'error' && (
-          <StatusBanner
-            $type="error"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <FaExclamationCircle />
-            Something went wrong. Please try again or email me directly.
-          </StatusBanner>
-        )}
+      <FormContainer onSubmit={handleSubmit}>
+        <FormGroup>
+          <Label htmlFor="name">Your Name *</Label>
+          <Input
+            type="text"
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="Enter your full name"
+            required
+          />
+        </FormGroup>
 
-        <FormContainer onSubmit={handleSubmit}>
-          <FormGroup>
-            <Label htmlFor="name">Your Name *</Label>
-            <Input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Enter your full name"
-              required
-            />
-          </FormGroup>
+        <FormGroup>
+          <Label htmlFor="email">Email Address *</Label>
+          <Input
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="your.email@example.com"
+            required
+          />
+        </FormGroup>
 
-          <FormGroup>
-            <Label htmlFor="email">Email Address *</Label>
-            <Input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="your.email@example.com"
-              required
-            />
-          </FormGroup>
+        <FormGroup>
+          <Label htmlFor="subject">Subject *</Label>
+          <Input
+            type="text"
+            id="subject"
+            name="subject"
+            value={formData.subject}
+            onChange={handleChange}
+            placeholder="What's this about?"
+            required
+          />
+        </FormGroup>
 
-          <FormGroup>
-            <Label htmlFor="subject">Subject *</Label>
-            <Input
-              type="text"
-              id="subject"
-              name="subject"
-              value={formData.subject}
-              onChange={handleChange}
-              placeholder="What's this about?"
-              required
-            />
-          </FormGroup>
+        <FormGroup>
+          <Label htmlFor="message">Message *</Label>
+          <TextArea
+            id="message"
+            name="message"
+            value={formData.message}
+            onChange={handleChange}
+            placeholder="Tell me about your project, ideas, or just say hello..."
+            required
+          />
+        </FormGroup>
 
-          <FormGroup>
-            <Label htmlFor="message">Message *</Label>
-            <TextArea
-              id="message"
-              name="message"
-              value={formData.message}
-              onChange={handleChange}
-              placeholder="Tell me about your project, ideas, or just say hello..."
-              required
-            />
-          </FormGroup>
-
-          <SubmitButton
-            type="submit"
-            disabled={isSubmitting || status === 'success'}
-            whileHover={{ y: -2 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            {isSubmitting ? 'Sending…' : status === 'success' ? 'Sent!' : 'Send Message'}
-            <FaPaperPlane />
-          </SubmitButton>
-        </FormContainer>
-      </ModalContent>
-    </ModalOverlay>
+        <SubmitButton
+          type="submit"
+          disabled={isSubmitting || status === 'success'}
+          whileHover={{ y: -2 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          {isSubmitting ? 'Sending…' : status === 'success' ? 'Sent!' : 'Send Message'}
+          <FaPaperPlane />
+        </SubmitButton>
+      </FormContainer>
+    </Modal>
   );
 };
 
 const CVModal = ({ isOpen, onClose }) => {
-  useEffect(() => {
-    if (!isOpen) return;
-    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [isOpen, onClose]);
-
-  if (!isOpen) return null;
-
   return (
-    <ModalOverlay
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onClick={onClose}
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      labelledBy="cv-modal-title"
     >
-      <ModalContent
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <CloseButton onClick={onClose}>
-          <FaTimes />
-        </CloseButton>
-        
-        <ModalTitle>Curriculum Vitae</ModalTitle>
-        
-        <CVContent>
-          <CVSection>
-            <CVSectionTitle>
-              <FaPhone />
-              Contact
-            </CVSectionTitle>
-            <ContactInfo>
-              <ContactItem href="mailto:samukelo.mkhonza@outlook.com">
-                <FaEnvelope />
-                samukelo.mkhonza@outlook.com
-              </ContactItem>
-              <ContactItem href="https://www.linkedin.com/in/samukelo-mkhonza-a27340215/" target="_blank" rel="noopener noreferrer">
-                <FaLinkedin />
-                LinkedIn Profile
-              </ContactItem>
-            </ContactInfo>
-          </CVSection>
+      <ModalHeader>
+        <ModalTitle id="cv-modal-title">Curriculum Vitae</ModalTitle>
+      </ModalHeader>
 
-          <CVSection>
-            <CVSectionTitle>
-              <FaGraduationCap />
-              Education
-            </CVSectionTitle>
-            <JobTitle>National Diploma in ICT - Applications Development</JobTitle>
-            <Company>Durban University of Technology • 2022</Company>
-            <CVText style={{ marginTop: '0.5rem' }}>
-              4-Year Extended Curriculum Programme focusing on software development, web technologies, and database management.
+      <CVContent>
+        <CVSection>
+          <CVSectionTitle>
+            <FaPhone />
+            Contact
+          </CVSectionTitle>
+          <ContactInfo>
+            <ContactItem href="mailto:samukelo.mkhonza@outlook.com">
+              <FaEnvelope />
+              samukelo.mkhonza@outlook.com
+            </ContactItem>
+            <ContactItem href="https://www.linkedin.com/in/samukelo-mkhonza-a27340215/" target="_blank" rel="noopener noreferrer">
+              <FaLinkedin />
+              LinkedIn Profile
+            </ContactItem>
+          </ContactInfo>
+        </CVSection>
+
+        <CVSection>
+          <CVSectionTitle>
+            <FaGraduationCap />
+            Education
+          </CVSectionTitle>
+          <JobTitle>National Diploma in ICT - Applications Development</JobTitle>
+          <Company>Durban University of Technology • 2022</Company>
+          <CVText style={{ marginTop: '0.5rem' }}>
+            4-Year Extended Curriculum Programme focusing on software development, web technologies, and database management.
+          </CVText>
+        </CVSection>
+
+        <CVSection>
+          <CVSectionTitle>
+            <FaBriefcase />
+            Experience
+          </CVSectionTitle>
+          <WorkExperience>
+            <JobTitle>Junior Cloud Technologist (Intern)</JobTitle>
+            <Company>CloudZA • <Duration>Dec 2023 - Dec 2024</Duration></Company>
+            <CVText>
+              Assisted in implementing and maintaining cloud infrastructure, contributed to AWS architecture documentation, 
+              and collaborated with senior technologists to optimize AWS solutions.
             </CVText>
-          </CVSection>
+          </WorkExperience>
+        </CVSection>
 
-          <CVSection>
-            <CVSectionTitle>
-              <FaBriefcase />
-              Experience
-            </CVSectionTitle>
-            <WorkExperience>
-              <JobTitle>Junior Cloud Technologist (Intern)</JobTitle>
-              <Company>CloudZA • <Duration>Dec 2023 - Dec 2024</Duration></Company>
-              <CVText>
-                Assisted in implementing and maintaining cloud infrastructure, contributed to AWS architecture documentation, 
-                and collaborated with senior technologists to optimize AWS solutions.
-              </CVText>
-            </WorkExperience>
-          </CVSection>
+        <CVSection>
+          <CVSectionTitle>
+            <FaCode />
+            Technical Skills
+          </CVSectionTitle>
+          <CVList>
+            <CVListItem>Java</CVListItem>
+            <CVListItem>Python</CVListItem>
+            <CVListItem>JavaScript</CVListItem>
+            <CVListItem>React.js</CVListItem>
+            <CVListItem>Node.js</CVListItem>
+            <CVListItem>AWS Cloud</CVListItem>
+            <CVListItem>SQL</CVListItem>
+            <CVListItem>Git/GitHub</CVListItem>
+          </CVList>
+        </CVSection>
 
-          <CVSection>
-            <CVSectionTitle>
-              <FaCode />
-              Technical Skills
-            </CVSectionTitle>
-            <CVList>
-              <CVListItem>Java</CVListItem>
-              <CVListItem>Python</CVListItem>
-              <CVListItem>JavaScript</CVListItem>
-              <CVListItem>React.js</CVListItem>
-              <CVListItem>Node.js</CVListItem>
-              <CVListItem>AWS Cloud</CVListItem>
-              <CVListItem>SQL</CVListItem>
-              <CVListItem>Git/GitHub</CVListItem>
-            </CVList>
-          </CVSection>
-
-          <CVSection>
-            <CVSectionTitle>
-              <FaCertificate />
-              Key Certifications
-            </CVSectionTitle>
-            <CVList>
-              <CVListItem>AWS Cloud Practitioner</CVListItem>
-              <CVListItem>AWS Solutions Architect</CVListItem>
-              <CVListItem>Fortinet NSE 1-3</CVListItem>
-              <CVListItem>Cisco Network Security</CVListItem>
-              <CVListItem>Python Essentials</CVListItem>
-            </CVList>
-          </CVSection>
-        </CVContent>
-      </ModalContent>
-    </ModalOverlay>
+        <CVSection>
+          <CVSectionTitle>
+            <FaCertificate />
+            Key Certifications
+          </CVSectionTitle>
+          <CVList>
+            <CVListItem>AWS Cloud Practitioner</CVListItem>
+            <CVListItem>AWS Solutions Architect</CVListItem>
+            <CVListItem>Fortinet NSE 1-3</CVListItem>
+            <CVListItem>Cisco Network Security</CVListItem>
+            <CVListItem>Python Essentials</CVListItem>
+          </CVList>
+        </CVSection>
+      </CVContent>
+    </Modal>
   );
 };
 

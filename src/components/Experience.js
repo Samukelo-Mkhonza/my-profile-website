@@ -1,9 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import styled from 'styled-components';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import {
-  FaTimes, FaCheckCircle, FaTrophy, FaMapMarkerAlt, FaBriefcase
+  FaCheckCircle, FaTrophy, FaMapMarkerAlt, FaBriefcase, FaArrowRight
 } from 'react-icons/fa';
+import Modal, {
+  ModalHeader, ModalTitle, ModalMeta, ModalDescription,
+  Divider, ModalSection, SectionLabel, ChipRow, Chip
+} from './ui/Modal';
 
 /* ─── Layout ──────────────────────────────────────────────────────────────── */
 
@@ -17,16 +21,16 @@ const Container = styled.div`
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 clamp(0.5rem, 2vw, 1rem);
 `;
 
-const Heading = styled.h2`
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
+const Heading = styled(motion.h2)`
+  font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.1em;
   text-align: center;
-  margin-bottom: clamp(2rem, 4vw, 3rem);
+  margin-bottom: clamp(1rem, 2vw, 1.5rem);
   color: var(--text-primary, #000);
   position: relative;
   &:after {
@@ -39,126 +43,182 @@ const Heading = styled.h2`
     height: 3px;
     background: var(--text-primary, #000);
   }
+  @media (max-width: 480px) { font-size: clamp(1.5rem, 6vw, 2rem); }
+`;
+
+const Subtitle = styled(motion.p)`
+  text-align: center;
+  color: var(--text-secondary, #666);
+  font-size: clamp(0.875rem, 2vw, 1.0625rem);
+  line-height: 1.6;
+  max-width: 600px;
+  margin: clamp(1.5rem, 3vw, 2rem) auto clamp(2.5rem, 5vw, 3.5rem);
 `;
 
 /* ─── Timeline ────────────────────────────────────────────────────────────── */
 
 const Timeline = styled.div`
+  --exp-node: 38px;
+  --exp-gap: clamp(1.75rem, 4vw, 2.75rem);
+  max-width: 860px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--exp-gap);
+  @media (min-width: 640px) { --exp-node: 46px; }
+`;
+
+const Entry = styled(motion.article)`
   position: relative;
+  display: grid;
+  grid-template-columns: var(--exp-node) 1fr;
+  column-gap: clamp(0.875rem, 3vw, 1.5rem);
+  align-items: start;
+
+  /* Rail segment linking this marker to the next entry's marker. */
   &:before {
     content: '';
     position: absolute;
-    left: 50%;
-    top: 0;
+    left: calc(var(--exp-node) / 2 - 1.5px);
+    top: calc(var(--exp-node) + 8px);
+    bottom: calc(-1 * var(--exp-gap) - 8px);
     width: 3px;
-    height: 100%;
-    background: var(--border-card, #ddd);
-    transform: translateX(-50%);
+    background: var(--border-card, #111);
   }
-  @media (max-width: 768px) {
-    &:before { left: 1.5rem; transform: none; }
-  }
+  &:last-child:before { display: none; }
 `;
 
-const Entry = styled(motion.div)`
-  position: relative;
-  width: 50%;
-  margin-bottom: clamp(2rem, 4vw, 3rem);
-  ${({ $align }) =>
-    $align === 'left'
-      ? 'left: 0; text-align: right; padding-right: 3rem;'
-      : 'left: 50%; text-align: left; padding-left: 3rem;'}
-  @media (max-width: 768px) {
-    width: 100%;
-    left: 0 !important;
-    text-align: left !important;
-    padding: 0 0 0 3rem !important;
-  }
+const Node = styled.div`
+  width: var(--exp-node);
+  height: var(--exp-node);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: ${p => (p.$current ? 'var(--accent-orange, #ee5a24)' : 'var(--bg-card, #fff)')};
+  color: ${p => (p.$current ? 'var(--on-orange, #fff)' : 'var(--text-primary, #111)')};
+  border: 2px solid var(--border-card, #111);
+  border-radius: var(--radius-sm, 10px);
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
+  font-size: clamp(0.8125rem, 2vw, 1rem);
+  font-weight: 800;
+  z-index: 1;
 `;
 
-const ExperienceCard = styled(motion.div)`
+const ExperienceCard = styled.div`
   background: var(--bg-card, #ffffff);
-  border: 2px solid var(--border-card, #e0e0e0);
+  border: 2px solid var(--border-card, #111);
   border-radius: var(--radius-card, 14px);
   box-shadow: var(--shadow-hard, 4px 4px 0 #111);
-  padding: clamp(1.5rem, 3vw, 2rem);
+  padding: clamp(1.25rem, 4vw, 2rem);
   position: relative;
-  transition: all 0.3s ease;
-  cursor: pointer;
   overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+
   &:before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
-    height: 3px;
+    height: 4px;
     background: var(--accent-orange, #ee5a24);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.3s ease;
   }
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
-    &:before { transform: scaleX(1); }
+
+  @media (hover: hover) {
+    &:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
+      &:before { transform: scaleX(1); }
+    }
   }
 `;
 
-const Circle = styled.div`
-  position: absolute;
-  top: 2rem;
-  width: 16px;
-  height: 16px;
-  background: var(--text-primary, #000);
-  border-radius: 50%;
-  border: 3px solid var(--bg-primary, #fff);
-  box-shadow: 0 0 0 3px var(--border-card, #ddd);
-  z-index: 10;
-  ${({ $align }) => ($align === 'left' ? 'right: -8px;' : 'left: -8px;')}
-  @media (max-width: 768px) { left: -8px !important; right: auto !important; }
+const MetaRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
 `;
 
-const Period = styled.time`
-  font-size: clamp(0.75rem, 2vw, 0.875rem);
+const PeriodChip = styled.time`
+  background: var(--tag-bg, #f0f0f0);
+  color: var(--text-primary, #111);
+  border: 2px solid var(--border-card, #111);
+  border-radius: var(--radius-pill, 999px);
+  padding: 0.2rem 0.7rem;
+  font-size: clamp(0.7rem, 2vw, 0.8rem);
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--text-secondary, #666);
-  display: block;
-  margin-bottom: 0.75rem;
-  font-weight: 500;
+  letter-spacing: 0.08em;
+`;
+
+const TypeBadge = styled.span`
+  font-size: clamp(0.65rem, 2vw, 0.72rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: var(--accent, #000);
+  color: var(--accent-inverse, #fff);
+  border: 2px solid var(--border-card, #111);
+  padding: 0.2rem 0.7rem;
+  border-radius: var(--radius-pill, 999px);
+`;
+
+const CurrentBadge = styled.span`
+  font-size: clamp(0.65rem, 2vw, 0.72rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: var(--accent-orange, #ee5a24);
+  color: var(--on-orange, #fff);
+  border: 2px solid var(--border-card, #111);
+  padding: 0.2rem 0.7rem;
+  border-radius: var(--radius-pill, 999px);
 `;
 
 const Role = styled.h3`
-  font-size: clamp(1.25rem, 3vw, 1.5rem);
-  font-weight: 600;
+  font-size: clamp(1.125rem, 4vw, 1.5rem);
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: 0.25rem;
+  letter-spacing: 0.08em;
   line-height: 1.3;
   color: var(--text-primary, #000);
+  margin-bottom: 0.5rem;
 `;
 
-const Company = styled.h4`
-  font-size: clamp(1rem, 2.5vw, 1.125rem);
-  font-weight: 500;
-  color: var(--text-secondary, #333);
+const CompanyRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 1rem;
   margin-bottom: 1rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+`;
+
+const CompanyItem = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: clamp(0.8125rem, 2.5vw, 0.9375rem);
+  font-weight: 600;
+  color: var(--text-secondary, #333);
+  svg { font-size: 0.8em; color: var(--text-muted, #888); }
 `;
 
 const Description = styled.p`
   font-size: clamp(0.875rem, 2.5vw, 1rem);
-  line-height: 1.6;
+  line-height: 1.65;
   color: var(--text-secondary, #333);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 `;
 
 const SkillTags = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  @media (max-width: 768px) { justify-content: flex-start; }
-  ${({ $align }) => $align === 'left' && `@media (min-width: 769px) { justify-content: flex-end; }`}
+  margin-bottom: 1.25rem;
 `;
 
 const SkillTag = styled.span`
@@ -167,99 +227,50 @@ const SkillTag = styled.span`
   border: 2px solid var(--border-card, #111);
   padding: 0.25rem 0.75rem;
   border-radius: var(--radius-pill, 999px);
-  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  font-size: clamp(0.7rem, 2vw, 0.8125rem);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  transition: all 0.3s ease;
-  ${ExperienceCard}:hover & { background: var(--text-primary, #000); color: var(--accent-inverse, #fff); }
 `;
 
-const ClickHint = styled.span`
-  display: block;
-  margin-top: 1rem;
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-primary, #000);
-  opacity: 0;
-  transition: opacity 0.2s;
-  ${ExperienceCard}:hover & { opacity: 1; }
-`;
-
-/* ─── Modal ───────────────────────────────────────────────────────────────── */
-
-const Overlay = styled(motion.div)`
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(4px);
-  z-index: 1000;
-  display: flex;
+const DetailsButton = styled.button`
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  padding: 1rem;
-`;
-
-const Modal = styled(motion.div)`
-  background: var(--bg-card, #fff);
-  border: 2px solid var(--border-card, #e0e0e0);
-  border-radius: var(--radius-card, 14px);
-  box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
-  width: 100%;
-  max-width: 640px;
-  max-height: 90vh;
-  overflow-y: auto;
-  padding: clamp(1.5rem, 5vw, 2.5rem);
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-`;
-
-const CloseButton = styled(motion.button)`
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: var(--tag-bg, #f0f0f0);
-  border: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: var(--text-secondary, #666);
-  font-size: 0.875rem;
-  transition: background 0.2s, color 0.2s;
-  &:hover { background: var(--text-primary, #000); color: var(--accent-inverse, #fff); }
-`;
-
-const ModalHeaderBlock = styled.div`
-  padding-right: 2.5rem;
-  display: flex;
-  flex-direction: column;
   gap: 0.5rem;
-`;
-
-const ModalRole = styled.h2`
-  font-size: clamp(1.25rem, 4vw, 1.75rem);
+  background: var(--accent, #000);
+  color: var(--accent-inverse, #fff);
+  border: 2px solid var(--border-card, #111);
+  border-radius: var(--radius-pill, 999px);
+  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
+  padding: 0.5rem 1.125rem;
+  min-height: 44px;
+  font-family: inherit;
+  font-size: clamp(0.75rem, 2vw, 0.8125rem);
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-primary, #000);
-  line-height: 1.2;
-  margin: 0;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  svg { font-size: 0.8em; transition: transform 0.2s ease; }
+
+  @media (hover: hover) {
+    &:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 5px 5px 0 var(--shadow-color, #111);
+      svg { transform: translateX(3px); }
+    }
+  }
+  &:active {
+    transform: translate(1px, 1px);
+    box-shadow: 2px 2px 0 var(--shadow-color, #111);
+  }
+  &:focus-visible {
+    outline: 3px solid var(--accent-orange, #ee5a24);
+    outline-offset: 2px;
+  }
 `;
 
-const ModalMeta = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.75rem;
-`;
+/* ─── Modal content ───────────────────────────────────────────────────────── */
 
 const MetaItem = styled.span`
   display: inline-flex;
@@ -269,37 +280,6 @@ const MetaItem = styled.span`
   color: var(--text-secondary, #555);
   font-weight: 500;
   svg { font-size: 0.75rem; color: var(--text-secondary, #888); }
-`;
-
-const TypeBadge = styled.span`
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  background: var(--accent, #000);
-  color: var(--accent-inverse, #fff);
-  padding: 0.2rem 0.6rem;
-  border-radius: var(--radius-pill, 999px);
-`;
-
-const Divider = styled.hr`
-  border: none;
-  border-top: 1px solid var(--border-card, #e0e0e0);
-  margin: 0;
-`;
-
-const ModalSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-`;
-
-const SectionLabel = styled.span`
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--text-secondary, #888);
 `;
 
 const BulletList = styled.ul`
@@ -331,22 +311,6 @@ const ResponsibilityIcon = styled(FaCheckCircle)`
 
 const AchievementIcon = styled(FaTrophy)`
   color: var(--green, #43a047);
-`;
-
-const ToolsRow = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-`;
-
-const ToolChip = styled.span`
-  background: var(--tag-bg, #f0f0f0);
-  color: var(--text-primary, #444);
-  border: 2px solid var(--border-card, #111);
-  padding: 0.3rem 0.75rem;
-  border-radius: var(--radius-pill, 999px);
-  font-size: 0.8rem;
-  font-weight: 600;
 `;
 
 /* ─── Data ────────────────────────────────────────────────────────────────── */
@@ -398,154 +362,152 @@ const experiences = [
   },
 ];
 
+const isCurrent = exp => /present/i.test(exp.period);
+
 /* ─── Component ───────────────────────────────────────────────────────────── */
 
 const Experience = () => {
   const [selectedExp, setSelectedExp] = useState(null);
+  const reducedMotion = useReducedMotion();
 
   const closeModal = useCallback(() => setSelectedExp(null), []);
-
-  useEffect(() => {
-    const onKey = e => { if (e.key === 'Escape') closeModal(); };
-    if (selectedExp) document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [selectedExp, closeModal]);
 
   return (
     <Section id="experience">
       <Container>
-        <Heading>Experience</Heading>
+        <Heading
+          initial={{ opacity: 0, y: reducedMotion ? 0 : 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          Experience
+        </Heading>
+        <Subtitle
+          initial={{ opacity: 0, y: reducedMotion ? 0 : 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          Where I've worked and what I shipped along the way.
+        </Subtitle>
 
         <Timeline>
-          {experiences.map((exp, i) => {
-            const alignment = i % 2 === 0 ? 'left' : 'right';
-            return (
-              <Entry
-                key={i}
-                $align={alignment}
-                initial={{ opacity: 0, x: alignment === 'left' ? -100 : 100 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: i * 0.2 }}
-                viewport={{ once: true }}
-              >
-                <Circle $align={alignment} />
-                <ExperienceCard
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                  onClick={() => setSelectedExp(exp)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedExp(exp); } }}
+          {experiences.map((exp, i) => (
+            <Entry
+              key={`${exp.role}-${exp.period}`}
+              initial={{ opacity: 0, y: reducedMotion ? 0 : 28 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: i * 0.12 }}
+              viewport={{ once: true, margin: '-40px' }}
+            >
+              <Node $current={isCurrent(exp)} aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </Node>
+              <ExperienceCard onClick={() => setSelectedExp(exp)}>
+                <MetaRow>
+                  <PeriodChip>{exp.period}</PeriodChip>
+                  <TypeBadge>{exp.type}</TypeBadge>
+                  {isCurrent(exp) && <CurrentBadge>Current</CurrentBadge>}
+                </MetaRow>
+                <Role>{exp.role}</Role>
+                <CompanyRow>
+                  <CompanyItem><FaBriefcase />{exp.company}</CompanyItem>
+                  {exp.location && (
+                    <CompanyItem><FaMapMarkerAlt />{exp.location}</CompanyItem>
+                  )}
+                </CompanyRow>
+                <Description>{exp.description}</Description>
+                <SkillTags>
+                  {exp.skills.map(skill => (
+                    <SkillTag key={skill}>{skill}</SkillTag>
+                  ))}
+                </SkillTags>
+                <DetailsButton
+                  type="button"
+                  aria-label={`View details for ${exp.role} at ${exp.company}`}
+                  onClick={e => { e.stopPropagation(); setSelectedExp(exp); }}
                 >
-                  <Period>{exp.period}</Period>
-                  <Role>{exp.role}</Role>
-                  <Company>{exp.company}</Company>
-                  <Description>{exp.description}</Description>
-                  <SkillTags $align={alignment}>
-                    {exp.skills.map((skill, idx) => (
-                      <SkillTag key={idx}>{skill}</SkillTag>
-                    ))}
-                  </SkillTags>
-                  <ClickHint>Click to see more details →</ClickHint>
-                </ExperienceCard>
-              </Entry>
-            );
-          })}
+                  View details <FaArrowRight />
+                </DetailsButton>
+              </ExperienceCard>
+            </Entry>
+          ))}
         </Timeline>
       </Container>
 
       {/* ── Modal ── */}
-      <AnimatePresence>
+      <Modal
+        isOpen={!!selectedExp}
+        onClose={closeModal}
+        labelledBy="experience-modal-title"
+      >
         {selectedExp && (
-          <Overlay
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={closeModal}
-          >
-            <Modal
-              initial={{ opacity: 0, y: 40, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 40, scale: 0.96 }}
-              transition={{ type: 'spring', damping: 26, stiffness: 300 }}
-              onClick={e => e.stopPropagation()}
-            >
-              <CloseButton
-                onClick={closeModal}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                aria-label="Close"
-              >
-                <FaTimes />
-              </CloseButton>
-
-              <ModalHeaderBlock>
-                <ModalRole>{selectedExp.role}</ModalRole>
-                <ModalMeta>
-                  <TypeBadge>{selectedExp.type}</TypeBadge>
+          <>
+            <ModalHeader>
+              <ModalTitle id="experience-modal-title">{selectedExp.role}</ModalTitle>
+              <ModalMeta>
+                <TypeBadge>{selectedExp.type}</TypeBadge>
+                <MetaItem>
+                  <FaBriefcase />
+                  {selectedExp.company}
+                </MetaItem>
+                {selectedExp.location && (
                   <MetaItem>
-                    <FaBriefcase />
-                    {selectedExp.company}
+                    <FaMapMarkerAlt />
+                    {selectedExp.location}
                   </MetaItem>
-                  {selectedExp.location && (
-                    <MetaItem>
-                      <FaMapMarkerAlt />
-                      {selectedExp.location}
-                    </MetaItem>
-                  )}
-                  <MetaItem>{selectedExp.period}</MetaItem>
-                </ModalMeta>
-              </ModalHeaderBlock>
+                )}
+                <MetaItem>{selectedExp.period}</MetaItem>
+              </ModalMeta>
+            </ModalHeader>
 
-              <p style={{ fontSize: '0.9375rem', lineHeight: 1.8, color: 'var(--text-secondary, #555)', margin: 0 }}>
-                {selectedExp.description}
-              </p>
+            <ModalDescription>{selectedExp.description}</ModalDescription>
 
-              <Divider />
+            <Divider />
 
-              <ModalSection>
-                <SectionLabel>Responsibilities</SectionLabel>
-                <BulletList>
-                  {selectedExp.responsibilities.map((item, i) => (
-                    <BulletItem key={i}>
-                      <ResponsibilityIcon />
-                      {item}
-                    </BulletItem>
-                  ))}
-                </BulletList>
-              </ModalSection>
+            <ModalSection>
+              <SectionLabel>Responsibilities</SectionLabel>
+              <BulletList>
+                {selectedExp.responsibilities.map((item, i) => (
+                  <BulletItem key={i}>
+                    <ResponsibilityIcon />
+                    {item}
+                  </BulletItem>
+                ))}
+              </BulletList>
+            </ModalSection>
 
-              {selectedExp.achievements?.length > 0 && (
-                <>
-                  <Divider />
-                  <ModalSection>
-                    <SectionLabel>Key Achievements</SectionLabel>
-                    <BulletList>
-                      {selectedExp.achievements.map((item, i) => (
-                        <BulletItem key={i}>
-                          <AchievementIcon />
-                          {item}
-                        </BulletItem>
-                      ))}
-                    </BulletList>
-                  </ModalSection>
-                </>
-              )}
+            {selectedExp.achievements?.length > 0 && (
+              <>
+                <Divider />
+                <ModalSection>
+                  <SectionLabel>Key Achievements</SectionLabel>
+                  <BulletList>
+                    {selectedExp.achievements.map((item, i) => (
+                      <BulletItem key={i}>
+                        <AchievementIcon />
+                        {item}
+                      </BulletItem>
+                    ))}
+                  </BulletList>
+                </ModalSection>
+              </>
+            )}
 
-              <Divider />
+            <Divider />
 
-              <ModalSection>
-                <SectionLabel>Technologies Used</SectionLabel>
-                <ToolsRow>
-                  {selectedExp.skills.map(s => (
-                    <ToolChip key={s}>{s}</ToolChip>
-                  ))}
-                </ToolsRow>
-              </ModalSection>
-            </Modal>
-          </Overlay>
+            <ModalSection>
+              <SectionLabel>Technologies Used</SectionLabel>
+              <ChipRow>
+                {selectedExp.skills.map(s => (
+                  <Chip key={s}>{s}</Chip>
+                ))}
+              </ChipRow>
+            </ModalSection>
+          </>
         )}
-      </AnimatePresence>
+      </Modal>
     </Section>
   );
 };

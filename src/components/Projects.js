@@ -3,11 +3,15 @@ import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   FaGithub, FaStar, FaCodeBranch, FaEye,
-  FaTimes, FaExternalLinkAlt, FaCalendarAlt, FaCircle, FaSpinner
+  FaExternalLinkAlt, FaCalendarAlt, FaCircle, FaSpinner
 } from 'react-icons/fa';
 import TiltCard from './TiltCard';
 import projectPlaceholder from '../assets/project-card-placeholder.svg';
 import useIsNarrowViewport from '../lib/useIsNarrowViewport';
+import Modal, {
+  ModalHeader, ModalTitle, ModalDescription,
+  Divider, ModalSection, SectionLabel, ChipRow, Chip
+} from './ui/Modal';
 
 const GITHUB_USERNAME = 'Samukelo-Mkhonza';
 
@@ -322,84 +326,7 @@ const ViewDetailsHint = styled.span`
   ${ProjectCard}:hover & { opacity: 1; }
 `;
 
-/* ─── Modal ───────────────────────────────────────────────────────────────── */
-
-const Overlay = styled(motion.div)`
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-`;
-
-const Modal = styled(motion.div)`
-  background: var(--bg-card, #fff);
-  border: 2px solid var(--border-card, #e0e0e0);
-  border-radius: var(--radius-card, 14px);
-  box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
-  width: 100%;
-  max-width: 620px;
-  max-height: 90vh;
-  overflow-y: auto;
-  padding: clamp(1.5rem, 5vw, 2.5rem);
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-`;
-
-const CloseButton = styled(motion.button)`
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: var(--tag-bg, #f0f0f0);
-  border: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: var(--text-secondary, #666);
-  font-size: 0.875rem;
-  transition: background 0.2s, color 0.2s;
-  &:hover { background: var(--text-primary, #000); color: var(--accent-inverse, #fff); }
-`;
-
-const ModalTitle = styled.h2`
-  font-size: clamp(1.25rem, 4vw, 1.75rem);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-primary, #000);
-  padding-right: 2.5rem;
-  line-height: 1.2;
-`;
-
-const ModalDescription = styled.p`
-  font-size: clamp(0.875rem, 2vw, 1rem);
-  line-height: 1.8;
-  color: var(--text-secondary, #555);
-`;
-
-const ModalSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;
-
-const ModalSectionLabel = styled.span`
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--text-secondary, #888);
-`;
+/* ─── Modal content ───────────────────────────────────────────────────────── */
 
 const StatsRow = styled.div`
   display: flex;
@@ -416,12 +343,6 @@ const StatBig = styled.div`
   color: var(--text-primary, #000);
   svg { color: var(--text-secondary, #888); font-size: 1rem; }
   span { font-weight: 400; color: var(--text-secondary, #666); font-size: 0.875rem; }
-`;
-
-const Divider = styled.hr`
-  border: none;
-  border-top: 1px solid var(--border-card, #e0e0e0);
-  margin: 0;
 `;
 
 const DateRow = styled.div`
@@ -523,12 +444,6 @@ const Projects = () => {
   }, []);
 
   const closeModal = useCallback(() => setSelectedRepo(null), []);
-
-  useEffect(() => {
-    const onKey = e => { if (e.key === 'Escape') closeModal(); };
-    if (selectedRepo) document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [selectedRepo, closeModal]);
 
   const languages = ['all', ...Array.from(new Set(repos.map(r => r.language).filter(Boolean)))];
 
@@ -685,108 +600,92 @@ const Projects = () => {
       </Container>
 
       {/* ── Modal ── */}
-      <AnimatePresence>
+      <Modal
+        isOpen={!!selectedRepo}
+        onClose={closeModal}
+        labelledBy="project-modal-title"
+      >
         {selectedRepo && (
-          <Overlay
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={closeModal}
-          >
-            <Modal
-              initial={{ opacity: 0, y: 40, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 40, scale: 0.96 }}
-              transition={{ type: 'spring', damping: 26, stiffness: 300 }}
-              onClick={e => e.stopPropagation()}
+          <>
+            <ModalHeader>
+              <ModalTitle id="project-modal-title">{formatName(selectedRepo.name)}</ModalTitle>
+            </ModalHeader>
+
+            <ModalDescription>
+              {selectedRepo.description || 'No description provided for this repository.'}
+            </ModalDescription>
+
+            {selectedRepo.topics?.length > 0 && (
+              <ModalSection>
+                <SectionLabel>Topics</SectionLabel>
+                <ChipRow>
+                  {selectedRepo.topics.map(t => (
+                    <Chip key={t}>{t}</Chip>
+                  ))}
+                </ChipRow>
+              </ModalSection>
+            )}
+
+            <Divider />
+
+            <ModalSection>
+              <SectionLabel>Stats</SectionLabel>
+              <StatsRow>
+                <StatBig>
+                  <FaStar />
+                  {selectedRepo.stargazers_count}
+                  <span>Stars</span>
+                </StatBig>
+                <StatBig>
+                  <FaCodeBranch />
+                  {selectedRepo.forks_count}
+                  <span>Forks</span>
+                </StatBig>
+                <StatBig>
+                  <FaEye />
+                  {selectedRepo.watchers_count}
+                  <span>Watchers</span>
+                </StatBig>
+                {selectedRepo.language && (
+                  <StatBig>
+                    <FaCircle style={{ color: LANGUAGE_COLORS[selectedRepo.language] || '#ccc', fontSize: '0.75rem' }} />
+                    {selectedRepo.language}
+                    <span>Language</span>
+                  </StatBig>
+                )}
+              </StatsRow>
+            </ModalSection>
+
+            <Divider />
+
+            <ModalSection>
+              <SectionLabel>Dates</SectionLabel>
+              <DateRow>
+                <DateItem>
+                  <FaCalendarAlt />
+                  Created: {formatDate(selectedRepo.created_at)}
+                </DateItem>
+                <DateItem>
+                  <FaCalendarAlt />
+                  Last updated: {formatDate(selectedRepo.updated_at)}
+                </DateItem>
+              </DateRow>
+            </ModalSection>
+
+            <GitHubButton
+              href={selectedRepo.html_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
             >
-              <CloseButton
-                onClick={closeModal}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                aria-label="Close"
-              >
-                <FaTimes />
-              </CloseButton>
-
-              <ModalTitle>{formatName(selectedRepo.name)}</ModalTitle>
-
-              <ModalDescription>
-                {selectedRepo.description || 'No description provided for this repository.'}
-              </ModalDescription>
-
-              {selectedRepo.topics?.length > 0 && (
-                <ModalSection>
-                  <ModalSectionLabel>Topics</ModalSectionLabel>
-                  <TagsRow>
-                    {selectedRepo.topics.map(t => (
-                      <TopicTag key={t}>{t}</TopicTag>
-                    ))}
-                  </TagsRow>
-                </ModalSection>
-              )}
-
-              <Divider />
-
-              <ModalSection>
-                <ModalSectionLabel>Stats</ModalSectionLabel>
-                <StatsRow>
-                  <StatBig>
-                    <FaStar />
-                    {selectedRepo.stargazers_count}
-                    <span>Stars</span>
-                  </StatBig>
-                  <StatBig>
-                    <FaCodeBranch />
-                    {selectedRepo.forks_count}
-                    <span>Forks</span>
-                  </StatBig>
-                  <StatBig>
-                    <FaEye />
-                    {selectedRepo.watchers_count}
-                    <span>Watchers</span>
-                  </StatBig>
-                  {selectedRepo.language && (
-                    <StatBig>
-                      <FaCircle style={{ color: LANGUAGE_COLORS[selectedRepo.language] || '#ccc', fontSize: '0.75rem' }} />
-                      {selectedRepo.language}
-                      <span>Language</span>
-                    </StatBig>
-                  )}
-                </StatsRow>
-              </ModalSection>
-
-              <Divider />
-
-              <ModalSection>
-                <ModalSectionLabel>Dates</ModalSectionLabel>
-                <DateRow>
-                  <DateItem>
-                    <FaCalendarAlt />
-                    Created: {formatDate(selectedRepo.created_at)}
-                  </DateItem>
-                  <DateItem>
-                    <FaCalendarAlt />
-                    Last updated: {formatDate(selectedRepo.updated_at)}
-                  </DateItem>
-                </DateRow>
-              </ModalSection>
-
-              <GitHubButton
-                href={selectedRepo.html_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
-              >
-                <FaGithub />
-                View on GitHub
-                <FaExternalLinkAlt style={{ fontSize: '0.8rem' }} />
-              </GitHubButton>
-            </Modal>
-          </Overlay>
+              <FaGithub />
+              View on GitHub
+              <FaExternalLinkAlt style={{ fontSize: '0.8rem' }} />
+            </GitHubButton>
+          </>
         )}
-      </AnimatePresence>
+      </Modal>
     </Section>
   );
 };

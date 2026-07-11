@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import styled from 'styled-components';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FaTimes, FaRocket, FaArrowRight } from 'react-icons/fa';
+import { motion } from 'framer-motion';
+import { FaRocket, FaArrowRight } from 'react-icons/fa';
 import { blogPosts } from '../content/blogPosts';
+import Modal, { ModalTitle } from './ui/Modal';
 
 const Section = styled.section`
   padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 4vw, 2rem);
@@ -254,88 +255,11 @@ const ReadMore = styled.span`
   }
 `;
 
-// Modal Styles
-const ModalOverlay = styled(motion.div)`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.9);
-  backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: clamp(1rem, 3vw, 2rem);
-  overflow-y: auto;
-`;
-
-const ModalContent = styled(motion.div)`
-  background: var(--bg-card, #ffffff);
-  border: 2px solid var(--border-card, #111);
-  border-radius: var(--radius-card, 14px);
-  padding: clamp(2rem, 4vw, 3rem);
-  max-width: min(90vw, 450px);
-  width: 100%;
-  text-align: center;
-  position: relative;
-  margin: auto;
-  box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
-
-  /* Small mobile */
-  @media (max-width: 480px) {
-    padding: clamp(1.5rem, 4vw, 2rem);
-    border-radius: 12px;
-  }
-
-  /* Very small screens */
-  @media (max-width: 360px) {
-    padding: 1.5rem 1rem;
-  }
-`;
-
-const CloseButton = styled.button`
-  position: absolute;
-  top: clamp(1rem, 2vw, 1.25rem);
-  right: clamp(1rem, 2vw, 1.25rem);
-  background: transparent;
-  border: 2px solid var(--border-card, #e9ecef);
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  cursor: pointer;
-  color: var(--text-secondary, #6c757d);
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-
-  @media (hover: hover) {
-    &:hover {
-      color: var(--text-primary, #000);
-      transform: scale(1.1);
-    }
-  }
-  
-  &:active {
-    transform: scale(0.95);
-  }
-
-  @media (max-width: 360px) {
-    top: 0.75rem;
-    right: 0.75rem;
-    width: 28px;
-    height: 28px;
-    font-size: 0.875rem;
-  }
-`;
-
+// Modal content (frame and behaviour come from the shared Modal component;
+// spacing between blocks comes from the shared panel's column gap)
 const ModalIcon = styled(motion.div)`
   width: 60px;
   height: 60px;
-  margin: 0 auto clamp(1.25rem, 2.5vw, 1.75rem);
   color: var(--text-primary, #000);
   display: flex;
   align-items: center;
@@ -343,7 +267,8 @@ const ModalIcon = styled(motion.div)`
   background: var(--tag-bg, #f8f9fa);
   border: 2px solid var(--border-card, #111);
   border-radius: 50%;
-  
+  flex-shrink: 0;
+
   svg {
     width: 32px;
     height: 32px;
@@ -352,8 +277,7 @@ const ModalIcon = styled(motion.div)`
   @media (max-width: 360px) {
     width: 52px;
     height: 52px;
-    margin-bottom: 1.25rem;
-    
+
     svg {
       width: 28px;
       height: 28px;
@@ -361,30 +285,14 @@ const ModalIcon = styled(motion.div)`
   }
 `;
 
-const ModalTitle = styled.h3`
-  font-size: clamp(1.25rem, 3vw, 1.5rem);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: clamp(0.5rem, 1.5vw, 0.75rem);
-  color: var(--text-primary, #000);
-  line-height: 1.2;
-
-  @media (max-width: 360px) {
-    font-size: 1.125rem;
-    letter-spacing: 0.02em;
-  }
-`;
-
 const ModalText = styled.p`
   font-size: clamp(0.875rem, 2vw, 1rem);
   line-height: 1.6;
   color: var(--text-secondary, #495057);
-  margin-bottom: clamp(1.5rem, 3vw, 2rem);
+  margin: 0;
 
   @media (max-width: 360px) {
     font-size: 0.8125rem;
-    margin-bottom: 1.25rem;
   }
 `;
 
@@ -392,12 +300,11 @@ const ModalBlogTitle = styled.h4`
   font-size: clamp(0.875rem, 2vw, 1rem);
   font-weight: 500;
   color: var(--text-muted, #6c757d);
-  margin-bottom: clamp(1rem, 2vw, 1.5rem);
+  margin: 0;
   font-style: italic;
 
   @media (max-width: 360px) {
     font-size: 0.8125rem;
-    margin-bottom: 0.875rem;
   }
 `;
 
@@ -499,18 +406,13 @@ const BlogFooter = styled.div`
 `;
 
 const Blog = () => {
-  const [modalOpen, setModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
 
   const handleCardClick = (post) => {
     setSelectedPost(post);
-    setModalOpen(true);
   };
 
-  const closeModal = () => {
-    setModalOpen(false);
-    setTimeout(() => setSelectedPost(null), 300);
-  };
+  const closeModal = useCallback(() => setSelectedPost(null), []);
 
   return (
     <Section id="blog">
@@ -575,60 +477,42 @@ const Blog = () => {
         </BlogGrid>
       </Container>
 
-      {/* Modal */}
-      <AnimatePresence>
-        {modalOpen && (
-          <ModalOverlay
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            onClick={closeModal}
-          >
-            <ModalContent
-              initial={{ scale: 0.9, opacity: 0 }}
+      {/* ── Modal ── */}
+      <Modal
+        isOpen={!!selectedPost}
+        onClose={closeModal}
+        labelledBy="blog-modal-title"
+        maxWidth="450px"
+        center
+      >
+        {selectedPost && (
+          <>
+            <ModalIcon
+              initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ 
+              transition={{
+                delay: 0.1,
                 type: "spring",
-                damping: 30,
-                stiffness: 300
+                damping: 25
               }}
-              onClick={(e) => e.stopPropagation()}
             >
-              <CloseButton onClick={closeModal} aria-label="Close modal">
-                <FaTimes />
-              </CloseButton>
-              
-              <ModalIcon
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ 
-                  delay: 0.1,
-                  type: "spring",
-                  damping: 25
-                }}
-              >
-                <FaRocket />
-              </ModalIcon>
-              
-              <ModalTitle>Coming Soon</ModalTitle>
-              
-              {selectedPost && (
-                <ModalBlogTitle>{selectedPost.title}</ModalBlogTitle>
-              )}
-              
-              <ModalText>
-                This article is currently being written. Check back soon — or reach out via the contact form if you'd like to talk about the topic in the meantime.
-              </ModalText>
-              
-              <CTAButton onClick={closeModal}>
-                Got it
-              </CTAButton>
-            </ModalContent>
-          </ModalOverlay>
+              <FaRocket />
+            </ModalIcon>
+
+            <ModalTitle id="blog-modal-title">Coming Soon</ModalTitle>
+
+            <ModalBlogTitle>{selectedPost.title}</ModalBlogTitle>
+
+            <ModalText>
+              This article is currently being written. Check back soon — or reach out via the contact form if you'd like to talk about the topic in the meantime.
+            </ModalText>
+
+            <CTAButton onClick={closeModal}>
+              Got it
+            </CTAButton>
+          </>
         )}
-      </AnimatePresence>
+      </Modal>
     </Section>
   );
 };
