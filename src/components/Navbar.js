@@ -476,6 +476,8 @@ const Navbar = () => {
   useEffect(() => {
     if (!isOpen) return undefined;
 
+    const menuButton = menuButtonRef.current;
+
     const getFocusable = () =>
       drawerRef.current
         ? Array.from(drawerRef.current.querySelectorAll('a[href], button:not([disabled])'))
@@ -507,7 +509,7 @@ const Navbar = () => {
     document.addEventListener('keydown', handleKeyDown);
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
-      menuButtonRef.current?.focus();
+      menuButton?.focus();
     };
   }, [isOpen]);
 
