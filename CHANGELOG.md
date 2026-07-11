@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.8.1](https://github.com/Samukelo-Mkhonza/my-profile-website/compare/v0.8.0...v0.8.1) (2026-07-11)
+
+
+### Bug Fixes
+
+* remove orange highlight from Years in Tech stat card ([7c772cf](https://github.com/Samukelo-Mkhonza/my-profile-website/commit/7c772cf84c847c0d1fd5ba9db943ef6925dff0ff))
+* remove unused $accent prop from StatCard in Hero component ([9a1e378](https://github.com/Samukelo-Mkhonza/my-profile-website/commit/9a1e378321bdde9e38bcbb9fb78f86007d9aeb09))
+
 ## [0.8.0](https://github.com/Samukelo-Mkhonza/my-profile-website/compare/v0.7.1...v0.8.0) (2026-07-11)
 
 
