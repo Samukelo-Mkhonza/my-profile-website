@@ -1,10 +1,14 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaTimes, FaCheckCircle, FaExternalLinkAlt } from 'react-icons/fa';
+import { FaCheckCircle, FaExternalLinkAlt } from 'react-icons/fa';
 import TiltCard from './TiltCard';
 import useIsNarrowViewport from '../lib/useIsNarrowViewport';
 import { skillCategories, skillsData } from '../content/skills';
+import Modal, {
+  ModalTitle, ModalMeta, ModalDescription,
+  Divider, ModalSection, SectionLabel, ChipRow, Chip
+} from './ui/Modal';
 
 /* ─── Layout ──────────────────────────────────────────────────────────────── */
 
@@ -274,57 +278,9 @@ const ClickHint = styled.span`
   ${SkillCard}:focus-visible & { opacity: 1; }
 `;
 
-/* ─── Modal ───────────────────────────────────────────────────────────────── */
+/* ─── Modal content ───────────────────────────────────────────────────────── */
 
-const Overlay = styled(motion.div)`
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(4px);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-`;
-
-const Modal = styled(motion.div)`
-  background: var(--bg-card, #fff);
-  border: 2px solid var(--border-card, #e0e0e0);
-  border-radius: var(--radius-card, 14px);
-  box-shadow: var(--shadow-hard-lg, 6px 6px 0 #111);
-  width: 100%;
-  max-width: 580px;
-  max-height: 90vh;
-  overflow-y: auto;
-  padding: clamp(1.5rem, 5vw, 2.5rem);
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  &:focus { outline: none; }
-`;
-
-const CloseButton = styled(motion.button)`
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: var(--tag-bg, #f0f0f0);
-  border: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: var(--text-secondary, #666);
-  font-size: 0.875rem;
-  transition: background 0.2s, color 0.2s;
-  &:hover { background: var(--text-primary, #000); color: var(--accent-inverse, #fff); }
-`;
-
-const ModalHeader = styled.div`
+const SkillModalHeader = styled.div`
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -345,23 +301,6 @@ const ModalTitleGroup = styled.div`
   gap: 0.375rem;
 `;
 
-const ModalTitle = styled.h2`
-  font-size: clamp(1.25rem, 4vw, 1.75rem);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-primary, #000);
-  line-height: 1.1;
-  margin: 0;
-`;
-
-const ModalMeta = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-`;
-
 const LevelBadge = styled.span`
   font-size: 0.75rem;
   color: var(--text-secondary, #6c757d);
@@ -378,33 +317,6 @@ const YearsBadge = styled.span`
   font-size: 0.8rem;
   color: var(--text-secondary, #666);
   font-weight: 500;
-`;
-
-const ModalDescription = styled.p`
-  font-size: clamp(0.875rem, 2vw, 1rem);
-  line-height: 1.8;
-  color: var(--text-secondary, #555);
-  margin: 0;
-`;
-
-const Divider = styled.hr`
-  border: none;
-  border-top: 1px solid var(--border-card, #e0e0e0);
-  margin: 0;
-`;
-
-const SectionLabel = styled.span`
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--text-secondary, #888);
-`;
-
-const ModalSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
 `;
 
 const UsageList = styled.ul`
@@ -429,22 +341,6 @@ const UsageItem = styled.li`
     margin-top: 0.3rem;
     flex-shrink: 0;
   }
-`;
-
-const ToolsRow = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-`;
-
-const ToolChip = styled.span`
-  background: var(--tag-bg, #f0f0f0);
-  color: var(--text-primary, #444);
-  border: 2px solid var(--border-card, #111);
-  padding: 0.3rem 0.75rem;
-  border-radius: var(--radius-pill, 999px);
-  font-size: 0.8rem;
-  font-weight: 600;
 `;
 
 const ProofLink = styled.a`
@@ -474,45 +370,8 @@ const Skills = () => {
   const [selectedSkill, setSelectedSkill] = useState(null);
   const [showAll, setShowAll] = useState(false);
   const previewCount = useIsNarrowViewport() ? PREVIEW_COUNT_NARROW : PREVIEW_COUNT;
-  const modalRef = useRef(null);
 
   const closeModal = useCallback(() => setSelectedSkill(null), []);
-
-  // Dialog behaviour while the modal is open: lock body scroll, move focus
-  // into the dialog, trap Tab inside it, close on Escape, and hand focus back
-  // to the card that opened it.
-  useEffect(() => {
-    if (!selectedSkill) return;
-    const openerElement = document.activeElement;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    modalRef.current?.focus();
-
-    const onKey = (e) => {
-      if (e.key === 'Escape') { closeModal(); return; }
-      if (e.key !== 'Tab' || !modalRef.current) return;
-      const focusables = modalRef.current.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-      if (focusables.length === 0) return;
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-      const active = document.activeElement;
-      if (e.shiftKey && (active === first || active === modalRef.current)) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && active === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    };
-    document.addEventListener('keydown', onKey);
-    return () => {
-      document.removeEventListener('keydown', onKey);
-      document.body.style.overflow = previousOverflow;
-      if (openerElement instanceof HTMLElement) openerElement.focus();
-    };
-  }, [selectedSkill, closeModal]);
 
   const filteredSkills = activeFilter === 'all'
     ? skillsData
@@ -610,104 +469,81 @@ const Skills = () => {
       </Container>
 
       {/* ── Modal ── */}
-      <AnimatePresence>
+      <Modal
+        isOpen={!!selectedSkill}
+        onClose={closeModal}
+        labelledBy="skill-modal-title"
+      >
         {selectedSkill && (
-          <Overlay
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={closeModal}
-          >
-            <Modal
-              ref={modalRef}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="skill-modal-title"
-              tabIndex={-1}
-              initial={{ opacity: 0, y: 40, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 40, scale: 0.96 }}
-              transition={{ type: 'spring', damping: 26, stiffness: 300 }}
-              onClick={e => e.stopPropagation()}
-            >
-              <CloseButton
-                onClick={closeModal}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                aria-label="Close"
-              >
-                <FaTimes />
-              </CloseButton>
+          <>
+            <SkillModalHeader>
+              <ModalIcon><selectedSkill.icon /></ModalIcon>
+              <ModalTitleGroup>
+                <ModalTitle id="skill-modal-title">{selectedSkill.name}</ModalTitle>
+                <ModalMeta>
+                  <LevelBadge>{selectedSkill.level}</LevelBadge>
+                  <YearsBadge>{selectedSkill.years}</YearsBadge>
+                </ModalMeta>
+              </ModalTitleGroup>
+            </SkillModalHeader>
 
-              <ModalHeader>
-                <ModalIcon><selectedSkill.icon /></ModalIcon>
-                <ModalTitleGroup>
-                  <ModalTitle id="skill-modal-title">{selectedSkill.name}</ModalTitle>
-                  <ModalMeta>
-                    <LevelBadge>{selectedSkill.level}</LevelBadge>
-                    <YearsBadge>{selectedSkill.years}</YearsBadge>
-                  </ModalMeta>
-                </ModalTitleGroup>
-              </ModalHeader>
+            <ModalDescription>{selectedSkill.description}</ModalDescription>
 
-              <ModalDescription>{selectedSkill.description}</ModalDescription>
+            <Divider />
 
-              <Divider />
+            <ModalSection>
+              <SectionLabel>How I've used it</SectionLabel>
+              <UsageList>
+                {selectedSkill.usageItems.map((item, i) => (
+                  <UsageItem key={i}>
+                    <FaCheckCircle />
+                    {item}
+                  </UsageItem>
+                ))}
+              </UsageList>
+            </ModalSection>
 
-              <ModalSection>
-                <SectionLabel>How I've used it</SectionLabel>
-                <UsageList>
-                  {selectedSkill.usageItems.map((item, i) => (
-                    <UsageItem key={i}>
-                      <FaCheckCircle />
-                      {item}
-                    </UsageItem>
-                  ))}
-                </UsageList>
-              </ModalSection>
+            {selectedSkill.tools?.length > 0 && (
+              <>
+                <Divider />
+                <ModalSection>
+                  <SectionLabel>Tools & Libraries</SectionLabel>
+                  <ChipRow>
+                    {selectedSkill.tools.map(t => (
+                      <Chip key={t}>{t}</Chip>
+                    ))}
+                  </ChipRow>
+                </ModalSection>
+              </>
+            )}
 
-              {selectedSkill.tools?.length > 0 && (
-                <>
-                  <Divider />
-                  <ModalSection>
-                    <SectionLabel>Tools & Libraries</SectionLabel>
-                    <ToolsRow>
-                      {selectedSkill.tools.map(t => (
-                        <ToolChip key={t}>{t}</ToolChip>
-                      ))}
-                    </ToolsRow>
-                  </ModalSection>
-                </>
-              )}
-
-              {selectedSkill.proof && (
-                <>
-                  <Divider />
-                  <ModalSection>
-                    <SectionLabel>See it in action</SectionLabel>
-                    {selectedSkill.proof.href.startsWith('http') ? (
-                      <ProofLink
-                        href={selectedSkill.proof.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {selectedSkill.proof.label} <FaExternalLinkAlt />
-                      </ProofLink>
-                    ) : (
-                      <ProofLink
-                        href={selectedSkill.proof.href}
-                        onClick={closeModal}
-                      >
-                        {selectedSkill.proof.label} →
-                      </ProofLink>
-                    )}
-                  </ModalSection>
-                </>
-              )}
-            </Modal>
-          </Overlay>
+            {selectedSkill.proof && (
+              <>
+                <Divider />
+                <ModalSection>
+                  <SectionLabel>See it in action</SectionLabel>
+                  {selectedSkill.proof.href.startsWith('http') ? (
+                    <ProofLink
+                      href={selectedSkill.proof.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {selectedSkill.proof.label} <FaExternalLinkAlt />
+                    </ProofLink>
+                  ) : (
+                    <ProofLink
+                      href={selectedSkill.proof.href}
+                      onClick={closeModal}
+                    >
+                      {selectedSkill.proof.label} →
+                    </ProofLink>
+                  )}
+                </ModalSection>
+              </>
+            )}
+          </>
         )}
-      </AnimatePresence>
+      </Modal>
     </Section>
   );
 };
