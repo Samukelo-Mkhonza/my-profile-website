@@ -3,6 +3,7 @@
 [![CI](https://github.com/Samukelo-Mkhonza/my-profile-website/actions/workflows/ci.yml/badge.svg)](https://github.com/Samukelo-Mkhonza/my-profile-website/actions/workflows/ci.yml)
 [![Deploy](https://github.com/Samukelo-Mkhonza/my-profile-website/actions/workflows/deploy.yml/badge.svg)](https://github.com/Samukelo-Mkhonza/my-profile-website/actions/workflows/deploy.yml)
 [![Pages](https://github.com/Samukelo-Mkhonza/my-profile-website/actions/workflows/pages.yml/badge.svg)](https://github.com/Samukelo-Mkhonza/my-profile-website/actions/workflows/pages.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 A sleek, production-ready React portfolio site for **Samukelo Mkhonza**, Software Developer, showcasing skills, experience, and contact links. Styled with JetBrains Mono font, animated with Framer Motion, and scoped via Styled Components.
 
@@ -64,3 +65,19 @@ Each target skips itself until its switch is flipped (`AWS_DEPLOY_ROLE_ARN` /
 
 Setup instructions (GitHub secrets/variables, the IAM role, and how to retire
 the old CodePipeline stack) are in [.github/DEPLOYMENT.md](.github/DEPLOYMENT.md).
+
+## Contributing
+
+This is a personal portfolio, but bug reports, typo fixes, and small
+improvements are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for local
+setup and PR expectations, and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for
+how discussion is expected to go.
+
+## Security
+
+Found a vulnerability? Please don't open a public issue — see
+[SECURITY.md](SECURITY.md) for how to report it privately.
+
+## License
+
+[MIT](LICENSE) © Samukelo Mkhonza
