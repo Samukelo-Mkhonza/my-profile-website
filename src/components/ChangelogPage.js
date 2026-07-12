@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { FaCodeBranch } from 'react-icons/fa';
 import PageShell from './PageShell';
 import { profile } from '../content/profile';
+import { fetchGithubJSON } from '../lib/githubFetch';
 
 // Build-in-public feed: the real commit history of this site, straight from
 // the GitHub API (same unauthenticated pattern Projects.js already uses).
@@ -109,11 +110,7 @@ const ChangelogPage = ({ onClose }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`https://api.github.com/repos/${profile.siteRepo}/commits?per_page=30`)
-      .then((res) => {
-        if (!res.ok) throw new Error(`GitHub API error ${res.status}`);
-        return res.json();
-      })
+    fetchGithubJSON(`https://api.github.com/repos/${profile.siteRepo}/commits?per_page=30`)
       .then((data) => {
         setCommits(data);
         setLoading(false);

@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
 import { profile } from '../content/profile';
 import { runCommand, completeCommand } from '../lib/terminalCommands';
+import { fetchGithubJSON } from '../lib/githubFetch';
 
 // Interactive terminal overlay. Keyboard-first (Ctrl+` toggles it, Tab
 // completes, ↑/↓ recall history), accessible (labelled input, live-region
@@ -159,7 +160,6 @@ const Terminal = ({ onClose, onNavigate }) => {
   const [busy, setBusy] = useState(false);
   const inputRef = useRef(null);
   const screenRef = useRef(null);
-  const projectsCache = useRef(null);
 
   // Focus on open, and re-focus after async commands re-enable the input.
   useEffect(() => {
@@ -172,14 +172,10 @@ const Terminal = ({ onClose, onNavigate }) => {
   }, [lines, busy]);
 
   const fetchProjects = useCallback(async () => {
-    if (projectsCache.current) return projectsCache.current;
-    const res = await fetch(
+    const data = await fetchGithubJSON(
       `https://api.github.com/users/${profile.github}/repos?sort=updated&per_page=50`
     );
-    if (!res.ok) throw new Error(`GitHub API error ${res.status}`);
-    const data = await res.json();
-    projectsCache.current = data.filter((r) => !r.fork);
-    return projectsCache.current;
+    return data.filter((r) => !r.fork);
   }, []);
 
   const submit = useCallback(

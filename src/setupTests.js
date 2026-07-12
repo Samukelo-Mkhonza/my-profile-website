@@ -54,3 +54,21 @@ window.fetch = () =>
 
 // jsdom logs "Not implemented" errors for scrollTo (used by Navbar/Footer).
 window.scrollTo = () => {};
+
+// jsdom does not implement matchMedia; App's SceneBackdrop uses it to skip
+// the 3D background on narrow/touch viewports. Defaults to "no match" so
+// existing tests see the same behavior as before that check was added.
+window.matchMedia =
+  window.matchMedia ||
+  function matchMedia(query) {
+    return {
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => false,
+    };
+  };

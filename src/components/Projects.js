@@ -8,6 +8,7 @@ import {
 import TiltCard from './TiltCard';
 import projectPlaceholder from '../assets/project-card-placeholder.svg';
 import useIsNarrowViewport from '../lib/useIsNarrowViewport';
+import { fetchGithubJSON } from '../lib/githubFetch';
 import Modal, {
   ModalHeader, ModalTitle, ModalDescription,
   Divider, ModalSection, SectionLabel, ChipRow, Chip
@@ -172,7 +173,9 @@ const SpinnerIcon = styled(FaSpinner)`
 
 const FilterView = styled(motion.div)``;
 
-const FeaturedCard = styled(motion.article)`
+/* motion.div, not motion.article: it carries role="button" for its
+   click/keyboard handler, and ARIA forbids role="button" on <article>. */
+const FeaturedCard = styled(motion.div)`
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
   background: var(--bg-card, #ffffff);
@@ -429,6 +432,10 @@ const GithubIconLink = styled.a`
   color: var(--text-secondary, #666);
   font-size: 1.25rem;
   flex-shrink: 0;
+  /* Padding + matching negative margin: grows the hit area to the
+     24x24px CSS target-size minimum without shifting surrounding layout. */
+  padding: 6px;
+  margin: -6px;
   transition: color 0.2s;
   &:hover { color: var(--text-primary, #000); }
 
@@ -630,11 +637,7 @@ const Projects = () => {
   const reducedMotion = useReducedMotion();
 
   useEffect(() => {
-    fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=50`)
-      .then(res => {
-        if (!res.ok) throw new Error(`GitHub API error ${res.status}`);
-        return res.json();
-      })
+    fetchGithubJSON(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=50`)
       .then(data => {
         setRepos(data.filter(r => !r.fork));
         setLoading(false);

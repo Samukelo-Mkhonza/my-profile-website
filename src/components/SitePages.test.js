@@ -35,31 +35,34 @@ describe('SitePages', () => {
     expect(screen.queryByRole('region')).not.toBeInTheDocument();
   });
 
-  test('opens the terminal from the floating button', () => {
+  test('opens the terminal from the floating button', async () => {
     renderSitePages();
     fireEvent.click(screen.getByRole('button', { name: /open interactive terminal/i }));
-    expect(screen.getByRole('region', { name: /interactive terminal/i })).toBeInTheDocument();
+    // Terminal is React.lazy-loaded, so it appears asynchronously.
+    expect(await screen.findByRole('region', { name: /interactive terminal/i })).toBeInTheDocument();
     expect(screen.getByLabelText(/terminal command input/i)).toBeInTheDocument();
   });
 
-  test('Ctrl+` toggles the terminal', () => {
+  test('Ctrl+` toggles the terminal', async () => {
     renderSitePages();
     fireEvent.keyDown(window, { key: '`', ctrlKey: true });
-    expect(screen.getByRole('region', { name: /interactive terminal/i })).toBeInTheDocument();
+    expect(await screen.findByRole('region', { name: /interactive terminal/i })).toBeInTheDocument();
   });
 
-  test('renders the Now page when the hash points at it', () => {
+  test('renders the Now page when the hash points at it', async () => {
     window.location.hash = '#/now';
     renderSitePages();
-    expect(screen.getByRole('heading', { name: /^now$/i })).toBeInTheDocument();
+    // NowPage is React.lazy-loaded, so it appears asynchronously.
+    expect(await screen.findByRole('heading', { name: /^now$/i })).toBeInTheDocument();
   });
 
-  test('every registered page renders inside the shell', () => {
+  test('every registered page renders inside the shell', async () => {
     // Sanity-check the route table: each page component mounts without crashing.
     for (const route of Object.keys(PAGES)) {
       window.location.hash = `#/${route}`;
       const { unmount } = renderSitePages();
-      expect(screen.getByRole('button', { name: /back to site/i })).toBeInTheDocument();
+      // Each page is React.lazy-loaded, so it appears asynchronously.
+      expect(await screen.findByRole('button', { name: /back to site/i })).toBeInTheDocument();
       unmount();
       window.history.replaceState(null, '', window.location.pathname);
     }

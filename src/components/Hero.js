@@ -429,7 +429,7 @@ const ButtonGroup = styled(motion.div)`
   }
 `;
 
-const Button = styled(motion.a)`
+const Button = styled(motion.button).attrs({ type: 'button' })`
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -437,10 +437,12 @@ const Button = styled(motion.a)`
   padding: clamp(0.625rem, 1.5vw, 1rem) clamp(1.25rem, 2.5vw, 2rem);
   border-radius: var(--radius-pill, 999px);
   font-size: clamp(0.8125rem, 1.5vw, 1rem);
+  font-family: inherit;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   text-decoration: none;
+  appearance: none;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -1416,12 +1418,11 @@ const Hero = () => {
               <TypingText texts={roles} speed={100} pause={2000} />
             </DynamicRole>
 
-            <Description
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.8 }}
-            >
-              Passionate about building scalable cloud-native applications and 
+            {/* No fade-in: Lighthouse flags this as the LCP element, and
+                delaying its paint behind a timed animation directly hurts
+                LCP for no real visual benefit at this depth in the reveal. */}
+            <Description>
+              Passionate about building scalable cloud-native applications and
               creating exceptional digital experiences. Currently architecting 
               solutions at CloudZA, transforming ideas into reality.
             </Description>

@@ -12,11 +12,13 @@ import Footer from './components/Footer';
 import EasterEggs from './components/EasterEggs';
 import CursorTrail from './components/CursorTrail';
 import SitePages from './components/SitePages';
-import Chatbot from './components/Chatbot';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 
 // WebGL scene is heavy, so it is code-split and only loaded after first paint
 const Background3D = lazy(() => import('./components/Background3D'));
+// Chat widget isn't needed for first paint either; deferring its parse/eval
+// keeps it off the critical path for LCP/TBT.
+const Chatbot = lazy(() => import('./components/Chatbot'));
 
 const ScrollProgress = () => {
   const { scrollYProgress } = useScroll();
@@ -50,11 +52,18 @@ const SceneBackdrop = () => {
   const reducedMotion = useReducedMotion();
   const [show, setShow] = useState(false);
 
-  // Defer the WebGL scene until after first paint
+  // Skip the ~240KB three.js/react-three-fiber scene entirely on narrow/
+  // touch viewports: it's a cursor-following decoration (little payoff with
+  // no hover), and this is exactly where the parse/eval cost hurts most.
   useEffect(() => {
     if (reducedMotion) return;
-    const timer = setTimeout(() => setShow(true), 200);
-    return () => clearTimeout(timer);
+    if (window.matchMedia('(max-width: 768px), (hover: none)').matches) return;
+    // requestIdleCallback (falling back to setTimeout) so the scene never
+    // competes with hydration/interactivity work on slower devices.
+    const idle = window.requestIdleCallback || ((cb) => setTimeout(cb, 200));
+    const cancelIdle = window.cancelIdleCallback || clearTimeout;
+    const handle = idle(() => setShow(true), { timeout: 1000 });
+    return () => cancelIdle(handle);
   }, [reducedMotion]);
 
   if (!show) return null;
@@ -85,7 +94,9 @@ function App() {
           <Blog />
           <Explore />
           <Footer />
-          <Chatbot />
+          <Suspense fallback={null}>
+            <Chatbot />
+          </Suspense>
         </div>
         {/* Hash-routed extra pages (#/now, #/uses, …) + terminal overlay */}
         <SitePages />

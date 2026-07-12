@@ -1,13 +1,16 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, lazy, Suspense } from 'react';
 import styled from 'styled-components';
 import { AnimatePresence } from 'framer-motion';
-import NowPage from './NowPage';
-import UsesPage from './UsesPage';
-import GardenPage from './GardenPage';
-import CaseStudiesPage from './CaseStudiesPage';
-import ChangelogPage from './ChangelogPage';
-import PlaygroundPage from './PlaygroundPage';
-import Terminal from './Terminal';
+
+// These pages are only ever reached via a #/<route> hash, so they're code-split
+// out of the main bundle instead of paying their parse/eval cost on every load.
+const NowPage = lazy(() => import('./NowPage'));
+const UsesPage = lazy(() => import('./UsesPage'));
+const GardenPage = lazy(() => import('./GardenPage'));
+const CaseStudiesPage = lazy(() => import('./CaseStudiesPage'));
+const ChangelogPage = lazy(() => import('./ChangelogPage'));
+const PlaygroundPage = lazy(() => import('./PlaygroundPage'));
+const Terminal = lazy(() => import('./Terminal'));
 
 // Tiny hash router for the "extra" pages. Regular section anchors (#about,
 // #projects…) keep working untouched; only hashes shaped like #/<route> are
@@ -116,15 +119,17 @@ const SitePages = () => {
 
   return (
     <>
-      <AnimatePresence>
-        {ActivePage && <ActivePage key={route} onClose={closePage} />}
-      </AnimatePresence>
+      <Suspense fallback={null}>
+        <AnimatePresence>
+          {ActivePage && <ActivePage key={route} onClose={closePage} />}
+        </AnimatePresence>
 
-      <AnimatePresence>
-        {terminalOpen && (
-          <Terminal onClose={() => setTerminalOpen(false)} onNavigate={navigate} />
-        )}
-      </AnimatePresence>
+        <AnimatePresence>
+          {terminalOpen && (
+            <Terminal onClose={() => setTerminalOpen(false)} onNavigate={navigate} />
+          )}
+        </AnimatePresence>
+      </Suspense>
 
       {!terminalOpen && (
         <TerminalFab
