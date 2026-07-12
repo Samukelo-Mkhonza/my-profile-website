@@ -57,8 +57,11 @@ const TypingText = ({ text, speed = 40, start = true }) => {
     return () => clearInterval(interval);
   }, [text, speed, start, instant]);
 
+  // role="img" flattens the animated children into one static accessible
+  // name; role="text" (Safari-only, not a standard ARIA role) triggered
+  // an eslint aria-role warning during the production build.
   return (
-    <span aria-label={text}>
+    <span role="img" aria-label={text}>
       <span aria-hidden="true">{displayed}</span>
       <Cursor $done={done} aria-hidden="true" />
     </span>

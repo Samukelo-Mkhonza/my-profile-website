@@ -563,7 +563,7 @@ const Navbar = () => {
           <Logo
             href="#hero"
             onClick={(e) => { handleLinkClick('#hero', e); handleLogoEasterEgg(); }}
-            aria-label="Go to home"
+            aria-label="SM, go to home"
           >
             <LogoIcon
               $scrolled={scrolled}

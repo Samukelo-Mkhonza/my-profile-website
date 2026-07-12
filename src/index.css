@@ -34,7 +34,7 @@ html {
   --skill-card-bg: #fffcf5;
   /* Neo-brutalist primitives (theme-independent shapes; colors via tokens) */
   --accent-orange: #ee5a24;
-  --on-orange: #ffffff;
+  --on-orange: #111111; /* #fff on this orange is 3.42:1, fails AA for small/bold text */
   --green: #43a047;
   --shadow-hard-sm: 3px 3px 0 var(--shadow-color);
   --shadow-hard: 4px 4px 0 var(--shadow-color);

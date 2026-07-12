@@ -514,7 +514,7 @@ const Skills = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <cat.icon />
+                <cat.icon aria-hidden="true" />
                 <span>{cat.label}</span>
               </FilterTab>
             ))}
@@ -548,7 +548,7 @@ const Skills = () => {
                     animate={{ scale: 1 }}
                     transition={{ delay: Math.min(index * 0.1, 0.5) + 0.2, type: 'spring', damping: 15 }}
                   >
-                    <skill.icon />
+                    <skill.icon aria-hidden="true" />
                   </IconTile>
                   <SkillInfo>
                     <SkillName>{skill.name}</SkillName>

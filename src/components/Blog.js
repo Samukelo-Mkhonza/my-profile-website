@@ -110,7 +110,9 @@ const BlogGrid = styled.div`
   }
 `;
 
-const BlogCard = styled(motion.article)`
+/* motion.div, not motion.article: it carries role="button" for its
+   click/keyboard handler, and ARIA forbids role="button" on <article>. */
+const BlogCard = styled(motion.div)`
   background: var(--skill-card-bg, #f8f9fa);
   border: var(--border-w, 2px) solid var(--border-card, #111);
   border-radius: var(--radius-card, 14px);
@@ -463,7 +465,7 @@ const Blog = () => {
                     ))}
                   </BlogTags>
                   <DetailsHint>
-                    Details <FaArrowRight />
+                    Details <FaArrowRight aria-hidden="true" />
                   </DetailsHint>
                 </CardFooter>
               </BlogCard>
