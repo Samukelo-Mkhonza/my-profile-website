@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.8.2](https://github.com/Samukelo-Mkhonza/my-profile-website/compare/v0.8.1...v0.8.2) (2026-07-12)
+
+
+### Bug Fixes
+
+* resolve accessibility and SEO audit failures ([2462b7b](https://github.com/Samukelo-Mkhonza/my-profile-website/commit/2462b7b058b0b6d2f2d7af7b93dc992308116fdb))
+
+
+### Performance
+
+* code-split routes, defer 3D scene, fix LCP and reflow, cache GitHub API ([45e9390](https://github.com/Samukelo-Mkhonza/my-profile-website/commit/45e93904b7ced424b4731f32809ad5a13c211419))
+
 ## [0.8.1](https://github.com/Samukelo-Mkhonza/my-profile-website/compare/v0.8.0...v0.8.1) (2026-07-11)
 
 
