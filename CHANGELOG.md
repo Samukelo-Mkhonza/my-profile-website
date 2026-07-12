@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.0](https://github.com/Samukelo-Mkhonza/my-profile-website/compare/v0.8.2...v0.9.0) (2026-07-12)
+
+
+### Features
+
+* add issue templates, contributing guide, code of conduct, security policy, and license ([57b20ac](https://github.com/Samukelo-Mkhonza/my-profile-website/commit/57b20ace0def3a52570edd1bad5a5c142f6c79f4))
+
 ## [0.8.2](https://github.com/Samukelo-Mkhonza/my-profile-website/compare/v0.8.1...v0.8.2) (2026-07-12)
 
 
