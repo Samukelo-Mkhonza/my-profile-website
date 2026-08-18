@@ -10,11 +10,6 @@ import {
   FaRocket,
   FaMapMarkerAlt,
   FaPaperPlane,
-  FaEye,
-  FaPhone,
-  FaLinkedin,
-  FaCertificate,
-  FaGraduationCap,
   FaBriefcase,
   FaCheckCircle,
   FaExclamationCircle,
@@ -490,29 +485,6 @@ const PrimaryButton = styled(Button)`
   }
 `;
 
-const SecondaryButton = styled(Button)`
-  background: var(--bg-card, transparent);
-  color: var(--text-primary, #000);
-  border: 2px solid var(--border-card, #000);
-  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
-
-  &:before {
-    background: var(--accent, #000);
-  }
-
-  @media (hover: hover) {
-    &:hover {
-      color: var(--accent-inverse, #fff);
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-hard, 4px 4px 0 #111);
-
-      &:before {
-        width: 100%;
-      }
-    }
-  }
-`;
-
 /* Bare column — the old glass wrapper card made a box-in-box-in-box stack
    that competed with the headline; the tiles now stand on their own */
 const StatsSection = styled(motion.div)`
@@ -845,166 +817,6 @@ const SubmitButton = styled(motion.button)`
   }
 `;
 
-// CV Modal Styles
-const CVContent = styled.div`
-  width: 100%;
-`;
-
-const CVSection = styled.div`
-  margin-bottom: clamp(1.5rem, 3vw, 2rem);
-  padding-bottom: clamp(1rem, 2vw, 1.5rem);
-  border-bottom: 1px solid var(--border-card);
-
-  &:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-  }
-
-  @media (max-width: 360px) {
-    margin-bottom: 1.25rem;
-    padding-bottom: 0.875rem;
-  }
-`;
-
-const CVSectionTitle = styled.h3`
-  font-size: clamp(1rem, 2.5vw, 1.25rem);
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: clamp(0.75rem, 2vw, 1rem);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-
-  svg {
-    font-size: clamp(0.875rem, 2vw, 1rem);
-    color: var(--text-secondary);
-    flex-shrink: 0;
-  }
-
-  @media (max-width: 360px) {
-    font-size: 0.9375rem;
-    gap: 0.5rem;
-    letter-spacing: 0.02em;
-  }
-`;
-
-const CVText = styled.p`
-  color: var(--text-secondary);
-  line-height: 1.6;
-  margin-bottom: 0.75rem;
-  font-size: clamp(0.875rem, 2vw, 1rem);
-
-  @media (max-width: 360px) {
-    font-size: 0.8125rem;
-    line-height: 1.5;
-  }
-`;
-
-const CVList = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: clamp(0.5rem, 1.5vw, 0.75rem);
-
-  @media (max-width: 360px) {
-    gap: 0.375rem;
-  }
-`;
-
-const CVListItem = styled.li`
-  background: var(--tag-bg);
-  padding: clamp(0.375rem, 1.5vw, 0.5rem) clamp(0.75rem, 2vw, 1rem);
-  border: 2px solid var(--border-card, #111);
-  border-radius: var(--radius-pill, 999px);
-  font-size: clamp(0.75rem, 1.75vw, 0.875rem);
-  font-weight: 600;
-  color: var(--text-primary);
-  transition: all 0.3s ease;
-
-  @media (hover: hover) {
-    &:hover {
-      background: var(--accent);
-      color: var(--accent-inverse);
-    }
-  }
-
-  @media (max-width: 360px) {
-    padding: 0.375rem 0.625rem;
-    font-size: 0.75rem;
-  }
-`;
-
-const ContactInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: clamp(0.375rem, 1vw, 0.5rem);
-  margin-top: 0.5rem;
-`;
-
-const ContactItem = styled.a`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  color: var(--text-secondary);
-  text-decoration: none;
-  transition: color 0.3s ease;
-  font-size: clamp(0.875rem, 2vw, 1rem);
-  word-break: break-word;
-
-  @media (hover: hover) {
-    &:hover {
-      color: var(--text-primary);
-    }
-  }
-
-  svg {
-    font-size: clamp(0.875rem, 2vw, 1rem);
-    color: var(--text-primary);
-    flex-shrink: 0;
-  }
-
-  @media (max-width: 360px) {
-    font-size: 0.8125rem;
-    gap: 0.5rem;
-  }
-`;
-
-const WorkExperience = styled.div`
-  margin-top: clamp(0.75rem, 2vw, 1rem);
-`;
-
-const JobTitle = styled.h4`
-  font-size: clamp(1rem, 2.5vw, 1.125rem);
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 0.25rem;
-
-  @media (max-width: 360px) {
-    font-size: 0.9375rem;
-  }
-`;
-
-const Company = styled.p`
-  color: var(--text-secondary);
-  font-style: italic;
-  margin-bottom: 0.5rem;
-  font-size: clamp(0.875rem, 2vw, 1rem);
-
-  @media (max-width: 360px) {
-    font-size: 0.8125rem;
-  }
-`;
-
-const Duration = styled.span`
-  font-size: clamp(0.75rem, 1.75vw, 0.875rem);
-  color: var(--text-muted);
-`;
-
 const roles = [
   "Software Developer",
   "Cloud Architect", 
@@ -1191,100 +1003,8 @@ const ContactModal = ({ isOpen, onClose }) => {
   );
 };
 
-const CVModal = ({ isOpen, onClose }) => {
-  return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      labelledBy="cv-modal-title"
-    >
-      <ModalHeader>
-        <ModalTitle id="cv-modal-title">Curriculum Vitae</ModalTitle>
-      </ModalHeader>
-
-      <CVContent>
-        <CVSection>
-          <CVSectionTitle>
-            <FaPhone />
-            Contact
-          </CVSectionTitle>
-          <ContactInfo>
-            <ContactItem href="mailto:samukelo.mkhonza@outlook.com">
-              <FaEnvelope />
-              samukelo.mkhonza@outlook.com
-            </ContactItem>
-            <ContactItem href="https://www.linkedin.com/in/samukelo-mkhonza-a27340215/" target="_blank" rel="noopener noreferrer">
-              <FaLinkedin />
-              LinkedIn Profile
-            </ContactItem>
-          </ContactInfo>
-        </CVSection>
-
-        <CVSection>
-          <CVSectionTitle>
-            <FaGraduationCap />
-            Education
-          </CVSectionTitle>
-          <JobTitle>National Diploma in ICT - Applications Development</JobTitle>
-          <Company>Durban University of Technology • 2022</Company>
-          <CVText style={{ marginTop: '0.5rem' }}>
-            4-Year Extended Curriculum Programme focusing on software development, web technologies, and database management.
-          </CVText>
-        </CVSection>
-
-        <CVSection>
-          <CVSectionTitle>
-            <FaBriefcase />
-            Experience
-          </CVSectionTitle>
-          <WorkExperience>
-            <JobTitle>Junior Cloud Technologist (Intern)</JobTitle>
-            <Company>CloudZA • <Duration>Dec 2023 - Dec 2024</Duration></Company>
-            <CVText>
-              Assisted in implementing and maintaining cloud infrastructure, contributed to AWS architecture documentation, 
-              and collaborated with senior technologists to optimize AWS solutions.
-            </CVText>
-          </WorkExperience>
-        </CVSection>
-
-        <CVSection>
-          <CVSectionTitle>
-            <FaCode />
-            Technical Skills
-          </CVSectionTitle>
-          <CVList>
-            <CVListItem>Java</CVListItem>
-            <CVListItem>Python</CVListItem>
-            <CVListItem>JavaScript</CVListItem>
-            <CVListItem>React.js</CVListItem>
-            <CVListItem>Node.js</CVListItem>
-            <CVListItem>AWS Cloud</CVListItem>
-            <CVListItem>SQL</CVListItem>
-            <CVListItem>Git/GitHub</CVListItem>
-          </CVList>
-        </CVSection>
-
-        <CVSection>
-          <CVSectionTitle>
-            <FaCertificate />
-            Key Certifications
-          </CVSectionTitle>
-          <CVList>
-            <CVListItem>AWS Cloud Practitioner</CVListItem>
-            <CVListItem>AWS Solutions Architect</CVListItem>
-            <CVListItem>Fortinet NSE 1-3</CVListItem>
-            <CVListItem>Cisco Network Security</CVListItem>
-            <CVListItem>Python Essentials</CVListItem>
-          </CVList>
-        </CVSection>
-      </CVContent>
-    </Modal>
-  );
-};
-
 const Hero = () => {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-  const [isCVModalOpen, setIsCVModalOpen] = useState(false);
   const sectionRef = useRef(null);
   const reducedMotion = useReducedMotion();
 
@@ -1304,20 +1024,12 @@ const Hero = () => {
     }
   };
 
-  const viewCV = () => {
-    setIsCVModalOpen(true);
-  };
-
   const openContact = () => {
     setIsContactModalOpen(true);
   };
 
   const closeContact = () => {
     setIsContactModalOpen(false);
-  };
-
-  const closeCV = () => {
-    setIsCVModalOpen(false);
   };
 
   return (
@@ -1393,14 +1105,6 @@ const Hero = () => {
                 <span>Get In Touch</span>
                 <FaEnvelope />
               </PrimaryButton>
-              <SecondaryButton
-                onClick={viewCV}
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <span>View CV</span>
-                <FaEye />
-              </SecondaryButton>
             </ButtonGroup>
           </MainContent>
 
@@ -1483,7 +1187,6 @@ const Hero = () => {
       </Section>
 
       <ContactModal isOpen={isContactModalOpen} onClose={closeContact} />
-      <CVModal isOpen={isCVModalOpen} onClose={closeCV} />
     </>
   );
 };

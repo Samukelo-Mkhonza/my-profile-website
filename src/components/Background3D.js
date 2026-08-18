@@ -4,11 +4,11 @@ import * as THREE from 'three';
 
 /**
  * Lazy-loaded WebGL background for the whole page: a wireframe
- * icosahedron with an inner solid core plus an orbiting particle
- * shell. One fixed canvas sits behind every section (sections use
- * translucent backgrounds so it shows through), steering toward
- * the cursor and drifting as the page scrolls. Monochrome so it
- * works with both the light and dark theme.
+ * icosahedron plus an orbiting particle shell. One fixed canvas sits
+ * behind every section (sections use translucent backgrounds so it
+ * shows through), steering toward the cursor and drifting as the
+ * page scrolls. Monochrome so it works with both the light and dark
+ * theme.
  */
 
 const Particles = ({ color, count }) => {
@@ -50,39 +50,21 @@ const Particles = ({ color, count }) => {
   );
 };
 
-const CoreShape = ({ wireColor, coreColor }) => {
+const CoreShape = ({ wireColor }) => {
   const outer = useRef();
-  const inner = useRef();
 
   useFrame((_, delta) => {
     if (outer.current) {
       outer.current.rotation.x += delta * 0.1;
       outer.current.rotation.y += delta * 0.16;
     }
-    if (inner.current) {
-      inner.current.rotation.x -= delta * 0.14;
-      inner.current.rotation.y -= delta * 0.1;
-    }
   });
 
   return (
-    <group>
-      <mesh ref={outer}>
-        <icosahedronGeometry args={[1.7, 1]} />
-        <meshBasicMaterial color={wireColor} wireframe transparent opacity={0.35} />
-      </mesh>
-      <mesh ref={inner}>
-        <icosahedronGeometry args={[0.95, 0]} />
-        <meshStandardMaterial
-          color={coreColor}
-          flatShading
-          transparent
-          opacity={0.22}
-          roughness={0.4}
-          metalness={0.6}
-        />
-      </mesh>
-    </group>
+    <mesh ref={outer}>
+      <icosahedronGeometry args={[1.7, 0]} />
+      <meshBasicMaterial color={wireColor} wireframe transparent opacity={0.5} />
+    </mesh>
   );
 };
 
@@ -133,7 +115,6 @@ const MouseScrollRig = ({ children }) => {
 
 const Background3D = ({ isDark }) => {
   const wireColor = isDark ? '#e8e8e8' : '#1a1a1a';
-  const coreColor = isDark ? '#ffffff' : '#333333';
   const particleColor = isDark ? '#bbbbbb' : '#444444';
   // Fewer particles on small screens to keep mobile smooth
   const count = useMemo(
@@ -152,7 +133,7 @@ const Background3D = ({ isDark }) => {
       <ambientLight intensity={0.7} />
       <directionalLight position={[4, 6, 5]} intensity={0.8} />
       <MouseScrollRig>
-        <CoreShape wireColor={wireColor} coreColor={coreColor} />
+        <CoreShape wireColor={wireColor} />
         <Particles color={particleColor} count={count} />
       </MouseScrollRig>
     </Canvas>
