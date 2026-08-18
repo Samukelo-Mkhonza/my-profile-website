@@ -42,12 +42,6 @@ const gradientShift = keyframes`
   100% { background-position: 0% 50%; }
 `;
 
-// Availability pill dot pulse
-const pulse = keyframes`
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.75); }
-`;
-
 // Styled cursor element
 const Cursor = styled.span`
   display: inline-block;
@@ -268,38 +262,6 @@ const Greeting = styled(motion.div)`
     font-size: 0.75rem;
     letter-spacing: 0.05em;
   }
-`;
-
-/* Status pill above the headline: the "hire me" signal, first thing read */
-const AvailabilityPill = styled(motion.div)`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  align-self: flex-start;
-  padding: 0.375rem 0.875rem;
-  background: var(--bg-card, #fffcf5);
-  border: 2px solid var(--border-card, #111);
-  border-radius: var(--radius-pill, 999px);
-  box-shadow: var(--shadow-hard-sm, 3px 3px 0 #111);
-  font-size: clamp(0.625rem, 1.5vw, 0.75rem);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--text-primary, #000);
-
-  @media (max-width: 768px) {
-    align-self: center;
-  }
-`;
-
-const PulseDot = styled.span`
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 50%;
-  background: var(--green, #43a047);
-  flex-shrink: 0;
-  animation: ${pulse} 2s ease-in-out infinite;
-  @media (prefers-reduced-motion: reduce) { animation: none; }
 `;
 
 const Title = styled(motion.h1)`
@@ -1382,15 +1344,6 @@ const Hero = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <AvailabilityPill
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-            >
-              <PulseDot />
-              Available for Projects
-            </AvailabilityPill>
-
             <Greeting
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

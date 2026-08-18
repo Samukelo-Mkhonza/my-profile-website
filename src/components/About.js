@@ -13,7 +13,7 @@ import {
   FaMusic,
   FaGamepad
 } from 'react-icons/fa';
-import profilePhoto from '../assets/profile-photo-placeholder.svg';
+import profilePhoto from '../assets/profile-photo.jpg';
 
 /* ─── Typing accent (heading only) ────────────────────────────────────────── */
 
