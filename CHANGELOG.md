@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.10.0](https://github.com/Samukelo-Mkhonza/my-profile-website/compare/v0.9.0...v0.10.0) (2026-08-18)
+
+
+### Features
+
+* update profile photo and remove unused animations from Hero component ([796d6eb](https://github.com/Samukelo-Mkhonza/my-profile-website/commit/796d6eb5476a3c84b02f270478c7a4e76de32160))
+
+
+### Refactoring
+
+* simplify CoreShape component and remove unused CV modal ([0140f9a](https://github.com/Samukelo-Mkhonza/my-profile-website/commit/0140f9a7987ee22a10912d5828b3119a84f6995f))
+
 ## [0.9.0](https://github.com/Samukelo-Mkhonza/my-profile-website/compare/v0.8.2...v0.9.0) (2026-07-12)
 
 
